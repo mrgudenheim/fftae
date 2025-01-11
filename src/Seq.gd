@@ -273,7 +273,7 @@ func write_wiki_table() -> void:
 		#seq_strings.append(str(seq_index)) # ID (Dec)
 		seq_strings.append("0x%02x" % seq_index) # ID (Hex)
 		seq_strings.append(seq_description) # Description
-		seq_strings.append(sequences[seq_index].to_string_hex()) # Opcodes
+		seq_strings.append(sequences[seq_index].to_string_hex("<br>")) # Opcodes
 		output_array.append(" || ".join(seq_strings))
 	
 	var final_output: String = "\n|-\n".join(output_array)

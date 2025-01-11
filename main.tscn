@@ -7,7 +7,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_bugng"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("settings_ui", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog")]
+[node name="Main" type="Control" node_paths=PackedStringArray("settings_ui", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,6 +21,8 @@ save_xml_button = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml"
 save_xml_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveXmlDialog")
 save_seq_button = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ")
 save_seq_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ/SaveSeqDialog")
+animation_list_container = NodePath("HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer")
+opcode_list_container = NodePath("HBoxContainer/AnimationEditor/VBoxContainer/Opcodes")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -30,7 +32,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("patch_type_options", "patch_start_location", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit")]
+[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("patch_type_options", "patch_start_location", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
 patch_type_options = NodePath("VBoxContainer/Info/PatchType")
@@ -40,6 +42,8 @@ bytes_text = NodePath("VBoxContainer/Info/EmptyBytesNum")
 patch_name_edit = NodePath("VBoxContainer/Info/PatchNameLineEdit")
 author_name_edit = NodePath("VBoxContainer/Info/AuthorLineEdit")
 patch_description_edit = NodePath("VBoxContainer/DescriptionTextEdit")
+animation_id_spinbox = NodePath("../AnimationEditor/VBoxContainer/Header/IdSpinBox")
+animation_name_options = NodePath("../AnimationEditor/VBoxContainer/Header/AnimationOptionButton")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/SettingsPanel"]
 layout_mode = 2
@@ -191,6 +195,7 @@ columns = 3
 [node name="ID" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
 layout_mode = 2
 text = "Anim ID"
+horizontal_alignment = 1
 
 [node name="Desription" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
 layout_mode = 2
@@ -261,55 +266,55 @@ text = "Insert Opcode"
 layout_mode = 2
 text = "Delete Opcode"
 
-[node name="Animations" type="GridContainer" parent="HBoxContainer/AnimationEditor/VBoxContainer"]
+[node name="Opcodes" type="GridContainer" parent="HBoxContainer/AnimationEditor/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 columns = 5
 
-[node name="#" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="#" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 text = "#"
 
-[node name="Opcode" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="Opcode" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 text = "Opcode"
 horizontal_alignment = 1
 
-[node name="Param1" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="Param1" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 text = "Param1"
 
-[node name="Param2" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="Param2" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 text = "Param2"
 
-[node name="Param3" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="Param3" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 text = "Param3"
 
-[node name="Test" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="Test" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 text = "1
 "
 
-[node name="OpcodesOption" type="OptionButton" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="OpcodesOption" type="OptionButton" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 selected = 0
 item_count = 1
 popup/item_0/text = "LoadFrameWait"
 
-[node name="SpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="SpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 min_value = -128.0
 max_value = 255.0
 
-[node name="SpinBox2" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="SpinBox2" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 min_value = -128.0
 max_value = 255.0
 
-[node name="SpinBox3" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+[node name="SpinBox3" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
 layout_mode = 2
 min_value = -128.0
 max_value = 255.0
@@ -321,3 +326,4 @@ max_value = 255.0
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
+[connection signal="item_selected" from="HBoxContainer/AnimationEditor/VBoxContainer/Header/AnimationOptionButton" to="." method="_on_animation_option_button_item_selected"]

@@ -9,6 +9,9 @@ extends Node
 @export var author_name_edit: LineEdit
 @export var patch_description_edit: TextEdit
 
+@export var animation_id_spinbox: SpinBox
+@export var animation_name_options: OptionButton
+
 var patch_name: String = "default patch name":
 	get:
 		if not patch_name_edit.text.is_empty():
@@ -61,6 +64,11 @@ var max_bytes: int = 0:
 		update_info_text(current_bytes, max_bytes, bytes_text)
 
 
+func _ready() -> void:
+	animation_id_spinbox.value_changed.connect(animation_name_options.select)
+	animation_name_options.item_selected.connect(animation_id_spinbox.set_value_no_signal)
+
+
 func update_info_text(current: int, max_value: int, ui: Label) -> void:
 	var percent_of_max:String = " (%.f%%)" % [100 * current/float(max_value)]
 	ui.text = str(current) + "/" + str(max_value) + percent_of_max
@@ -82,10 +90,26 @@ func on_seq_data_loaded(seq: Seq) -> void:
 	max_animation_slots = seq.section2_length / 4
 	current_bytes = seq.toal_length
 	
-	if FFTae.start_sizes.has(seq.file_name):
-		max_bytes = ceil(FFTae.start_sizes[seq.file_name] / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
+	if FFTae.original_sizes.has(seq.file_name):
+		max_bytes = ceil(FFTae.original_sizes[seq.file_name] / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
 	
-	patch_description_edit.placeholder_text = patch_type_options.get_item_text(patch_type_options.selected) + ".seq edited with FFT Animation Editor"
+	var type: String = patch_type_options.get_item_text(patch_type_options.selected)
+	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
+	patch_name_edit.placeholder_text = type + "_animation_edit"
+	
+	animation_id_spinbox.max_value = seq.sequences.size()
+	animation_id_spinbox.editable = true
+	
+	animation_name_options.clear()
+	if seq.sequences.size() == 0:
+		animation_name_options.select(-1)
+		animation_name_options.disabled = true
+	else:
+		for index in seq.sequences.size():
+			var sequence: Sequence = seq.sequences[index]
+			animation_name_options.add_item(str(index) + " " + sequence.seq_name)
+		animation_name_options.select(animation_id_spinbox.value)
+		animation_name_options.disabled = false
 
 
 func _on_patch_type_item_selected(index: int) -> void:
