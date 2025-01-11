@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://dgp4s8ucc0j6n"]
+[gd_scene load_steps=6 format=3 uid="uid://dgp4s8ucc0j6n"]
 
+[ext_resource type="Theme" uid="uid://bhwwwa4jiaiop" path="res://src/ui_theme.tres" id="1_13w5h"]
 [ext_resource type="Script" path="res://main.gd" id="1_lyv0c"]
 [ext_resource type="Script" path="res://src/settings_ui.gd" id="2_hmnjv"]
 
@@ -14,15 +15,16 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_13w5h")
 script = ExtResource("1_lyv0c")
 settings_ui = NodePath("HBoxContainer/SettingsPanel")
-load_file_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ/LoadFileDialog")
-save_xml_button = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml")
-save_xml_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveXmlDialog")
-save_seq_button = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ")
-save_seq_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ/SaveSeqDialog")
-animation_list_container = NodePath("HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer")
-opcode_list_container = NodePath("HBoxContainer/AnimationEditor/VBoxContainer/Opcodes")
+load_file_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ/LoadFileDialog")
+save_xml_button = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml")
+save_xml_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog")
+save_seq_button = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ")
+save_seq_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog")
+animation_list_container = NodePath("HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer")
+opcode_list_container = NodePath("HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -35,25 +37,28 @@ grow_vertical = 2
 [node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("patch_type_options", "patch_start_location", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
-patch_type_options = NodePath("VBoxContainer/Info/PatchType")
-patch_start_location = NodePath("VBoxContainer/Info/PatchLocationStart2")
-animations_slots_text = NodePath("VBoxContainer/Info/EmptyAnimationSlotsNum")
-bytes_text = NodePath("VBoxContainer/Info/EmptyBytesNum")
-patch_name_edit = NodePath("VBoxContainer/Info/PatchNameLineEdit")
-author_name_edit = NodePath("VBoxContainer/Info/AuthorLineEdit")
-patch_description_edit = NodePath("VBoxContainer/DescriptionTextEdit")
-animation_id_spinbox = NodePath("../AnimationEditor/VBoxContainer/Header/IdSpinBox")
-animation_name_options = NodePath("../AnimationEditor/VBoxContainer/Header/AnimationOptionButton")
+patch_type_options = NodePath("MarginContainer/VBoxContainer/Info/PatchType")
+patch_start_location = NodePath("MarginContainer/VBoxContainer/Info/PatchLocationStart2")
+animations_slots_text = NodePath("MarginContainer/VBoxContainer/Info/EmptyAnimationSlotsNum")
+bytes_text = NodePath("MarginContainer/VBoxContainer/Info/EmptyBytesNum")
+patch_name_edit = NodePath("MarginContainer/VBoxContainer/Info/PatchNameLineEdit")
+author_name_edit = NodePath("MarginContainer/VBoxContainer/Info/AuthorLineEdit")
+patch_description_edit = NodePath("MarginContainer/VBoxContainer/DescriptionTextEdit")
+animation_id_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/IdSpinBox")
+animation_name_options = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/SettingsPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/SettingsPanel"]
 layout_mode = 2
 
-[node name="Load SEQ" type="Button" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/SettingsPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Load SEQ" type="Button" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Load SEQ
 "
 
-[node name="LoadFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ"]
+[node name="LoadFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ"]
 title = "Open a File"
 initial_position = 1
 size = Vector2i(500, 400)
@@ -63,100 +68,100 @@ access = 2
 filters = PackedStringArray("*.seq")
 use_native_dialog = true
 
-[node name="Info" type="GridContainer" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+[node name="Info" type="GridContainer" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 columns = 2
 
-[node name="PatchStart" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="PatchStart" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "Seq Type: "
 horizontal_alignment = 2
 
-[node name="PatchType" type="OptionButton" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="PatchType" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 
-[node name="PatchLocationStart" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="PatchLocationStart" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "Start Location: "
 horizontal_alignment = 2
 
-[node name="PatchLocationStart2" type="SpinBox" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="PatchLocationStart2" type="SpinBox" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 max_value = 1e+09
 rounded = true
 allow_greater = true
 
-[node name="EmptyAnimationSlots" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="EmptyAnimationSlots" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "Animation Slots: "
 horizontal_alignment = 2
 
-[node name="EmptyAnimationSlotsNum" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="EmptyAnimationSlotsNum" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "0/256"
 label_settings = SubResource("LabelSettings_8s6nw")
 
-[node name="EmptyBytes" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="EmptyBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "Bytes: "
 horizontal_alignment = 2
 
-[node name="EmptyBytesNum" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="EmptyBytesNum" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "2048/2048"
 label_settings = SubResource("LabelSettings_bugng")
 
-[node name="PatchNameLabel" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="PatchNameLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "Patch Name: "
 horizontal_alignment = 2
 
-[node name="PatchNameLineEdit" type="LineEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="PatchNameLineEdit" type="LineEdit" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 placeholder_text = "default_patch_name"
 
-[node name="AuthorLabel" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="AuthorLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "Author: "
 horizontal_alignment = 2
 
-[node name="AuthorLineEdit" type="LineEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="AuthorLineEdit" type="LineEdit" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 placeholder_text = "Default Author Name"
 
-[node name="DescriptionLabel" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+[node name="DescriptionLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Patch Description: "
 horizontal_alignment = 1
 
-[node name="DescriptionTextEdit" type="TextEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+[node name="DescriptionTextEdit" type="TextEdit" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Patch description goes here..."
 wrap_mode = 1
 
-[node name="SaveAsXml" type="Button" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+[node name="SaveAsXml" type="Button" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 disabled = true
 text = "Save XML Patch
 "
 
-[node name="SaveXmlDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml"]
+[node name="SaveXmlDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml"]
 initial_position = 1
 size = Vector2i(500, 400)
 access = 2
 filters = PackedStringArray("*.xml")
 use_native_dialog = true
 
-[node name="SaveAsSEQ" type="Button" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+[node name="SaveAsSEQ" type="Button" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 disabled = true
 text = "Save as SEQ
 "
 
-[node name="SaveSeqDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ"]
+[node name="SaveSeqDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ"]
 auto_translate_mode = 1
 initial_position = 1
 size = Vector2i(500, 400)
@@ -167,163 +172,127 @@ use_native_dialog = true
 [node name="AnimationsList" type="PanelContainer" parent="HBoxContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationsList"]
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/AnimationsList"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/AnimationsList/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer"]
 layout_mode = 2
 
-[node name="InsertAnimation" type="Button" parent="HBoxContainer/AnimationsList/VBoxContainer/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="InsertAnimation" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 disabled = true
 text = "Insert Animation"
 
-[node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationsList/VBoxContainer/HBoxContainer"]
+[node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 disabled = true
 text = "Delete Animation"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationsList/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="GridContainer" type="GridContainer" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer"]
+[node name="AnimationListGridContainer" type="GridContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 columns = 3
 
-[node name="ID" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+[node name="ID" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Anim ID"
 horizontal_alignment = 1
 
-[node name="Desription" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+[node name="Desription" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Description"
 horizontal_alignment = 1
 
-[node name="Opcodes" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+[node name="Opcodes" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Opcodes"
 horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
-layout_mode = 2
-text = "1"
-horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
-layout_mode = 2
-text = "Test Description"
-
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer/VBoxContainer"]
-layout_mode = 2
-text = "LoadFrameWait(10,12)"
-
-[node name="Label2" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer/VBoxContainer"]
-layout_mode = 2
-text = "LoadFrameWait(10,12)"
-
-[node name="Label3" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer/VBoxContainer"]
-layout_mode = 2
-text = "LoadFrameWait(10,12)"
-
 [node name="AnimationEditor" type="PanelContainer" parent="HBoxContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationEditor"]
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/AnimationEditor"]
 layout_mode = 2
 
-[node name="Header" type="GridContainer" parent="HBoxContainer/AnimationEditor/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationEditor/MarginContainer"]
+layout_mode = 2
+
+[node name="Options" type="GridContainer" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer"]
 layout_mode = 2
 columns = 2
 
-[node name="IdLabel" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+[node name="IdLabel" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
 text = "Anim ID"
+horizontal_alignment = 1
 
-[node name="AnimOptLabel" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+[node name="AnimOptLabel" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
 text = "Description
 "
+horizontal_alignment = 1
 
-[node name="IdSpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+[node name="IdSpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
 editable = false
 
-[node name="AnimationOptionButton" type="OptionButton" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+[node name="AnimationOptionButton" type="OptionButton" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
+size_flags_horizontal = 3
 disabled = true
 
-[node name="InsertOpcode" type="Button" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+[node name="InsertOpcode" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
 text = "Insert Opcode"
 
-[node name="DeleteOpcode" type="Button" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+[node name="DeleteOpcode" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
 text = "Delete Opcode"
 
-[node name="Opcodes" type="GridContainer" parent="HBoxContainer/AnimationEditor/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Opcodes" type="GridContainer" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 columns = 5
 
-[node name="#" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
+[node name="#" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
 layout_mode = 2
 text = "#"
 
-[node name="Opcode" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
+[node name="Opcode" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
 layout_mode = 2
 text = "Opcode"
 horizontal_alignment = 1
 
-[node name="Param1" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
+[node name="Param1" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
 layout_mode = 2
 text = "Param1"
 
-[node name="Param2" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
+[node name="Param2" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
 layout_mode = 2
 text = "Param2"
 
-[node name="Param3" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
+[node name="Param3" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
 layout_mode = 2
 text = "Param3"
 
-[node name="Test" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
-layout_mode = 2
-text = "1
-"
-
-[node name="OpcodesOption" type="OptionButton" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
-layout_mode = 2
-selected = 0
-item_count = 1
-popup/item_0/text = "LoadFrameWait"
-
-[node name="SpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
-layout_mode = 2
-min_value = -128.0
-max_value = 255.0
-
-[node name="SpinBox2" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
-layout_mode = 2
-min_value = -128.0
-max_value = 255.0
-
-[node name="SpinBox3" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Opcodes"]
-layout_mode = 2
-min_value = -128.0
-max_value = 255.0
-
-[connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ" to="." method="_on_load_seq_pressed"]
-[connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
-[connection signal="item_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/Info/PatchType" to="HBoxContainer/SettingsPanel" method="_on_patch_type_item_selected"]
-[connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml" to="." method="_on_save_as_xml_pressed"]
-[connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
-[connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
-[connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
-[connection signal="item_selected" from="HBoxContainer/AnimationEditor/VBoxContainer/Header/AnimationOptionButton" to="." method="_on_animation_option_button_item_selected"]
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ" to="." method="_on_load_seq_pressed"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
+[connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info/PatchType" to="HBoxContainer/SettingsPanel" method="_on_patch_type_item_selected"]
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml" to="." method="_on_save_as_xml_pressed"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
+[connection signal="item_selected" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton" to="." method="_on_animation_option_button_item_selected"]

@@ -150,14 +150,21 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		var id_label: Label = Label.new()
 		id_label.text = id
 		id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		
 		var description_label: Label = Label.new()
 		description_label.text = description
+		
 		var opcodes_label: Label = Label.new()
 		opcodes_label.text = opcodes
+		var opcodes_panel_margin: MarginContainer = MarginContainer.new()
+		opcodes_panel_margin.add_child(opcodes_label)
+		var opcodes_panel: PanelContainer = PanelContainer.new()
+		opcodes_panel.add_child(opcodes_panel_margin)
+		
 		
 		animations_grid_parent.add_child(id_label)
 		animations_grid_parent.add_child(description_label)
-		animations_grid_parent.add_child(opcodes_label)
+		animations_grid_parent.add_child(opcodes_panel)
 
 
 func populate_opcode_list(opcode_grid_parent: GridContainer, sequence: Sequence) -> void:

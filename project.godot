@@ -18,6 +18,11 @@ config/features=PackedStringArray("4.3", "GL Compatibility")
 
 gdscript/warnings/untyped_declaration=1
 
+[display]
+
+window/size/viewport_width=1500
+window/size/viewport_height=900
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
