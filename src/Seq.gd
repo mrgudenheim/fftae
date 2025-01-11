@@ -35,7 +35,7 @@ var section3_length:int = 0:
 	get:
 		#var sequence_pointers_sorted:Array[int] = sequence_pointers.duplicate()
 		#sequence_pointers_sorted.sort()
-		var sum:int = 2 + sequence_pointers[-1] # length to last seqence
+		var sum: int = 2 + sequence_pointers[-1] # length to last seqence
 		sum += sequences[-1].length # length of last sequence
 		return sum
 		
@@ -44,9 +44,14 @@ var section3_length:int = 0:
 			#sum += sequence.length
 		#return sum + 2 # bytes
 
-static var opcode_parameters: Dictionary
-static var opcode_names: Dictionary
-static var seq_names: Dictionary # [name_alias, [seq_index, seq_name]]
+var toal_length: int = 0:
+	get:
+		return section1_length + section2_length + section3_length
+
+static var opcode_parameters: Dictionary = {}
+static var opcode_parameters_by_name: Dictionary = {}
+static var opcode_names: Dictionary = {}
+static var seq_names: Dictionary = {} # [name_alias, [seq_index, seq_name]]
 
 
 static func _static_init() -> void:
@@ -169,7 +174,7 @@ func get_sequence_data(bytes:PackedByteArray) -> Sequence:
 	return seq
 
 
-func write_seq() -> void:
+func write_seq(path: String) -> void:
 	var bytes:PackedByteArray = []
 	bytes.resize(section1_length + section2_length + section3_length)
 	bytes.fill(0)
@@ -201,8 +206,11 @@ func write_seq() -> void:
 				bytes.encode_u8(offset, param)
 				offset += 1
 	
-	DirAccess.make_dir_recursive_absolute("user://FFTorama")
-	var save_file := FileAccess.open("user://FFTorama/"+file_name+".seq", FileAccess.WRITE)
+	# clean up file name
+	if path.get_slice(".", -2).to_lower() == path.get_slice(".", -1).to_lower():
+		path = path.trim_suffix(path.get_slice(".", -1))
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var save_file := FileAccess.open(path.get_basename(), FileAccess.WRITE)
 	save_file.store_buffer(bytes)
 
 
@@ -398,6 +406,10 @@ func write_csv() -> void:
 
 # https://ffhacktics.com/wiki/SEQ_%26_Animation_info_page
 static func load_opcode_data() -> void:
+	opcode_names.clear()
+	opcode_parameters.clear()
+	opcode_parameters_by_name.clear()
+	
 	var opcode_filepath:String = "res://src/SeqData/opcodeParameters.txt"
 	
 	var file := FileAccess.open(opcode_filepath, FileAccess.READ)
@@ -419,6 +431,7 @@ static func load_opcode_data() -> void:
 
 		opcode_names[opcode_code] = opcode_name
 		opcode_parameters[opcode_code] = opcode_num_parameters
+		opcode_parameters_by_name[opcode_name] = opcode_num_parameters
 
 		line_index += 1
 

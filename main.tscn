@@ -1,10 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://dgp4s8ucc0j6n"]
+[gd_scene load_steps=5 format=3 uid="uid://dgp4s8ucc0j6n"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_lyv0c"]
+[ext_resource type="Script" path="res://src/settings_ui.gd" id="2_hmnjv"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_8s6nw"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bugng"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("load_file_dialog", "save_file_dialog", "patch_type_options")]
+[node name="Main" type="Control" node_paths=PackedStringArray("settings_ui", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,9 +15,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_lyv0c")
+settings_ui = NodePath("HBoxContainer/SettingsPanel")
 load_file_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ/LoadFileDialog")
-save_file_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveFileDialog")
-patch_type_options = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/Info/PatchType")
+save_xml_button = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml")
+save_xml_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveXmlDialog")
+save_seq_button = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ")
+save_seq_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ/SaveSeqDialog")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -24,8 +30,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer"]
+[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("patch_type_options", "patch_start_location", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit")]
 layout_mode = 2
+script = ExtResource("2_hmnjv")
+patch_type_options = NodePath("VBoxContainer/Info/PatchType")
+patch_start_location = NodePath("VBoxContainer/Info/PatchLocationStart2")
+animations_slots_text = NodePath("VBoxContainer/Info/EmptyAnimationSlotsNum")
+bytes_text = NodePath("VBoxContainer/Info/EmptyBytesNum")
+patch_name_edit = NodePath("VBoxContainer/Info/PatchNameLineEdit")
+author_name_edit = NodePath("VBoxContainer/Info/AuthorLineEdit")
+patch_description_edit = NodePath("VBoxContainer/DescriptionTextEdit")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/SettingsPanel"]
 layout_mode = 2
@@ -37,10 +51,13 @@ text = "Load SEQ
 
 [node name="LoadFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ"]
 title = "Open a File"
+initial_position = 1
+size = Vector2i(500, 400)
 ok_button_text = "Open"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.seq")
+use_native_dialog = true
 
 [node name="Info" type="GridContainer" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
 layout_mode = 2
@@ -61,24 +78,26 @@ horizontal_alignment = 2
 
 [node name="PatchLocationStart2" type="SpinBox" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 layout_mode = 2
+max_value = 1e+09
+rounded = true
 allow_greater = true
-editable = false
 
 [node name="EmptyAnimationSlots" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 layout_mode = 2
 text = "Animation Slots: "
 horizontal_alignment = 2
 
-[node name="EmptyAnimationSlots2" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="EmptyAnimationSlotsNum" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 layout_mode = 2
 text = "0/256"
+label_settings = SubResource("LabelSettings_8s6nw")
 
 [node name="EmptyBytes" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 layout_mode = 2
 text = "Bytes: "
 horizontal_alignment = 2
 
-[node name="EmptyBytes2" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="EmptyBytesNum" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 layout_mode = 2
 text = "2048/2048"
 label_settings = SubResource("LabelSettings_bugng")
@@ -90,33 +109,29 @@ horizontal_alignment = 2
 
 [node name="PatchNameLineEdit" type="LineEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 layout_mode = 2
-placeholder_text = "DefaultPatchName"
+placeholder_text = "default_patch_name"
 
-[node name="AuthorLabel2" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="AuthorLabel" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 layout_mode = 2
 text = "Author: "
 horizontal_alignment = 2
 
-[node name="AuthorLineEdit2" type="LineEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+[node name="AuthorLineEdit" type="LineEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-placeholder_text = "DefaultAuthorName"
+placeholder_text = "Default Author Name"
 
 [node name="DescriptionLabel" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
 layout_mode = 2
 text = "Patch Description: "
 horizontal_alignment = 1
 
-[node name="DescriptionLineEdit3" type="TextEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+[node name="DescriptionTextEdit" type="TextEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_vertical = 3
-placeholder_text = "Patch Description goes here..."
+placeholder_text = "Patch description goes here..."
 wrap_mode = 1
-
-[node name="GridContainer2" type="GridContainer" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
-layout_mode = 2
-columns = 2
 
 [node name="SaveAsXml" type="Button" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
 layout_mode = 2
@@ -124,9 +139,26 @@ disabled = true
 text = "Save XML Patch
 "
 
-[node name="SaveFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml"]
+[node name="SaveXmlDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml"]
+initial_position = 1
+size = Vector2i(500, 400)
 access = 2
 filters = PackedStringArray("*.xml")
+use_native_dialog = true
+
+[node name="SaveAsSEQ" type="Button" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Save as SEQ
+"
+
+[node name="SaveSeqDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ"]
+auto_translate_mode = 1
+initial_position = 1
+size = Vector2i(500, 400)
+access = 2
+filters = PackedStringArray("*.seq")
+use_native_dialog = true
 
 [node name="AnimationsList" type="PanelContainer" parent="HBoxContainer"]
 layout_mode = 2
@@ -139,10 +171,12 @@ layout_mode = 2
 
 [node name="InsertAnimation" type="Button" parent="HBoxContainer/AnimationsList/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Insert Animation"
 
 [node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationsList/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Delete Animation"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationsList/VBoxContainer"]
@@ -282,6 +316,8 @@ max_value = 255.0
 
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ" to="." method="_on_load_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
-[connection signal="item_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/Info/PatchType" to="." method="_on_patch_type_item_selected"]
+[connection signal="item_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/Info/PatchType" to="HBoxContainer/SettingsPanel" method="_on_patch_type_item_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml" to="." method="_on_save_as_xml_pressed"]
-[connection signal="dir_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveFileDialog" to="." method="_on_save_file_dialog_dir_selected"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
