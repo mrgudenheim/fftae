@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcrged8oflt1x"]
+
+[ext_resource type="Script" path="res://src/scenes/animation_ui.gd" id="1_xy70b"]
+
+[node name="Animation" type="GridContainer" node_paths=PackedStringArray("id", "description", "opcodes_container")]
+columns = 3
+script = ExtResource("1_xy70b")
+id = NodePath("ID")
+description = NodePath("Description")
+opcodes_container = NodePath("Opcodes")
+
+[node name="ID" type="LineEdit" parent="."]
+layout_mode = 2
+
+[node name="Description" type="LineEdit" parent="."]
+layout_mode = 2
+
+[node name="Opcodes" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 4

@@ -1,0 +1,287 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgp4s8ucc0j6n"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_lyv0c"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bugng"]
+
+[node name="Main" type="Control" node_paths=PackedStringArray("load_file_dialog", "save_file_dialog", "patch_type_options")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lyv0c")
+load_file_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ/LoadFileDialog")
+save_file_dialog = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveFileDialog")
+patch_type_options = NodePath("HBoxContainer/SettingsPanel/VBoxContainer/Info/PatchType")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/SettingsPanel"]
+layout_mode = 2
+
+[node name="Load SEQ" type="Button" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Load SEQ
+"
+
+[node name="LoadFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ"]
+title = "Open a File"
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.seq")
+
+[node name="Info" type="GridContainer" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="PatchStart" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "Seq Type: "
+horizontal_alignment = 2
+
+[node name="PatchType" type="OptionButton" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+
+[node name="PatchLocationStart" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "Start Location: "
+horizontal_alignment = 2
+
+[node name="PatchLocationStart2" type="SpinBox" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+allow_greater = true
+editable = false
+
+[node name="EmptyAnimationSlots" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "Animation Slots: "
+horizontal_alignment = 2
+
+[node name="EmptyAnimationSlots2" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "0/256"
+
+[node name="EmptyBytes" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "Bytes: "
+horizontal_alignment = 2
+
+[node name="EmptyBytes2" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "2048/2048"
+label_settings = SubResource("LabelSettings_bugng")
+
+[node name="PatchNameLabel" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "Patch Name: "
+horizontal_alignment = 2
+
+[node name="PatchNameLineEdit" type="LineEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+placeholder_text = "DefaultPatchName"
+
+[node name="AuthorLabel2" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+layout_mode = 2
+text = "Author: "
+horizontal_alignment = 2
+
+[node name="AuthorLineEdit2" type="LineEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer/Info"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+placeholder_text = "DefaultAuthorName"
+
+[node name="DescriptionLabel" type="Label" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Patch Description: "
+horizontal_alignment = 1
+
+[node name="DescriptionLineEdit3" type="TextEdit" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Patch Description goes here..."
+wrap_mode = 1
+
+[node name="GridContainer2" type="GridContainer" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="SaveAsXml" type="Button" parent="HBoxContainer/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Save XML Patch
+"
+
+[node name="SaveFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml"]
+access = 2
+filters = PackedStringArray("*.xml")
+
+[node name="AnimationsList" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationsList"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/AnimationsList/VBoxContainer"]
+layout_mode = 2
+
+[node name="InsertAnimation" type="Button" parent="HBoxContainer/AnimationsList/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Insert Animation"
+
+[node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationsList/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Delete Animation"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationsList/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="GridContainer" type="GridContainer" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+columns = 3
+
+[node name="ID" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+text = "Anim ID"
+
+[node name="Desription" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+text = "Description"
+horizontal_alignment = 1
+
+[node name="Opcodes" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+text = "Opcodes"
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+text = "1"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+text = "Test Description"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer/VBoxContainer"]
+layout_mode = 2
+text = "LoadFrameWait(10,12)"
+
+[node name="Label2" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer/VBoxContainer"]
+layout_mode = 2
+text = "LoadFrameWait(10,12)"
+
+[node name="Label3" type="Label" parent="HBoxContainer/AnimationsList/VBoxContainer/ScrollContainer/GridContainer/VBoxContainer"]
+layout_mode = 2
+text = "LoadFrameWait(10,12)"
+
+[node name="AnimationEditor" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationEditor"]
+layout_mode = 2
+
+[node name="Header" type="GridContainer" parent="HBoxContainer/AnimationEditor/VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="IdLabel" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+layout_mode = 2
+text = "Anim ID"
+
+[node name="AnimOptLabel" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+layout_mode = 2
+text = "Description
+"
+
+[node name="IdSpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+layout_mode = 2
+editable = false
+
+[node name="AnimationOptionButton" type="OptionButton" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+layout_mode = 2
+disabled = true
+
+[node name="InsertOpcode" type="Button" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+layout_mode = 2
+text = "Insert Opcode"
+
+[node name="DeleteOpcode" type="Button" parent="HBoxContainer/AnimationEditor/VBoxContainer/Header"]
+layout_mode = 2
+text = "Delete Opcode"
+
+[node name="Animations" type="GridContainer" parent="HBoxContainer/AnimationEditor/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+columns = 5
+
+[node name="#" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+text = "#"
+
+[node name="Opcode" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+text = "Opcode"
+horizontal_alignment = 1
+
+[node name="Param1" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+text = "Param1"
+
+[node name="Param2" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+text = "Param2"
+
+[node name="Param3" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+text = "Param3"
+
+[node name="Test" type="Label" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+text = "1
+"
+
+[node name="OpcodesOption" type="OptionButton" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+selected = 0
+item_count = 1
+popup/item_0/text = "LoadFrameWait"
+
+[node name="SpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+min_value = -128.0
+max_value = 255.0
+
+[node name="SpinBox2" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+min_value = -128.0
+max_value = 255.0
+
+[node name="SpinBox3" type="SpinBox" parent="HBoxContainer/AnimationEditor/VBoxContainer/Animations"]
+layout_mode = 2
+min_value = -128.0
+max_value = 255.0
+
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ" to="." method="_on_load_seq_pressed"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/Load SEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
+[connection signal="item_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/Info/PatchType" to="." method="_on_patch_type_item_selected"]
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml" to="." method="_on_save_as_xml_pressed"]
+[connection signal="dir_selected" from="HBoxContainer/SettingsPanel/VBoxContainer/SaveAsXml/SaveFileDialog" to="." method="_on_save_file_dialog_dir_selected"]
