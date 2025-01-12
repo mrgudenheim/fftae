@@ -16,15 +16,6 @@ func _ready() -> void:
 func on_item_selected(item_index: int) -> void:
 	var opcode_name: String = get_item_text(item_index)
 	
-	# set up seq_part
-	var will_initialize_params = false
-	if seq_part.opcode_name != opcode_name:
-		will_initialize_params = true
-	seq_part.opcode_name = opcode_name
-	for opcode: String in Seq.opcode_names.keys():
-		if Seq.opcode_names[opcode] == opcode_name:
-			seq_part.opcode = opcode
-	
 	# remove existing ui elements
 	for node in params_ui:
 		#parent.remove_child(node)
@@ -32,15 +23,23 @@ func on_item_selected(item_index: int) -> void:
 	params_ui.clear()
 	param_spinboxes.clear()
 	
-	var opcode_params: int = 2
+	# set up seq_part
+	var previous_length: int = FFTae.seq.sequences[seq_id].length
+	var params_need_initialize = false
+	if seq_part.opcode_name != opcode_name:
+		params_need_initialize = true
+	seq_part.opcode_name = opcode_name
+	for opcode: String in Seq.opcode_names.keys():
+		if Seq.opcode_names[opcode] == opcode_name:
+			seq_part.opcode = opcode	
+	var opcode_params: int = 2 # 2 for LoadFrameWait
 	if Seq.opcode_parameters_by_name.has(opcode_name):
 		opcode_params = Seq.opcode_parameters_by_name[opcode_name]
-	#seq_part.parameters.clear()
 	seq_part.parameters.resize(opcode_params)
-	if will_initialize_params:
+	FFTae.seq.update_seq_pointers(seq_id, previous_length)
+	if params_need_initialize:
 		for param_index: int in seq_part.parameters.size():
 			seq_part.parameters[param_index] = 0
-	#seq_part.parameters.fill(0)
 	
 	var node_position: int = self.get_index() - parent.columns # offset for headers
 	

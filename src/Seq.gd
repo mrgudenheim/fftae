@@ -209,25 +209,13 @@ func get_seq_bytes() -> PackedByteArray:
 	return bytes
 
 
-func update_data(seq_id: int, new_sequence: Sequence) -> void:
-	var length_delta: int = new_sequence.length - sequences[seq_id].length
+func update_seq_pointers(seq_id: int, old_length: int) -> void:
+	var length_delta: int = sequences[seq_id].length - old_length
 	
-	# update every pointer that points to after the update
+	# update every pointer that points to after the update - accounts for repeating and out of order pointers
 	for seq_index: int in sequence_pointers.size():
 		if sequence_pointers[seq_index] > sequence_pointers[seq_id]:
 			sequence_pointers[seq_index] += length_delta
-	
-	sequences[seq_id] = new_sequence.duplicate()
-
-
-# the following does not work because the seq file have repeating animations
-#func update_seq_pointers() -> void:
-	#sequence_pointers.clear()
-	#
-	#var seq_pointer: int = 0
-	#for index: int in sequences.size():
-		#sequence_pointers.append(seq_pointer)
-		#seq_pointer += sequences[index].length
 
 
 func write_seq(path: String) -> void:
