@@ -184,7 +184,7 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 	clear_grid_container(opcode_grid_parent, 1) # keep header row
 	#await get_tree().process_frame
 	var seq_temp: Seq = FFTae.seq
-	for seq_part_index: int in FFTae.seq.sequences[seq_id].seq_parts.size():	
+	for seq_part_index: int in FFTae.seq.sequences[seq_id].seq_parts.size():
 		var id_label: Label = Label.new()
 		id_label.text = str(seq_part_index)
 		id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

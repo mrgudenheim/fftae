@@ -17,6 +17,9 @@ func on_item_selected(item_index: int) -> void:
 	var opcode_name: String = get_item_text(item_index)
 	
 	# set up seq_part
+	var will_initialize_params = false
+	if seq_part.opcode_name != opcode_name:
+		will_initialize_params = true
 	seq_part.opcode_name = opcode_name
 	for opcode: String in Seq.opcode_names.keys():
 		if Seq.opcode_names[opcode] == opcode_name:
@@ -27,14 +30,17 @@ func on_item_selected(item_index: int) -> void:
 		#parent.remove_child(node)
 		node.queue_free()
 	params_ui.clear()
-	
 	param_spinboxes.clear()
+	
 	var opcode_params: int = 2
 	if Seq.opcode_parameters_by_name.has(opcode_name):
 		opcode_params = Seq.opcode_parameters_by_name[opcode_name]
-	seq_part.parameters.clear()
+	#seq_part.parameters.clear()
 	seq_part.parameters.resize(opcode_params)
-	seq_part.parameters.fill(0)
+	if will_initialize_params:
+		for param_index: int in seq_part.parameters.size():
+			seq_part.parameters[param_index] = 0
+	#seq_part.parameters.fill(0)
 	
 	var node_position: int = self.get_index() - parent.columns # offset for headers
 	
