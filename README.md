@@ -1,4 +1,4 @@
-# [Click here web app]()
+# [Click here for newest release](https://github.com/mrgudenheim/FFTae/releases)
 
 # About
 This tool streamlines creating xml patches for FFT that edit animations.
