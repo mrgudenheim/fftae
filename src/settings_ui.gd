@@ -9,8 +9,10 @@ extends Node
 @export var author_name_edit: LineEdit
 @export var patch_description_edit: TextEdit
 
+# animation editor elements
 @export var animation_id_spinbox: SpinBox
 @export var animation_name_options: OptionButton
+@export var row_spinbox: SpinBox
 
 var patch_name: String = "default patch name":
 	get:

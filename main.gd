@@ -214,6 +214,31 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 
 
 func _on_animation_option_button_item_selected(index: int) -> void:
-	var temp_seq: Seq = seq
 	var sequence: Sequence = seq.sequences[index]
+	settings_ui.row_spinbox.max_value = sequence.seq_parts.size() - 1
 	populate_opcode_list(opcode_list_container, index)
+
+
+func _on_insert_opcode_pressed() -> void:
+	var seq_part_id = settings_ui.row_spinbox.value
+	var seq_id = settings_ui.animation_name_options.selected
+	
+	var previous_length: int = seq.sequences[seq_id].length
+	# set up seq_part
+	var new_seq_part: SeqPart = SeqPart.new()
+	new_seq_part.parameters.resize(2)
+	new_seq_part.parameters.fill(0)
+	
+	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.insert(seq_part_id, new_seq_part)
+	FFTae.seq.update_seq_pointers(seq_id, previous_length)
+	_on_animation_option_button_item_selected(seq_id)
+
+
+func _on_delete_opcode_pressed() -> void:
+	var seq_part_id = settings_ui.row_spinbox.value
+	var seq_id = settings_ui.animation_name_options.selected
+	var previous_length: int = seq.sequences[seq_id].length
+	
+	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
+	FFTae.seq.update_seq_pointers(seq_id, previous_length)
+	_on_animation_option_button_item_selected(seq_id)
