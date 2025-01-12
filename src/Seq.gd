@@ -101,17 +101,17 @@ func set_data_from_seq_file(filepath:String) -> void:
 			break # skip to section 3 if no more pointers in section 2
 		sequence_pointers.append(seq_pointer)
 	
-	var sequence_data_start = section1_length + section2_length + 2
-	var section3_length_temp = bytes.decode_u16(sequence_data_start - 2)
+	var sequence_data_start: int = section1_length + section2_length + 2
+	var section3_length_temp: int = bytes.decode_u16(sequence_data_start - 2)
 	sequences.clear()
-	for seq_pointer in sequence_pointers:
-		var seq_offset:int = sequence_data_start + seq_pointer
+	#for seq_pointer in sequence_pointers:
+		#var seq_offset:int = sequence_data_start + seq_pointer
 		
 	var sequence_pointers_sorted:PackedInt32Array = sequence_pointers.duplicate()
 	sequence_pointers_sorted.sort()
 
 	for seq_index in sequence_pointers.size():
-		var seq_pointer = sequence_pointers[seq_index]
+		var seq_pointer: int = sequence_pointers[seq_index]
 		
 		# get location of the end of the sequence
 		var sequence_end_pointer:int = 0
@@ -139,7 +139,6 @@ func get_sequence_data(bytes:PackedByteArray) -> Sequence:
 	while seq_part_pointer < bytes.size():
 		var seq_part:SeqPart = SeqPart.new()
 		var num_params:int = 2
-		var signed:bool = false
 		if bytes.decode_u8(seq_part_pointer) == 0xFF:
 			var opcode:String = "%x%x" % [bytes.decode_u8(seq_part_pointer), bytes.decode_u8(seq_part_pointer + 1)]
 			#push_warning(opcode)
@@ -174,7 +173,8 @@ func get_sequence_data(bytes:PackedByteArray) -> Sequence:
 	return seq
 
 
-func write_seq(path: String) -> void:
+func get_seq_bytes() -> PackedByteArray:
+	#update_seq_pointers()
 	var bytes:PackedByteArray = []
 	bytes.resize(section1_length + section2_length + section3_length)
 	bytes.fill(0)
@@ -206,17 +206,46 @@ func write_seq(path: String) -> void:
 				bytes.encode_u8(offset, param)
 				offset += 1
 	
+	return bytes
+
+
+func update_data(seq_id: int, new_sequence: Sequence) -> void:
+	var length_delta: int = new_sequence.length - sequences[seq_id].length
+	
+	# update every pointer that points to after the update
+	for seq_index: int in sequence_pointers.size():
+		if sequence_pointers[seq_index] > sequence_pointers[seq_id]:
+			sequence_pointers[seq_index] += length_delta
+	
+	sequences[seq_id] = new_sequence.duplicate()
+
+
+# the following does not work because the seq file have repeating animations
+#func update_seq_pointers() -> void:
+	#sequence_pointers.clear()
+	#
+	#var seq_pointer: int = 0
+	#for index: int in sequences.size():
+		#sequence_pointers.append(seq_pointer)
+		#seq_pointer += sequences[index].length
+
+
+func write_seq(path: String) -> void:
+	var bytes: PackedByteArray = get_seq_bytes()
+	
 	# clean up file name
-	if path.get_slice(".", -2).to_lower() == path.get_slice(".", -1).to_lower():
-		path = path.trim_suffix(path.get_slice(".", -1))
+	if path.get_slice(".", 1).to_lower() == path.get_slice(".", 2).to_lower():
+		path = path.trim_suffix(path.get_slice(".", 2))
+	
+	# save file
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
 	var save_file := FileAccess.open(path.get_basename(), FileAccess.WRITE)
 	save_file.store_buffer(bytes)
 
 
 func set_data_from_cfg(filepath:String) -> void:
-	var cfg = ConfigFile.new()
-	var err = cfg.load(filepath)
+	var cfg := ConfigFile.new()
+	var err := cfg.load(filepath)
 	#var err = cfg.load("user://FFTorama/"+file_name+"_shp.cfg")
 
 	if err != OK:
@@ -234,10 +263,10 @@ func set_data_from_cfg(filepath:String) -> void:
 	for seq_index:int in sequence_pointers.size():
 		var seq_label: String = file_name + "-" + str(seq_index)
 		var seq_data: Sequence = Sequence.new()
-		var seq_parts_size = cfg.get_value(seq_label, "size")
+		var seq_parts_size: int = cfg.get_value(seq_label, "size")
 		seq_data.seq_name = cfg.get_value(seq_label, "seq_name")
 		
-		for seq_part_index in seq_parts_size:
+		for seq_part_index: int in seq_parts_size:
 			var seq_part_label: String = seq_label + "-" + str(seq_part_index)
 			var seq_part_data: SeqPart = SeqPart.new()
 			seq_part_data.opcode = cfg.get_value(seq_part_label, "opcode")
@@ -280,12 +309,12 @@ func write_wiki_table() -> void:
 	final_output += "\n|}"
 	
 	DirAccess.make_dir_recursive_absolute("user://FFTorama")
-	var save_file = FileAccess.open("user://FFTorama/wiki_table_"+file_name+".txt", FileAccess.WRITE)
+	var save_file := FileAccess.open("user://FFTorama/wiki_table_"+file_name+".txt", FileAccess.WRITE)
 	save_file.store_string(final_output)
 
 
 func write_cfg() -> void:
-	var cfg = ConfigFile.new()
+	var cfg := ConfigFile.new()
 	cfg.set_value(file_name, "file_name", file_name)
 	cfg.set_value(file_name, "name_alias", name_alias)
 	cfg.set_value(file_name, "AA", AA)
@@ -311,7 +340,7 @@ func write_cfg() -> void:
 func set_sequences_from_csv(filepath:String) -> void:
 	sequences.clear()
 	
-	var file = FileAccess.open(filepath, FileAccess.READ)
+	var file := FileAccess.open(filepath, FileAccess.READ)
 	if file == null:
 		push_warning(FileAccess.get_open_error())
 		return
@@ -400,7 +429,7 @@ func write_csv() -> void:
 		seq_id += 1
 
 	DirAccess.make_dir_recursive_absolute("user://FFTorama")
-	var save_file = FileAccess.open("user://FFTorama/animation_data_"+file_name+".txt", FileAccess.WRITE)
+	var save_file := FileAccess.open("user://FFTorama/animation_data_"+file_name+".txt", FileAccess.WRITE)
 	save_file.store_string(output)
 
 

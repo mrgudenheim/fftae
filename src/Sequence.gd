@@ -11,6 +11,13 @@ var length:int = 0:
 		return sum # bytes
 
 
+func duplicate() -> Sequence:
+	var new_sequence: Sequence = Sequence.new()
+	new_sequence.seq_name = seq_name
+	new_sequence.seq_parts = seq_parts.duplicate(true)
+	return new_sequence
+
+
 func _to_string() -> String:
 	var string_list:PackedStringArray = []
 	for part in seq_parts:

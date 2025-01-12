@@ -90,6 +90,7 @@ layout_mode = 2
 max_value = 1e+09
 rounded = true
 allow_greater = true
+alignment = 2
 
 [node name="EmptyAnimationSlots" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
@@ -241,6 +242,7 @@ horizontal_alignment = 1
 
 [node name="IdSpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
+alignment = 2
 editable = false
 
 [node name="AnimationOptionButton" type="OptionButton" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
@@ -268,25 +270,34 @@ size_flags_vertical = 4
 columns = 5
 
 [node name="#" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
+custom_minimum_size = Vector2(25, 0)
 layout_mode = 2
 text = "#"
+horizontal_alignment = 1
 
 [node name="Opcode" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Opcode"
 horizontal_alignment = 1
 
 [node name="Param1" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 text = "Param1"
+horizontal_alignment = 1
 
 [node name="Param2" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 text = "Param2"
+horizontal_alignment = 1
 
 [node name="Param3" type="Label" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes"]
+custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 text = "Param3"
+horizontal_alignment = 1
 
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ" to="." method="_on_load_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]

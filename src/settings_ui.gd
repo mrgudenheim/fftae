@@ -66,6 +66,7 @@ var max_bytes: int = 0:
 
 func _ready() -> void:
 	animation_id_spinbox.value_changed.connect(animation_name_options.select)
+	animation_id_spinbox.value_changed.connect(animation_name_options.item_selected.emit)
 	animation_name_options.item_selected.connect(animation_id_spinbox.set_value_no_signal)
 
 

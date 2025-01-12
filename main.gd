@@ -54,7 +54,7 @@ static var original_sizes: Dictionary = {
 	"wep2": 2607,
 	}
 
-var seq: Seq = Seq.new()
+static var seq: Seq = Seq.new()
 
 func _ready() -> void:
 	bytes_per_sector = data_bytes_per_sector + bytes_per_sector_header + bytes_per_sector_footer
@@ -89,8 +89,8 @@ func _on_load_file_dialog_file_selected(path: String) -> void:
 	
 	populate_animation_list(animation_list_container, seq)
 	
-	var sequence: Sequence = seq.sequences[settings_ui.animation_name_options.selected]
-	populate_opcode_list(opcode_list_container, sequence)
+	#var sequence: Sequence = seq.sequences[settings_ui.animation_name_options.selected]
+	populate_opcode_list(opcode_list_container, settings_ui.animation_name_options.selected)
 
 
 func _on_save_xml_dialog_file_selected(path: String) -> void:
@@ -99,10 +99,19 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 	var xml_author: String = '<Author>' + settings_ui.patch_author + '</Author>'
 	var xml_description: String = '<Description>' + settings_ui.patch_description + '</Description>'
 	
-	# TODO make for each sector?
-	var xml_location_start: String = '<Location offset="%08x" file="BATTLE_BIN">' % int(settings_ui.patch_start_location.value)
-	var bytes: String = "FFFFFFFF"
-	var xml_location_end: String = '</Location>'
+	var xml_main_content: PackedStringArray = []
+	var seq_bytes: PackedByteArray = seq.get_seq_bytes()
+	var num_sectors: int = ceil(seq.toal_length / float(data_bytes_per_sector))
+	for sector: int in num_sectors:
+		var location_start: int = int(settings_ui.patch_start_location.value) + (sector * bytes_per_sector)
+		var xml_location_start: String = '<Location offset="%08x" file="BATTLE_BIN">' % location_start
+		var bytes: String = seq_bytes.slice(sector * data_bytes_per_sector, (sector + 1) * data_bytes_per_sector).hex_encode()
+		var xml_location_end: String = '</Location>'
+		
+		xml_main_content.append(xml_location_start)
+		xml_main_content.append(bytes)
+		xml_main_content.append(xml_location_end)
+	
 	var xml_end: String = '</Patch>\n</Patches>'
 	
 	var xml_parts: PackedStringArray = [
@@ -110,9 +119,7 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 		xml_patch_name,
 		xml_author,
 		xml_description,
-		xml_location_start,
-		bytes,
-		xml_location_end,
+		"\n".join(xml_main_content),
 		xml_end
 	]
 	
@@ -132,9 +139,15 @@ func _on_save_seq_dialog_file_selected(path: String) -> void:
 
 func clear_grid_container(grid: GridContainer, rows_to_keep: int) -> void:
 	var children_to_keep: int = rows_to_keep * grid.columns
-	for child_index: int in grid.get_child_count():
-		if child_index >= children_to_keep:
-			grid.get_child(child_index).queue_free()
+	var initial_children: int = grid.get_child_count()
+	for child_index: int in initial_children:
+		var reverse_child_index: int = initial_children - 1 - child_index
+		if reverse_child_index >= children_to_keep:
+			var child: Node = grid.get_child(reverse_child_index)
+			grid.remove_child(child)
+			child.queue_free()
+		else:
+			break
 
 
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
@@ -167,40 +180,40 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		animations_grid_parent.add_child(opcodes_panel)
 
 
-func populate_opcode_list(opcode_grid_parent: GridContainer, sequence: Sequence) -> void:
-	clear_grid_container(opcode_grid_parent, 1)
-	
-	for seq_part_index: int in sequence.seq_parts.size():
-		var seq_part: SeqPart = sequence.seq_parts[seq_part_index]
-	
+func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> void:
+	clear_grid_container(opcode_grid_parent, 1) # keep header row
+	#await get_tree().process_frame
+	var seq_temp: Seq = FFTae.seq
+	for seq_part_index: int in FFTae.seq.sequences[seq_id].seq_parts.size():	
 		var id_label: Label = Label.new()
 		id_label.text = str(seq_part_index)
 		id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		opcode_grid_parent.add_child(id_label)
 		
-		var opcode_options: OptionButton = OptionButton.new()
+		var opcode_options: OpcodeOptionButton = OpcodeOptionButton.new()
 		opcode_options.add_item("LoadFrameAndWait")
-		for opcode_name in Seq.opcode_parameters_by_name.keys():
+		for opcode_name: String in Seq.opcode_parameters_by_name.keys():
 			opcode_options.add_item(opcode_name)
-		for opcode_options_index: int in opcode_options.item_count:
-			if opcode_options.get_item_text(opcode_options_index) == seq_part.opcode_name:
-				opcode_options.select(opcode_options_index)
-				#_on_patch_type_item_selected(opcode_options.selected)
-				break
-		opcode_grid_parent.add_child(opcode_options)
 		
-		for param_index: int in range(3):
-			if param_index < seq_part.parameters.size():
-				var param_spinbox: SpinBox = SpinBox.new()
-				param_spinbox.max_value = 255
-				param_spinbox.min_value = -128
-				param_spinbox.value = seq_part.parameters[param_index]
-				opcode_grid_parent.add_child(param_spinbox)
-			else:
-				var empty: Label = Label.new()
-				opcode_grid_parent.add_child(empty)
+		opcode_options.seq_id = seq_id
+		opcode_options.seq_part_id = seq_part_index
+		opcode_options.seq_part = FFTae.seq.sequences[seq_id].seq_parts[seq_part_index]
+		opcode_grid_parent.add_child(opcode_options)
+		for opcode_options_index: int in opcode_options.item_count:
+			if opcode_options.get_item_text(opcode_options_index) == FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].opcode_name:
+				opcode_options.select(opcode_options_index)
+				opcode_options.item_selected.emit(opcode_options_index)
+				break
+		
+		var seq_temp2: Seq = FFTae.seq
+		for param_index: int in FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
+			opcode_options.seq_part.parameters[param_index]
+			opcode_options.param_spinboxes[param_index].value = FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
+		
+		#opcode_options.set_opcode_parameters(seq_part)
 
 
 func _on_animation_option_button_item_selected(index: int) -> void:
-	var sequence: Sequence = seq.sequences[settings_ui.animation_name_options.selected]
-	populate_opcode_list(opcode_list_container, sequence)
+	var temp_seq: Seq = seq
+	var sequence: Sequence = seq.sequences[index]
+	populate_opcode_list(opcode_list_container, index)
