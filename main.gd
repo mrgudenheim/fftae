@@ -1,6 +1,8 @@
 class_name FFTae
 extends Control
 
+static var ae: FFTae
+
 @export var settings_ui: SettingsUi
 @export var load_file_dialog: FileDialog
 @export var save_xml_button: Button
@@ -57,6 +59,7 @@ static var original_sizes: Dictionary = {
 static var seq: Seq = Seq.new()
 
 func _ready() -> void:
+	ae = self
 	bytes_per_sector = data_bytes_per_sector + bytes_per_sector_header + bytes_per_sector_footer
 	for key: String in start_locations.keys():
 		start_locations[key] = (start_locations[key] * bytes_per_sector) + bytes_per_sector_header
@@ -88,8 +91,6 @@ func _on_load_file_dialog_file_selected(path: String) -> void:
 	save_seq_button.disabled = false
 	
 	populate_animation_list(animation_list_container, seq)
-	
-	#var sequence: Sequence = seq.sequences[settings_ui.animation_name_options.selected]
 	populate_opcode_list(opcode_list_container, settings_ui.animation_name_options.selected)
 
 
@@ -99,18 +100,13 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 	var xml_author: String = '<Author>' + settings_ui.patch_author + '</Author>'
 	var xml_description: String = '<Description>' + settings_ui.patch_description + '</Description>'
 	
-	var xml_main_content: PackedStringArray = []
 	var seq_bytes: PackedByteArray = seq.get_seq_bytes()
-	var num_sectors: int = ceil(seq.toal_length / float(data_bytes_per_sector))
-	for sector: int in num_sectors:
-		var location_start: int = int(settings_ui.patch_start_location.value) + (sector * bytes_per_sector)
-		var xml_location_start: String = '<Location offset="%08x" file="BATTLE_BIN">' % location_start
-		var bytes: String = seq_bytes.slice(sector * data_bytes_per_sector, (sector + 1) * data_bytes_per_sector).hex_encode()
-		var xml_location_end: String = '</Location>'
-		
-		xml_main_content.append(xml_location_start)
-		xml_main_content.append(bytes)
-		xml_main_content.append(xml_location_end)
+	var bytes: String = seq_bytes.hex_encode()
+	var location_start: int = 0
+	var xml_location_start: String = '<Location offset="%08x" ' % location_start
+	var seq_file: String = settings_ui.patch_type_options.get_item_text(settings_ui.patch_type_options.selected)
+	xml_location_start += 'file="BATTLE_' + seq_file.to_upper() + '_SEQ">'
+	var xml_location_end: String = '</Location>'
 	
 	var xml_end: String = '</Patch>\n</Patches>'
 	
@@ -119,8 +115,10 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 		xml_patch_name,
 		xml_author,
 		xml_description,
-		"\n".join(xml_main_content),
-		xml_end
+		xml_location_start,
+		bytes,
+		xml_location_end,
+		xml_end,
 	]
 	
 	var xml_complete: String = "\n".join(xml_parts)
@@ -182,7 +180,7 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 
 func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> void:
 	clear_grid_container(opcode_grid_parent, 1) # keep header row
-	#await get_tree().process_frame
+	
 	var seq_temp: Seq = FFTae.seq
 	for seq_part_index: int in FFTae.seq.sequences[seq_id].seq_parts.size():
 		var id_label: Label = Label.new()
@@ -209,8 +207,6 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 		for param_index: int in FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
 			opcode_options.seq_part.parameters[param_index]
 			opcode_options.param_spinboxes[param_index].value = FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
-		
-		#opcode_options.set_opcode_parameters(seq_part)
 
 
 func _on_animation_option_button_item_selected(index: int) -> void:
@@ -230,7 +226,8 @@ func _on_insert_opcode_pressed() -> void:
 	new_seq_part.parameters.fill(0)
 	
 	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.insert(seq_part_id, new_seq_part)
-	FFTae.seq.update_seq_pointers(seq_id, previous_length)
+	seq.update_seq_pointers(seq_id, previous_length)
+	settings_ui.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
 
 
@@ -240,5 +237,6 @@ func _on_delete_opcode_pressed() -> void:
 	var previous_length: int = seq.sequences[seq_id].length
 	
 	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
-	FFTae.seq.update_seq_pointers(seq_id, previous_length)
+	seq.update_seq_pointers(seq_id, previous_length)
+	settings_ui.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)

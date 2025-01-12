@@ -37,6 +37,7 @@ func on_item_selected(item_index: int) -> void:
 		opcode_params = Seq.opcode_parameters_by_name[opcode_name]
 	seq_part.parameters.resize(opcode_params)
 	FFTae.seq.update_seq_pointers(seq_id, previous_length)
+	FFTae.ae.settings_ui.current_bytes = FFTae.ae.seq.toal_length
 	if params_need_initialize:
 		for param_index: int in seq_part.parameters.size():
 			seq_part.parameters[param_index] = 0

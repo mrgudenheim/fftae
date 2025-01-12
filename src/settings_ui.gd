@@ -76,8 +76,14 @@ func update_info_text(current: int, max_value: int, ui: Label) -> void:
 	var percent_of_max:String = " (%.f%%)" % [100 * current/float(max_value)]
 	ui.text = str(current) + "/" + str(max_value) + percent_of_max
 	
+	var type: String = patch_type_options.get_item_text(patch_type_options.selected)
 	if current > max_value:
 		ui.label_settings.font_color = Color.DARK_RED
+	elif FFTae.original_sizes.has(type):
+		if current == FFTae.original_sizes[type]:
+			ui.label_settings.font_color = Color.WEB_GREEN
+		else:
+			ui.label_settings.font_color = Color.WHITE
 	else:
 		ui.label_settings.font_color = Color.WHITE
 
@@ -123,3 +129,6 @@ func _on_patch_type_item_selected(index: int) -> void:
 		patch_start_location.value = FFTae.start_locations[type]
 	else:
 		patch_start_location.editable = true
+	
+	if FFTae.original_sizes.has(type):
+		max_bytes = ceil(FFTae.original_sizes[type] / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
