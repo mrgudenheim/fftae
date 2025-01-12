@@ -132,3 +132,6 @@ func _on_patch_type_item_selected(index: int) -> void:
 	
 	if FFTae.original_sizes.has(type):
 		max_bytes = ceil(FFTae.original_sizes[type] / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
+	
+	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
+	patch_name_edit.placeholder_text = type + "_animation_edit"
