@@ -22,21 +22,38 @@ static var data_bytes_per_sector: int = 2048  # 2048 bytes
 
 # (sector location * bytes_per_sector) + bytes_per_sector_header
 # https://ffhacktics.com/wiki/BATTLE/
-static var start_locations: Dictionary = {
-	"arute": 57062, # 57212, 
-	"cyoko": 57053, # 57203, 
-	"eff1": 57080, # 57230, 
-	"eff2": 57081, # 57231, 
-	"kanzen": 57064, # 57214, 
-	"mon": 57055, # 57205, 
-	"other": 57058, # 57208, 
-	"ruka": 57060, # 57210, 
-	"type1": 57037, # 57187, 
-	"type2": 57041, # 57191, 
-	"type3": 57045, # 57195, 
-	"type4": 57049, # 57199, 
-	"wep1": 57072, # 57222, 
-	"wep2": 57074, # 57244, 
+static var metadata_start_sector: int = 56436
+
+# location in full ROM
+var seq_metadata_size_offsets: Dictionary = {
+	"arute": 0x07e96dd0, 
+	"cyoko": 0x07e97100, 
+	"eff1": 0x07e976c0, 
+	"eff2": 0x07e97734, 
+	"kanzen": 0x07e9819e, 
+	"mon": 0x07e98748, 
+	"other": 0x07e98a80, 
+	"ruka": 0x07e98d06, 
+	"type1": 0x07e9937c, 
+	"type2": 0x07e993f0, 
+	"type3": 0x07e99464, 
+	"type4": 0x07e9949e, 
+	"wep1": 0x07e997d2,  
+	"wep2": 0x07e99846,  
+	}
+
+var shp_metadata_size_offsets: Dictionary = {
+	"arute": 0x07e96e0a, 
+	"cyoko": 0x07e9713a, 
+	"eff1": 0x07e976fa, 
+	"eff2": 0x07e9776e, 
+	"kanzen": 0x07e981da, 
+	"mon": 0x07e98780, 
+	"other": 0x07e98aba, 
+	"type1": 0x07e993b6, 
+	"type2": 0x07e9942a, 
+	"wep1": 0x07e9980c, 
+	"wep2": 0x07e99880, 
 	}
 
 static var original_sizes: Dictionary = {
@@ -61,13 +78,22 @@ static var seq: Seq = Seq.new()
 func _ready() -> void:
 	ae = self
 	bytes_per_sector = data_bytes_per_sector + bytes_per_sector_header + bytes_per_sector_footer
-	for key: String in start_locations.keys():
-		start_locations[key] = (start_locations[key] * bytes_per_sector) + bytes_per_sector_header
+	for key: String in seq_metadata_size_offsets.keys():
+		var sector: int = seq_metadata_size_offsets[key] / bytes_per_sector
+		var sector_delta: int = sector - metadata_start_sector
+		var sector_split_bytes = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
+		seq_metadata_size_offsets[key] = seq_metadata_size_offsets[key] - (metadata_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
+	
+	for key: String in shp_metadata_size_offsets.keys():
+		var sector: int = shp_metadata_size_offsets[key] / bytes_per_sector
+		var sector_delta: int = sector - metadata_start_sector
+		var sector_split_bytes = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
+		shp_metadata_size_offsets[key] = shp_metadata_size_offsets[key] - (metadata_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
 	
 	settings_ui.patch_type_options.clear()
 	settings_ui.patch_type_options.add_item("custom")
 	
-	for key: String in start_locations.keys():
+	for key: String in seq_metadata_size_offsets.keys():
 		settings_ui.patch_type_options.add_item(key)
 
 
@@ -100,11 +126,17 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 	var xml_author: String = '<Author>' + settings_ui.patch_author + '</Author>'
 	var xml_description: String = '<Description>' + settings_ui.patch_description + '</Description>'
 	
+	var seq_file: String = settings_ui.patch_type_options.get_item_text(settings_ui.patch_type_options.selected)
+	var xml_size_location_start: String = '<Location offset="%08x" ' % seq_metadata_size_offsets[seq_file]
+	xml_size_location_start += ('sector="%x">' % metadata_start_sector)
+	var bytes_size: String = '%04x' % seq.toal_length
+	bytes_size = bytes_size.right(2) + bytes_size.left(2)
+	var xml_size_location_end: String = '</Location>'
+	
 	var seq_bytes: PackedByteArray = seq.get_seq_bytes()
 	var bytes: String = seq_bytes.hex_encode()
 	var location_start: int = 0
 	var xml_location_start: String = '<Location offset="%08x" ' % location_start
-	var seq_file: String = settings_ui.patch_type_options.get_item_text(settings_ui.patch_type_options.selected)
 	xml_location_start += 'file="BATTLE_' + seq_file.to_upper() + '_SEQ">'
 	var xml_location_end: String = '</Location>'
 	
@@ -115,6 +147,9 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 		xml_patch_name,
 		xml_author,
 		xml_description,
+		xml_size_location_start,
+		bytes_size,
+		xml_size_location_end,
 		xml_location_start,
 		bytes,
 		xml_location_end,
@@ -205,7 +240,6 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 		
 		var seq_temp2: Seq = FFTae.seq
 		for param_index: int in FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
-			opcode_options.seq_part.parameters[param_index]
 			opcode_options.param_spinboxes[param_index].value = FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
 
 
@@ -216,8 +250,8 @@ func _on_animation_option_button_item_selected(index: int) -> void:
 
 
 func _on_insert_opcode_pressed() -> void:
-	var seq_part_id = settings_ui.row_spinbox.value
-	var seq_id = settings_ui.animation_name_options.selected
+	var seq_part_id: int = settings_ui.row_spinbox.value
+	var seq_id: int = settings_ui.animation_name_options.selected
 	
 	var previous_length: int = seq.sequences[seq_id].length
 	# set up seq_part
@@ -232,8 +266,8 @@ func _on_insert_opcode_pressed() -> void:
 
 
 func _on_delete_opcode_pressed() -> void:
-	var seq_part_id = settings_ui.row_spinbox.value
-	var seq_id = settings_ui.animation_name_options.selected
+	var seq_part_id: int = settings_ui.row_spinbox.value
+	var seq_id: int = settings_ui.animation_name_options.selected
 	var previous_length: int = seq.sequences[seq_id].length
 	
 	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.remove_at(seq_part_id)

@@ -124,9 +124,9 @@ func on_seq_data_loaded(seq: Seq) -> void:
 func _on_patch_type_item_selected(index: int) -> void:
 	var type: String = patch_type_options.get_item_text(index)
 	
-	if FFTae.start_locations.has(type):
+	if FFTae.ae.seq_metadata_size_offsets.has(type):
 		patch_start_location.editable = false
-		patch_start_location.value = FFTae.start_locations[type]
+		patch_start_location.value = FFTae.ae.seq_metadata_size_offsets[type]
 	else:
 		patch_start_location.editable = true
 	
