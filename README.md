@@ -9,7 +9,8 @@ This tool streamlines creating xml patches for FFT that edit animations.
 - Create SEQ or xml patch
 
 # Limitations and Notes
-Some animation pointers point to the same animation, but that is not reflected in what this tool displays. When editing an animation that is in multiple slots, make sure you are editing the last slot it appears in.
+- Some animation pointers point to the same animation, but that is not reflected in what this tool displays. When editing an animation that is in multiple slots, make sure you are editing the last slot it appears in.
+- Putting two Move opcodes (such as MoveForward2 followed by MoveForward2) in a row may cause weird issues
 
 # Future Improvements
 - Improve UI
