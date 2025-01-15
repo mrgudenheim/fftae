@@ -188,16 +188,21 @@ func clear_grid_container(grid: GridContainer, rows_to_keep: int) -> void:
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
 	clear_grid_container(animations_grid_parent, 1)
 	
-	for index in seq_local.sequences.size():
-		var sequence: Sequence = seq_local.sequences[index]
+	for index in seq_local.sequence_pointers.size():
+		var pointer: int = seq_local.sequence_pointers[index]
+		var sequence: Sequence = seq_local.sequences[pointer]
 		var is_hex: String = " (0x%02x)" % index
 		var id: String = str(index) + is_hex
 		var description: String = sequence.seq_name
 		var opcodes: String = sequence.to_string_hex("\n")
 		
-		var id_label: Label = Label.new()
-		id_label.text = id
-		id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var pointer_id_label: Label = Label.new()
+		pointer_id_label.text = id
+		pointer_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		
+		var anim_id_label: Label = Label.new()
+		anim_id_label.text = str(pointer)
+		anim_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		
 		var description_label: Label = Label.new()
 		description_label.text = description
@@ -210,7 +215,8 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		opcodes_panel.add_child(opcodes_panel_margin)
 		
 		
-		animations_grid_parent.add_child(id_label)
+		animations_grid_parent.add_child(pointer_id_label)
+		animations_grid_parent.add_child(anim_id_label)
 		animations_grid_parent.add_child(description_label)
 		animations_grid_parent.add_child(opcodes_panel)
 
