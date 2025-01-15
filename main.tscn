@@ -202,9 +202,14 @@ horizontal_scroll_mode = 0
 
 [node name="AnimationListGridContainer" type="GridContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
-columns = 3
+columns = 4
 
-[node name="ID" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
+[node name="Pointer ID" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
+layout_mode = 2
+text = "Pointer ID"
+horizontal_alignment = 1
+
+[node name="Anim ID" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Anim ID"
 horizontal_alignment = 1

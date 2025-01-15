@@ -16,6 +16,13 @@ static var seq_aliases: Dictionary = {
 	"wep1":"wep1",
 	"wep2":"wep2"}
 
+# LoadFrameAndWait with 0 delay is also an animation end
+static var ending_opcodes: PackedStringArray = [
+	"IncrementLoop",
+	"PauseAnimation",
+	"ffc2",
+	]
+
 
 var file_name:String = "default_file_name"
 var name_alias:String = "default_name_alias"
@@ -95,6 +102,7 @@ func set_data_from_seq_file(filepath:String) -> void:
 	AA = bytes.decode_u16(0)
 	BB = bytes.decode_u16(2)
 	
+	# get pointers
 	for seq_index in (section2_length / 4):
 		var seq_pointer:int = bytes.decode_u32(section1_length + (seq_index * 4))
 		if seq_index > 0 and seq_pointer == 0xFFFFFFFF:
@@ -106,31 +114,60 @@ func set_data_from_seq_file(filepath:String) -> void:
 	sequences.clear()
 	#for seq_pointer in sequence_pointers:
 		#var seq_offset:int = sequence_data_start + seq_pointer
-		
-	var sequence_pointers_sorted:PackedInt32Array = sequence_pointers.duplicate()
-	sequence_pointers_sorted.sort()
-
-	for seq_index in sequence_pointers.size():
-		var seq_pointer: int = sequence_pointers[seq_index]
-		
-		# get location of the end of the sequence
-		var sequence_end_pointer:int = 0
-		if seq_pointer == sequence_pointers_sorted[-1]:
-				sequence_end_pointer = section3_length_temp
+	
+	var sequence_start_index: int = sequence_data_start
+	var sequence_end_index: int = sequence_data_start # will be overwritten
+	var byte_index: int = sequence_data_start
+	var sequence_bytes: PackedByteArray = []
+	while byte_index < (sequence_data_start + section3_length_temp):
+		var potential_opcode: String = "%02x%02x" % [bytes.decode_u8(byte_index), bytes.decode_u8(byte_index + 1)]
+		if opcode_parameters.has(potential_opcode):
+			byte_index += 2 + opcode_parameters[potential_opcode] # move past the opcode and its parameters
+			if ending_opcodes.has(opcode_names[potential_opcode]):
+				sequence_end_index = byte_index
+				sequence_bytes = bytes.slice(sequence_start_index, sequence_end_index)
+				sequences.append(get_sequence_data(sequence_bytes))
+				sequence_start_index = byte_index
 		else:
-			for sorted_seq_index:int in sequence_pointers_sorted.size():
-				if sequence_pointers_sorted[sorted_seq_index] > seq_pointer:
-					sequence_end_pointer = sequence_pointers_sorted[sorted_seq_index]
-					break
-		
-		var sequence_bytes:PackedByteArray = bytes.slice(sequence_data_start + seq_pointer, sequence_data_start + sequence_end_pointer)
-		sequences.append(get_sequence_data(sequence_bytes))
-		
-		#push_warning(name_alias + " " + str(seq_names.has(name_alias)) + " " + str(seq_index))
-		if seq_names.has(name_alias):
-			#push_warning(name_alias + " " + str(seq_names.has(name_alias)) + " " + str(seq_index) + " " + str(seq_names[name_alias].has(seq_index)))
-			if seq_names[name_alias].has(seq_index):
-				sequences[-1].seq_name = seq_names[name_alias][seq_index]
+			byte_index += 2 # move past LoadFrameWait's 2 parameters
+			if potential_opcode.right(2) == "00": # if LoadFrameWait with 00 delay
+				sequence_end_index = byte_index
+				sequence_bytes = bytes.slice(sequence_start_index, sequence_end_index)
+				sequences.append(get_sequence_data(sequence_bytes))
+				sequence_start_index = byte_index
+	
+	for index in sequence_pointers.size():
+		sequence_pointers[index] = get_pointer_from_address(sequence_pointers[index])
+	set_sequence_names()
+
+
+func get_pointer_address(pointer: int) -> int:
+	var address: int = 0
+	var index: int = 0
+	while index < pointer:
+		address += sequences[index].length
+	
+	return address
+
+
+func get_pointer_from_address(address: int) -> int:
+	var index: int = 0
+	var total_length = 0
+	while total_length < address:
+		total_length += sequences[index].length
+		index += 1
+	
+	return index
+
+
+func set_sequence_names():
+	if seq_names.has(name_alias):
+		push_warning(sequence_pointers)
+		push_warning(seq_names[name_alias])
+		for pointer_index in sequence_pointers.size():
+			var pointer: int = sequence_pointers[pointer_index]
+			if sequences[pointer].seq_name.is_empty() and seq_names[name_alias].has(pointer_index): # if this is the first pointer to point to the sequence
+				sequences[pointer].seq_name = seq_names[name_alias][pointer_index] # set name of the sequence
 
 
 func get_sequence_data(bytes:PackedByteArray) -> Sequence:
