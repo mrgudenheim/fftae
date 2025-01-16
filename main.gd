@@ -285,6 +285,7 @@ func _on_delete_opcode_pressed() -> void:
 func _on_new_animation_pressed() -> void:
 	# create new sequence with initial opcode LoadFrameAndWait(0,0)
 	var new_seq: Sequence = Sequence.new()
+	new_seq.seq_name = "New Animation"
 	var initial_seq_part: SeqPart = SeqPart.new()
 	initial_seq_part.parameters.append(0)
 	initial_seq_part.parameters.append(0)
@@ -292,6 +293,7 @@ func _on_new_animation_pressed() -> void:
 	seq.sequences.append(new_seq)
 	
 	seq.sequence_pointers.append(seq.sequences.size() - 1) # add pointer to the new sequence
+	populate_animation_list(animation_list_container, seq)
 	
 	settings_ui.animation_id_spinbox.max_value = seq.sequences.size() - 1
 	settings_ui.animation_id_spinbox.value = seq.sequences.size() - 1
@@ -300,7 +302,9 @@ func _on_new_animation_pressed() -> void:
 func _on_delete_animation_pressed() -> void:
 	seq.sequences.remove_at(settings_ui.animation_id_spinbox.value)
 	settings_ui.animation_id_spinbox.max_value = seq.sequences.size() - 1
-	for pointer: int in seq.sequence_pointers:
-		if pointer >= settings_ui.animation_id_spinbox.max_value:
-			pointer = 0
+	for pointer_index: int in seq.sequence_pointers.size():
+		if seq.sequence_pointers[pointer_index] >= settings_ui.animation_id_spinbox.max_value:
+			seq.sequence_pointers[pointer_index] = 0
+	populate_animation_list(animation_list_container, seq)
+	settings_ui.update_animation_description_options(seq)
 	populate_opcode_list(opcode_list_container, settings_ui.animation_id_spinbox.value)

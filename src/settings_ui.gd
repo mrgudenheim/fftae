@@ -109,6 +109,10 @@ func on_seq_data_loaded(seq: Seq) -> void:
 	animation_id_spinbox.max_value = seq.sequences.size() - 1
 	animation_id_spinbox.editable = true
 	
+	update_animation_description_options(seq)
+
+
+func update_animation_description_options(seq: Seq) -> void:
 	animation_name_options.clear()
 	if seq.sequences.size() == 0:
 		animation_name_options.select(-1)
