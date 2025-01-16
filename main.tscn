@@ -34,11 +34,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("patch_type_options", "patch_start_location", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox")]
+[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("patch_type_options", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
 patch_type_options = NodePath("MarginContainer/VBoxContainer/Info/PatchType")
-patch_start_location = NodePath("MarginContainer/VBoxContainer/Info/PatchLocationStart2")
 animations_slots_text = NodePath("MarginContainer/VBoxContainer/Info/EmptyAnimationSlotsNum")
 bytes_text = NodePath("MarginContainer/VBoxContainer/Info/EmptyBytesNum")
 patch_name_edit = NodePath("MarginContainer/VBoxContainer/Info/PatchNameLineEdit")
@@ -47,6 +46,7 @@ patch_description_edit = NodePath("MarginContainer/VBoxContainer/DescriptionText
 animation_id_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/IdSpinBox")
 animation_name_options = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton")
 row_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Functions/RowSpinBox")
+pointer_index_spinbox = NodePath("../AnimationsList/MarginContainer/VBoxContainer/Functions/PointerSpinBox")
 
 [node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/SettingsPanel"]
 layout_mode = 2
@@ -80,20 +80,6 @@ horizontal_alignment = 2
 
 [node name="PatchType" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
-
-[node name="PatchLocationStart" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
-visible = false
-layout_mode = 2
-text = "Start Location: "
-horizontal_alignment = 2
-
-[node name="PatchLocationStart2" type="SpinBox" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
-visible = false
-layout_mode = 2
-max_value = 1e+09
-rounded = true
-allow_greater = true
-alignment = 2
 
 [node name="EmptyAnimationSlots" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
@@ -193,7 +179,7 @@ layout_mode = 2
 layout_mode = 2
 text = "Delete Pointer"
 
-[node name="RowSpinBox" type="SpinBox" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions"]
+[node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
@@ -336,6 +322,8 @@ horizontal_alignment = 1
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
+[connection signal="pressed" from="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/AddPointer" to="." method="_on_add_pointer_pressed"]
+[connection signal="pressed" from="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions/DeletePointer" to="." method="_on_delete_pointer_pressed"]
 [connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/NewAnimation" to="." method="_on_new_animation_pressed"]
 [connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/DeleteAnimation" to="." method="_on_delete_animation_pressed"]
 [connection signal="item_selected" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton" to="." method="_on_animation_option_button_item_selected"]

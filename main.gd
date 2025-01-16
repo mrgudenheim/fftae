@@ -186,6 +186,7 @@ func clear_grid_container(grid: GridContainer, rows_to_keep: int) -> void:
 
 
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
+	settings_ui.current_animation_slots = seq_local.sequence_pointers.size()
 	clear_grid_container(animations_grid_parent, 1)
 	
 	for index in seq_local.sequence_pointers.size():
@@ -205,8 +206,9 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		#anim_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		
 		var anim_id_spinbox: SpinBox = SpinBox.new()
-		anim_id_spinbox.value = pointer
 		anim_id_spinbox.max_value = seq_local.sequences.size() - 1
+		anim_id_spinbox.value = pointer
+		anim_id_spinbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		
 		var description_label: Label = Label.new()
 		description_label.text = description
@@ -217,7 +219,6 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		opcodes_panel_margin.add_child(opcodes_label)
 		var opcodes_panel: PanelContainer = PanelContainer.new()
 		opcodes_panel.add_child(opcodes_panel_margin)
-		
 		
 		animations_grid_parent.add_child(pointer_id_label)
 		animations_grid_parent.add_child(anim_id_spinbox)
@@ -321,3 +322,15 @@ func _on_delete_animation_pressed() -> void:
 	populate_animation_list(animation_list_container, seq)
 	settings_ui.update_animation_description_options(seq)
 	populate_opcode_list(opcode_list_container, settings_ui.animation_id_spinbox.value)
+
+
+func _on_add_pointer_pressed() -> void:
+	seq.sequence_pointers.append(0)
+	settings_ui.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
+	populate_animation_list(animation_list_container, seq)
+
+
+func _on_delete_pointer_pressed() -> void:
+	seq.sequence_pointers.remove_at(settings_ui.pointer_index_spinbox.value)
+	settings_ui.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
+	populate_animation_list(animation_list_container, seq)

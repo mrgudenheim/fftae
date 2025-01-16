@@ -2,7 +2,6 @@ class_name SettingsUi
 extends Node
 
 @export var patch_type_options: OptionButton
-@export var patch_start_location: SpinBox
 @export var animations_slots_text: Label
 @export var bytes_text: Label
 @export var patch_name_edit: LineEdit
@@ -13,6 +12,7 @@ extends Node
 @export var animation_id_spinbox: SpinBox
 @export var animation_name_options: OptionButton
 @export var row_spinbox: SpinBox
+@export var pointer_index_spinbox: SpinBox
 
 var patch_name: String = "default patch name":
 	get:
@@ -109,6 +109,8 @@ func on_seq_data_loaded(seq: Seq) -> void:
 	animation_id_spinbox.max_value = seq.sequences.size() - 1
 	animation_id_spinbox.editable = true
 	
+	pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
+	
 	update_animation_description_options(seq)
 
 
@@ -127,12 +129,6 @@ func update_animation_description_options(seq: Seq) -> void:
 
 func _on_patch_type_item_selected(index: int) -> void:
 	var type: String = patch_type_options.get_item_text(index)
-	
-	if FFTae.ae.seq_metadata_size_offsets.has(type):
-		patch_start_location.editable = false
-		patch_start_location.value = FFTae.ae.seq_metadata_size_offsets[type]
-	else:
-		patch_start_location.editable = true
 	
 	if FFTae.original_sizes.has(type):
 		max_bytes = ceil(FFTae.original_sizes[type] / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
