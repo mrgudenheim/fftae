@@ -81,13 +81,13 @@ func _ready() -> void:
 	for key: String in seq_metadata_size_offsets.keys():
 		var sector: int = seq_metadata_size_offsets[key] / bytes_per_sector
 		var sector_delta: int = sector - metadata_start_sector
-		var sector_split_bytes = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
+		var sector_split_bytes: int = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
 		seq_metadata_size_offsets[key] = seq_metadata_size_offsets[key] - (metadata_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
 	
 	for key: String in shp_metadata_size_offsets.keys():
 		var sector: int = shp_metadata_size_offsets[key] / bytes_per_sector
 		var sector_delta: int = sector - metadata_start_sector
-		var sector_split_bytes = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
+		var sector_split_bytes: int = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
 		shp_metadata_size_offsets[key] = shp_metadata_size_offsets[key] - (metadata_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
 	
 	settings_ui.patch_type_options.clear()
@@ -291,6 +291,7 @@ func _on_new_animation_pressed() -> void:
 	new_seq.seq_parts.append(initial_seq_part)
 	
 	seq.sequences.append(new_seq)
+	settings_ui.animation_id_spinbox.max_value = seq.sequences.size() - 1
 	settings_ui.animation_id_spinbox.value = seq.sequences.size() - 1
 
 
