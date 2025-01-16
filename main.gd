@@ -289,8 +289,10 @@ func _on_new_animation_pressed() -> void:
 	initial_seq_part.parameters.append(0)
 	initial_seq_part.parameters.append(0)
 	new_seq.seq_parts.append(initial_seq_part)
-	
 	seq.sequences.append(new_seq)
+	
+	seq.sequence_pointers.append(seq.sequences.size() - 1) # add pointer to the new sequence
+	
 	settings_ui.animation_id_spinbox.max_value = seq.sequences.size() - 1
 	settings_ui.animation_id_spinbox.value = seq.sequences.size() - 1
 
