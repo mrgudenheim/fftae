@@ -182,19 +182,19 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
-visible = false
+[node name="AddPointer" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Add Pointer"
+
+[node name="Functions" type="HBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="InsertAnimation" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="DeletePointer" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2
-disabled = true
-text = "Append Animation"
+text = "Delete Pointer"
 
-[node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="RowSpinBox" type="SpinBox" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2
-disabled = true
-text = "Delete Animation"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
 layout_mode = 2

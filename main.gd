@@ -200,9 +200,13 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		pointer_id_label.text = id
 		pointer_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		
-		var anim_id_label: Label = Label.new()
-		anim_id_label.text = str(pointer)
-		anim_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		#var anim_id_label: Label = Label.new()
+		#anim_id_label.text = str(pointer)
+		#anim_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		
+		var anim_id_spinbox: SpinBox = SpinBox.new()
+		anim_id_spinbox.value = pointer
+		anim_id_spinbox.max_value = seq_local.sequences.size() - 1
 		
 		var description_label: Label = Label.new()
 		description_label.text = description
@@ -216,9 +220,18 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		
 		
 		animations_grid_parent.add_child(pointer_id_label)
-		animations_grid_parent.add_child(anim_id_label)
+		animations_grid_parent.add_child(anim_id_spinbox)
 		animations_grid_parent.add_child(description_label)
 		animations_grid_parent.add_child(opcodes_panel)
+		
+		# update text for new animation pointed at
+		anim_id_spinbox.value_changed.connect(
+			func(new_value): 
+				seq_local.sequence_pointers[index] = new_value
+				var new_sequence: Sequence = seq_local.sequences[new_value]
+				description_label.text = new_sequence.seq_name
+				opcodes_label.text = new_sequence.to_string_hex("\n")
+				)
 
 
 func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> void:
