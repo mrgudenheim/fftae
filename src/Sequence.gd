@@ -1,11 +1,11 @@
 class_name Sequence
 
-var seq_parts:Array[SeqPart] = []
-var seq_name:String = ""
+var seq_parts: Array[SeqPart] = []
+var seq_name: String = ""
 
-var length:int = 0:
+var length: int = 0:
 	get:
-		var sum:int = 0
+		var sum: int = 0
 		for seq_part in seq_parts:
 			sum += seq_part.length
 		return sum # bytes
@@ -26,8 +26,8 @@ func _to_string() -> String:
 	return ", ".join(string_list)
 
 
-func to_string_hex(delimiter:String) -> String:
-	var string_list:PackedStringArray = []
+func to_string_hex(delimiter: String) -> String:
+	var string_list: PackedStringArray = []
 	for part in seq_parts:
 		string_list.append(part.to_string_hex())
 	

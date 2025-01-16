@@ -42,7 +42,7 @@ var section3_length:int = 0:
 	get:
 		#var sequence_pointers_sorted:Array[int] = sequence_pointers.duplicate()
 		#sequence_pointers_sorted.sort()
-		var sum: int = 2 + sequence_pointers[-1] # length to last seqence
+		var sum: int = 2 + get_pointer_address(sequence_pointers[-1]) # length to last seqence
 		sum += sequences[-1].length # length of last sequence
 		return sum
 		
@@ -146,6 +146,7 @@ func get_pointer_address(pointer: int) -> int:
 	var index: int = 0
 	while index < pointer:
 		address += sequences[index].length
+		index += 1
 	
 	return address
 
@@ -222,7 +223,7 @@ func get_seq_bytes() -> PackedByteArray:
 	
 	# section 2
 	for seq_pointer_index in sequence_pointers.size():
-		bytes.encode_u32(section1_length + (4 * seq_pointer_index), sequence_pointers[seq_pointer_index])
+		bytes.encode_u32(section1_length + (4 * seq_pointer_index), get_pointer_address(sequence_pointers[seq_pointer_index]))
 	
 	var sequence_pointers_length:int = sequence_pointers.size() * 4
 	var section2_empty_length:int = section2_length - sequence_pointers_length
@@ -231,9 +232,8 @@ func get_seq_bytes() -> PackedByteArray:
 	
 	# section 3
 	bytes.encode_u16(section1_length + section2_length, section3_length - 2)
-	var offset:int = 0
-	for seq_index:int in sequence_pointers.size():
-		offset = section1_length + section2_length + 2 + sequence_pointers[seq_index] # pointers are not guaranteed to always increase
+	var offset: int = section1_length + section2_length + 2
+	for seq_index: int in sequences.size():
 		for seq_part:SeqPart in sequences[seq_index].seq_parts:
 			if seq_part.isOpcode:
 				bytes.encode_u8(offset, 0xFF)
@@ -244,15 +244,6 @@ func get_seq_bytes() -> PackedByteArray:
 				offset += 1
 	
 	return bytes
-
-
-func update_seq_pointers(seq_id: int, old_length: int) -> void:
-	var length_delta: int = sequences[seq_id].length - old_length
-	
-	# update every pointer that points to after the update - accounts for repeating and out of order pointers
-	for seq_index: int in sequence_pointers.size():
-		if sequence_pointers[seq_index] > sequence_pointers[seq_id]:
-			sequence_pointers[seq_index] += length_delta
 
 
 func write_seq(path: String) -> void:

@@ -268,7 +268,6 @@ func _on_insert_opcode_pressed() -> void:
 	new_seq_part.parameters.fill(0)
 	
 	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.insert(seq_part_id, new_seq_part)
-	seq.update_seq_pointers(seq_id, previous_length)
 	settings_ui.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
 
@@ -279,6 +278,5 @@ func _on_delete_opcode_pressed() -> void:
 	var previous_length: int = seq.sequences[seq_id].length
 	
 	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
-	seq.update_seq_pointers(seq_id, previous_length)
 	settings_ui.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
