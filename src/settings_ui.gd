@@ -95,7 +95,7 @@ func on_seq_data_loaded(seq: Seq) -> void:
 			_on_patch_type_item_selected(patch_type_options.selected)
 			break
 	
-	current_animation_slots = seq.sequences.size()
+	current_animation_slots = seq.sequence_pointers.size()
 	max_animation_slots = seq.section2_length / 4
 	current_bytes = seq.toal_length
 	
@@ -106,7 +106,7 @@ func on_seq_data_loaded(seq: Seq) -> void:
 	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
 	patch_name_edit.placeholder_text = type + "_animation_edit"
 	
-	animation_id_spinbox.max_value = seq.sequences.size()
+	animation_id_spinbox.max_value = seq.sequences.size() - 1
 	animation_id_spinbox.editable = true
 	
 	animation_name_options.clear()

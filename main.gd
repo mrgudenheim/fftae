@@ -280,3 +280,24 @@ func _on_delete_opcode_pressed() -> void:
 	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
 	settings_ui.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
+
+
+func _on_new_animation_pressed() -> void:
+	# create new sequence with initial opcode LoadFrameAndWait(0,0)
+	var new_seq: Sequence = Sequence.new()
+	var initial_seq_part: SeqPart = SeqPart.new()
+	initial_seq_part.parameters.append(0)
+	initial_seq_part.parameters.append(0)
+	new_seq.seq_parts.append(initial_seq_part)
+	
+	seq.sequences.append(new_seq)
+	settings_ui.animation_id_spinbox.value = seq.sequences.size() - 1
+
+
+func _on_delete_animation_pressed() -> void:
+	seq.sequences.remove_at(settings_ui.animation_id_spinbox.value)
+	settings_ui.animation_id_spinbox.max_value = seq.sequences.size() - 1
+	for pointer: int in seq.sequence_pointers:
+		if pointer >= settings_ui.animation_id_spinbox.max_value:
+			pointer = 0
+	populate_opcode_list(opcode_list_container, settings_ui.animation_id_spinbox.value)

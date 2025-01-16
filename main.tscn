@@ -183,12 +183,13 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="InsertAnimation" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 disabled = true
-text = "Insert Animation"
+text = "Append Animation"
 
 [node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -232,6 +233,17 @@ layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationEditor/MarginContainer"]
 layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="NewAnimation" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Add New Animation"
+
+[node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Delete Current Animation"
 
 [node name="Options" type="GridContainer" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -324,6 +336,8 @@ horizontal_alignment = 1
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
+[connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/NewAnimation" to="." method="_on_new_animation_pressed"]
+[connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/DeleteAnimation" to="." method="_on_delete_animation_pressed"]
 [connection signal="item_selected" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton" to="." method="_on_animation_option_button_item_selected"]
 [connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Functions/InsertOpcode" to="." method="_on_insert_opcode_pressed"]
 [connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Functions/DeleteOpcode" to="." method="_on_delete_opcode_pressed"]

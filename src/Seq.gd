@@ -40,16 +40,10 @@ var section2_length:int = 0x400
 var sequences: Array[Sequence] = []
 var section3_length:int = 0:
 	get:
-		#var sequence_pointers_sorted:Array[int] = sequence_pointers.duplicate()
-		#sequence_pointers_sorted.sort()
-		var sum: int = 2 + get_pointer_address(sequence_pointers[-1]) # length to last seqence
-		sum += sequences[-1].length # length of last sequence
+		var sum: int = 2
+		for sequence: Sequence in sequences:
+			sum += sequence.length
 		return sum
-		
-		#var sum:int = 0
-		#for sequence in sequences:
-			#sum += sequence.length
-		#return sum + 2 # bytes
 
 var toal_length: int = 0:
 	get:
