@@ -18,14 +18,12 @@ func on_item_selected(item_index: int) -> void:
 	
 	# remove existing ui elements
 	for node in params_ui:
-		#parent.remove_child(node)
 		node.queue_free()
 	params_ui.clear()
 	param_spinboxes.clear()
 	
 	# set up seq_part
-	var previous_length: int = FFTae.seq.sequences[seq_id].length
-	var params_need_initialize = false
+	var params_need_initialize: bool = false
 	if seq_part.opcode_name != opcode_name:
 		params_need_initialize = true
 	seq_part.opcode_name = opcode_name
@@ -41,8 +39,6 @@ func on_item_selected(item_index: int) -> void:
 		for param_index: int in seq_part.parameters.size():
 			seq_part.parameters[param_index] = 0
 	
-	var node_position: int = self.get_index() - parent.columns # offset for headers
-	
 	# add new parameter ui elements
 	var max_params: int = 3
 	for param_index: int in range(max_params):
@@ -55,11 +51,6 @@ func on_item_selected(item_index: int) -> void:
 			parent.move_child(param_spinbox, self.get_index() + 1 + param_index)
 			param_spinboxes.append(param_spinbox)
 			params_ui.append(param_spinbox)
-			#param_spinbox.value_changed.connect(func(value: int) -> void: 
-					#var new_sequence: Sequence = FFTae.seq.sequences[seq_id].duplicate()
-					#new_sequence.seq_parts[seq_part_id].parameters[param_index] = value
-					#FFTae.seq.update_data(seq_id, new_sequence)
-					#)
 			param_spinbox.value_changed.connect(func(value: int) -> void: 
 					seq_part.parameters[param_index] = value
 					)
@@ -70,17 +61,5 @@ func on_item_selected(item_index: int) -> void:
 			parent.move_child(empty, empty_location)
 			params_ui.append(empty)
 	
-	#FFTae.seq.sequences[new_seq_id].seq_parts
-	#update_sequence_data(seq_id, seq_part_id, seq_part)
-
-
-func update_sequence_data(new_seq_id: int, new_seq_part_id: int, new_seq_part: SeqPart) -> void:
-	var seq_temp: Seq = FFTae.seq
-	var new_sequence: Sequence = FFTae.seq.sequences[new_seq_id].duplicate()
-	#new_sequence.seq_parts[new_seq_part_id] = new_seq_part
-	#FFTae.seq.update_data(new_seq_part_id, new_sequence)
-
-
-#func set_opcode_parameters(seq_part_local: SeqPart) -> void:
-	#for param_index: int in seq_part_local.parameters.size():
-		#param_spinboxes[param_index].value = seq_part_local.parameters[param_index]
+	# update animation list to reflect changes (very slow)
+	#FFTae.ae.populate_animation_list(FFTae.ae.animation_list_container, FFTae.ae.seq)
