@@ -28,6 +28,9 @@ static var directory_start_sector: int = 56436
 static var directory_data_sectors: PackedInt32Array = [56436, 56437, 56438, 56439, 56440, 56441]
 const OFFSET_RECORD_DATA_START: int = 0x60
 var file_records: Dictionary = {}
+var sprites: Dictionary = {}
+var shps: Dictionary = {}
+var seqs: Dictionary = {}
 
 # location of file size (4 bytes) in full ROM
 # the 4 bytes after are also the file size, but in big-endian format
@@ -131,25 +134,27 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 				break
 	
 	for record: FileRecord in file_records.values():
-		push_warning(record.to_string())
+		#push_warning(record.to_string())
+		var file_data: PackedByteArray = record.get_file_data(rom)
+		match record.name.get_extension():
+			"SPR":
+				var spr: Spr = Spr.new()
+				spr.set_data(file_data)
+				sprites[record.name] = spr
+			"SHP":
+				var shp: Shp = Shp.new()
+				shp.set_name(record.name)
+				shp.set_data_from_shp_bytes(file_data)
+				shps[record.name] = shp
+			"SEQ":
+				var seq: Seq = Seq.new()
+				seq.set_name(record.name)
+				seq.set_data_from_seq_bytes(file_data)
+				seqs[record.name] = seq
+			_:
+				push_warning(record.name + ": Don't recognize file extension")
 	
-	## for each SEQ in ROM
-	#seq = Seq.new()
-	#seq.set_data_from_seq_file(path)
-	#
-	## for each SHP in ROM
-	#var shp := Shp.new()
-	#
-	#
-	## for each SPR in ROM
-	## create bmp?
-	#
-	#settings_ui.on_seq_data_loaded(seq)
-	#save_xml_button.disabled = false
-	#save_seq_button.disabled = false
-	#
-	#populate_animation_list(animation_list_container, seq)
-	#populate_opcode_list(opcode_list_container, settings_ui.animation_name_options.selected)
+	
 
 
 func _on_load_seq_pressed() -> void:
