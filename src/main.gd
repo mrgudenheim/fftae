@@ -2,8 +2,10 @@ class_name FFTae
 extends Control
 
 static var ae: FFTae
+static var rom:PackedByteArray = []
 
 @export var settings_ui: SettingsUi
+@export var load_rom_dialog: FileDialog
 @export var load_file_dialog: FileDialog
 @export var save_xml_button: Button
 @export var save_xml_dialog: FileDialog
@@ -22,9 +24,14 @@ static var data_bytes_per_sector: int = 2048  # 2048 bytes
 
 # (sector location * bytes_per_sector) + bytes_per_sector_header
 # https://ffhacktics.com/wiki/BATTLE/
-static var metadata_start_sector: int = 56436
+static var directory_start_sector: int = 56436
+static var directory_data_sectors: PackedInt32Array = [56436, 56437, 56438, 56439, 56440, 56441]
+const OFFSET_RECORD_DATA_START: int = 0x60
+var file_records: Dictionary = {}
 
-# location in full ROM
+# location of file size (4 bytes) in full ROM
+# the 4 bytes after are also the file size, but in big-endian format
+# sector location (aka LBA) of the file is the 8 bytes before this (both-endian format)
 var seq_metadata_size_offsets: Dictionary = {
 	"arute": 0x07e96dd0, 
 	"cyoko": 0x07e97100, 
@@ -80,15 +87,15 @@ func _ready() -> void:
 	bytes_per_sector = data_bytes_per_sector + bytes_per_sector_header + bytes_per_sector_footer
 	for key: String in seq_metadata_size_offsets.keys():
 		var sector: int = seq_metadata_size_offsets[key] / bytes_per_sector
-		var sector_delta: int = sector - metadata_start_sector
+		var sector_delta: int = sector - directory_start_sector
 		var sector_split_bytes: int = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
-		seq_metadata_size_offsets[key] = seq_metadata_size_offsets[key] - (metadata_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
+		seq_metadata_size_offsets[key] = seq_metadata_size_offsets[key] - (directory_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
 	
 	for key: String in shp_metadata_size_offsets.keys():
 		var sector: int = shp_metadata_size_offsets[key] / bytes_per_sector
-		var sector_delta: int = sector - metadata_start_sector
+		var sector_delta: int = sector - directory_start_sector
 		var sector_split_bytes: int = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
-		shp_metadata_size_offsets[key] = shp_metadata_size_offsets[key] - (metadata_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
+		shp_metadata_size_offsets[key] = shp_metadata_size_offsets[key] - (directory_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
 	
 	settings_ui.patch_type_options.clear()
 	settings_ui.patch_type_options.add_item("custom")
@@ -97,25 +104,52 @@ func _ready() -> void:
 		settings_ui.patch_type_options.add_item(key)
 
 
+func _on_load_rom_pressed() -> void:
+	load_rom_dialog.visible = true
+
+
 func _on_load_rom_dialog_file_selected(path: String) -> void:
+	rom = FileAccess.get_file_as_bytes(path)
 	
-	# for each SEQ in ROM
-	seq = Seq.new()
-	seq.set_data_from_seq_file(path)
+	file_records.clear()
+	for directory_sector: int in directory_data_sectors:
+		var offset_start: int = 0
+		if directory_sector == directory_data_sectors[0]:
+			offset_start = OFFSET_RECORD_DATA_START
+		var directory_start: int = directory_sector * bytes_per_sector
+		var directory_data: PackedByteArray = rom.slice(directory_start, directory_start + data_bytes_per_sector + bytes_per_sector_header)
+		
+		var byte_index: int = offset_start + bytes_per_sector_header
+		while byte_index < data_bytes_per_sector + bytes_per_sector_header:
+			var record_length: int = directory_data.decode_u8(byte_index)
+			var record_data: PackedByteArray = directory_data.slice(byte_index, byte_index + record_length)
+			var record: FileRecord = FileRecord.new(record_data)
+			file_records[record.name] = record
+			
+			byte_index += record_length
+			if directory_data.decode_u8(byte_index) == 0: # end of data, rest of sector will be padded with zeros
+				break
 	
-	# for each SHP in ROM
-	var shp = Shp.new()
+	for record: FileRecord in file_records.values():
+		push_warning(record.to_string())
 	
-	
-	# for each SPR in ROM
-	# create bmp?
-	
-	settings_ui.on_seq_data_loaded(seq)
-	save_xml_button.disabled = false
-	save_seq_button.disabled = false
-	
-	populate_animation_list(animation_list_container, seq)
-	populate_opcode_list(opcode_list_container, settings_ui.animation_name_options.selected)
+	## for each SEQ in ROM
+	#seq = Seq.new()
+	#seq.set_data_from_seq_file(path)
+	#
+	## for each SHP in ROM
+	#var shp := Shp.new()
+	#
+	#
+	## for each SPR in ROM
+	## create bmp?
+	#
+	#settings_ui.on_seq_data_loaded(seq)
+	#save_xml_button.disabled = false
+	#save_seq_button.disabled = false
+	#
+	#populate_animation_list(animation_list_container, seq)
+	#populate_opcode_list(opcode_list_container, settings_ui.animation_name_options.selected)
 
 
 func _on_load_seq_pressed() -> void:
@@ -149,7 +183,7 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 	
 	var seq_file: String = settings_ui.patch_type_options.get_item_text(settings_ui.patch_type_options.selected)
 	var xml_size_location_start: String = '<Location offset="%08x" ' % seq_metadata_size_offsets[seq_file]
-	xml_size_location_start += ('sector="%x">' % metadata_start_sector)
+	xml_size_location_start += ('sector="%x">' % directory_start_sector)
 	var bytes_size: String = '%04x' % seq.toal_length
 	bytes_size = bytes_size.right(2) + bytes_size.left(2)
 	var xml_size_location_end: String = '</Location>'
@@ -248,7 +282,7 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 		
 		# update text for new animation pointed at
 		anim_id_spinbox.value_changed.connect(
-			func(new_value): 
+			func(new_value: int) -> void: 
 				seq_local.sequence_pointers[index] = new_value
 				var new_sequence: Sequence = seq_local.sequences[new_value]
 				description_label.text = new_sequence.seq_name

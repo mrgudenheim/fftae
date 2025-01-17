@@ -8,7 +8,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_bugng"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("settings_ui", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container")]
+[node name="Main" type="Control" node_paths=PackedStringArray("settings_ui", "load_rom_dialog", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -18,7 +18,8 @@ grow_vertical = 2
 theme = ExtResource("1_13w5h")
 script = ExtResource("1_lyv0c")
 settings_ui = NodePath("HBoxContainer/SettingsPanel")
-load_file_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ/LoadFileDialog")
+load_rom_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadRom/LoadRomDialog")
+load_file_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ/LoadFileDialog")
 save_xml_button = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml")
 save_xml_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog")
 save_seq_button = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ")
@@ -54,12 +55,29 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/SettingsPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="Load SEQ" type="Button" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
+[node name="LoadRom" type="Button" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Load ROM
+"
+
+[node name="LoadRomDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadRom"]
+auto_translate_mode = 1
+title = "Open a File"
+initial_position = 1
+size = Vector2i(500, 400)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.bin")
+use_native_dialog = true
+
+[node name="LoadSEQ" type="Button" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 text = "Load SEQ
 "
 
-[node name="LoadFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ"]
+[node name="LoadFileDialog" type="FileDialog" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ"]
 title = "Open a File"
 initial_position = 1
 size = Vector2i(500, 400)
@@ -315,8 +333,10 @@ layout_mode = 2
 text = "Param3"
 horizontal_alignment = 1
 
-[connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ" to="." method="_on_load_seq_pressed"]
-[connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Load SEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadRom" to="." method="_on_load_rom_pressed"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadRom/LoadRomDialog" to="." method="_on_load_rom_dialog_file_selected"]
+[connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ" to="." method="_on_load_seq_pressed"]
+[connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
 [connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info/PatchType" to="HBoxContainer/SettingsPanel" method="_on_patch_type_item_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml" to="." method="_on_save_as_xml_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
