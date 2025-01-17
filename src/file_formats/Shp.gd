@@ -138,6 +138,17 @@ func set_data_from_shp_object(shp_object:Shp) -> void:
 
 func set_data_from_shp_file(filepath:String) -> void:	
 	var new_file_name:String = filepath.get_file()
+	set_name(new_file_name)
+	
+	var bytes:PackedByteArray = FileAccess.get_file_as_bytes(filepath)
+	if bytes.size() == 0:
+		push_warning("Open Error: " + filepath)
+		return
+	else:
+		set_data_from_shp_bytes(bytes)
+
+
+func set_name(new_file_name: String) -> void:
 	new_file_name = new_file_name.trim_suffix(".shp")
 	new_file_name = new_file_name.trim_suffix(".SHP")
 	new_file_name = new_file_name.trim_suffix(".Shp")
@@ -148,13 +159,10 @@ func set_data_from_shp_file(filepath:String) -> void:
 	if shp_aliases.has(file_name):
 		name_alias = shp_aliases[file_name]
 	else:
-		name_alias = new_file_name
-	
-	var bytes:PackedByteArray = FileAccess.get_file_as_bytes(filepath)
-	if bytes.size() == 0:
-		push_warning("Open Error: " + filepath)
-		return
-	
+		name_alias = file_name
+
+
+func set_data_from_shp_bytes(bytes: PackedByteArray) -> void:	
 	swim_pointer = bytes.decode_u32(0)
 	attack_start_index = bytes.decode_u16(4)
 	sp_extra = bytes.decode_u16(6)

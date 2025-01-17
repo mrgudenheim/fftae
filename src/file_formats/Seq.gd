@@ -20,6 +20,7 @@ static var seq_aliases: Dictionary = {
 static var ending_opcodes: PackedStringArray = [
 	"IncrementLoop",
 	"PauseAnimation",
+	"EndAnimation",
 	"ffc2",
 	]
 
@@ -75,24 +76,31 @@ func set_data_from_seq_object(seq_object:Seq) -> void:
 	sequences = seq_object.sequences.duplicate()
 
 
-func set_data_from_seq_file(filepath:String) -> void:	
+func set_data_from_seq_file(filepath:String) -> void:
 	var new_file_name:String = filepath.get_file()
+	set_name(new_file_name)
+	
+	var bytes:PackedByteArray = FileAccess.get_file_as_bytes(filepath)
+	if bytes.size() == 0:
+		push_warning("Open Error: " + filepath)
+		return
+
+
+func set_name(new_file_name: String) -> void:
 	new_file_name = new_file_name.trim_suffix(".seq")
 	new_file_name = new_file_name.trim_suffix(".SEQ")
 	new_file_name = new_file_name.trim_suffix(".Seq")
 	new_file_name = new_file_name.to_lower()
 	
 	file_name = new_file_name
+	
 	if seq_aliases.has(file_name):
 		name_alias = seq_aliases[file_name]
 	else:
-		name_alias = new_file_name
-	
-	var bytes:PackedByteArray = FileAccess.get_file_as_bytes(filepath)
-	if bytes.size() == 0:
-		push_warning("Open Error: " + filepath)
-		return
-	
+		name_alias = file_name
+
+
+func set_data_from_seq_bytes(bytes: PackedByteArray) -> void:
 	AA = bytes.decode_u16(0)
 	BB = bytes.decode_u16(2)
 	
@@ -157,8 +165,8 @@ func get_pointer_from_address(address: int) -> int:
 
 func set_sequence_names():
 	if seq_names.has(name_alias):
-		push_warning(sequence_pointers)
-		push_warning(seq_names[name_alias])
+		#push_warning(sequence_pointers)
+		#push_warning(seq_names[name_alias])
 		for pointer_index in sequence_pointers.size():
 			var pointer: int = sequence_pointers[pointer_index]
 			if sequences[pointer].seq_name.is_empty() and seq_names[name_alias].has(pointer_index): # if this is the first pointer to point to the sequence
