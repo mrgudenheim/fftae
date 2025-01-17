@@ -2,13 +2,13 @@
 
 [ext_resource type="Theme" uid="uid://bhwwwa4jiaiop" path="res://src/ui_theme.tres" id="1_13w5h"]
 [ext_resource type="Script" path="res://src/main.gd" id="1_lyv0c"]
-[ext_resource type="Script" path="res://src/settings_ui.gd" id="2_hmnjv"]
+[ext_resource type="Script" path="res://src/ui_manager.gd" id="2_hmnjv"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_8s6nw"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bugng"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("settings_ui", "load_rom_dialog", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container")]
+[node name="Main" type="Control" node_paths=PackedStringArray("ui_manager", "load_rom_dialog", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,7 +17,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_13w5h")
 script = ExtResource("1_lyv0c")
-settings_ui = NodePath("HBoxContainer/SettingsPanel")
+ui_manager = NodePath("HBoxContainer/SettingsPanel")
 load_rom_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadRom/LoadRomDialog")
 load_file_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ/LoadFileDialog")
 save_xml_button = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml")
@@ -35,12 +35,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox")]
+[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_pointers_text", "animations_bytes_text", "shp_options", "sprite_options", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
 seq_options = NodePath("MarginContainer/VBoxContainer/Info/SeqFileOptions")
-animations_slots_text = NodePath("MarginContainer/VBoxContainer/Info/NumEmptyAnimationPointers")
-bytes_text = NodePath("MarginContainer/VBoxContainer/Info/NumEmptySeqBytes")
+animations_pointers_text = NodePath("MarginContainer/VBoxContainer/Info/NumEmptyAnimationPointers")
+animations_bytes_text = NodePath("MarginContainer/VBoxContainer/Info/NumEmptySeqBytes")
+shp_options = NodePath("MarginContainer/VBoxContainer/Info/ShpFileOptions")
+sprite_options = NodePath("MarginContainer/VBoxContainer/Info/SpriteOptions")
 patch_name_edit = NodePath("MarginContainer/VBoxContainer/Info/PatchNameLineEdit")
 author_name_edit = NodePath("MarginContainer/VBoxContainer/Info/AuthorLineEdit")
 patch_description_edit = NodePath("MarginContainer/VBoxContainer/DescriptionTextEdit")
@@ -124,7 +126,7 @@ layout_mode = 2
 text = "SHP: "
 horizontal_alignment = 2
 
-[node name="ShpFileSelector" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="ShpFileOptions" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 
 [node name="EmptyFramePointers" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
@@ -152,7 +154,7 @@ layout_mode = 2
 text = "Sprite:"
 horizontal_alignment = 2
 
-[node name="SpriteSelector" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="SpriteOptions" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 
 [node name="PatchNameLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]

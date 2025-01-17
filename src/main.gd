@@ -4,7 +4,7 @@ extends Control
 static var ae: FFTae
 static var rom:PackedByteArray = []
 
-@export var settings_ui: SettingsUi
+@export var ui_manager: UiManager
 @export var load_rom_dialog: FileDialog
 @export var load_file_dialog: FileDialog
 @export var save_xml_button: Button
@@ -148,14 +148,22 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 			_:
 				push_warning(record.name + ": File extension not recognized")
 	
-	settings_ui.seq_options.clear()
+	ui_manager.seq_options.clear()
 	for key: String in seqs.keys():
-		settings_ui.seq_options.add_item(key)
+		ui_manager.seq_options.add_item(key)
+	
+	ui_manager.shp_options.clear()
+	for key: String in shps.keys():
+		ui_manager.shp_options.add_item(key)
+	
+	ui_manager.sprite_options.clear()
+	for key: String in sprites.keys():
+		ui_manager.sprite_options.add_item(key)
 	
 	save_xml_button.disabled = false
 	save_seq_button.disabled = false
 	
-	settings_ui._on_seq_file_options_item_selected(settings_ui.seq_options.selected)
+	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
 
 
 func _on_load_seq_pressed() -> void:
@@ -173,21 +181,21 @@ func _on_save_as_seq_pressed() -> void:
 func _on_load_file_dialog_file_selected(path: String) -> void:
 	seq = Seq.new()
 	seq.set_data_from_seq_file(path)
-	settings_ui.on_seq_data_loaded(seq)
+	ui_manager.on_seq_data_loaded(seq)
 	save_xml_button.disabled = false
 	save_seq_button.disabled = false
 	
 	populate_animation_list(animation_list_container, seq)
-	populate_opcode_list(opcode_list_container, settings_ui.animation_name_options.selected)
+	populate_opcode_list(opcode_list_container, ui_manager.animation_name_options.selected)
 
 
 func _on_save_xml_dialog_file_selected(path: String) -> void:
 	var xml_header: String = '<?xml version="1.0" encoding="utf-8" ?>\n<Patches>'
-	var xml_patch_name: String = '<Patch name="' + settings_ui.patch_name + '">'
-	var xml_author: String = '<Author>' + settings_ui.patch_author + '</Author>'
-	var xml_description: String = '<Description>' + settings_ui.patch_description + '</Description>'
+	var xml_patch_name: String = '<Patch name="' + ui_manager.patch_name + '">'
+	var xml_author: String = '<Author>' + ui_manager.patch_author + '</Author>'
+	var xml_description: String = '<Description>' + ui_manager.patch_description + '</Description>'
 	
-	var seq_file: String = settings_ui.patch_type_options.get_item_text(settings_ui.patch_type_options.selected)
+	var seq_file: String = ui_manager.patch_type_options.get_item_text(ui_manager.patch_type_options.selected)
 	var xml_size_location_start: String = '<Location offset="%08x" ' % seq_metadata_size_offsets[seq_file]
 	xml_size_location_start += ('sector="%x">' % directory_start_sector)
 	var bytes_size: String = '%04x' % seq.toal_length
@@ -247,7 +255,7 @@ func clear_grid_container(grid: GridContainer, rows_to_keep: int) -> void:
 
 
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
-	settings_ui.current_animation_slots = seq_local.sequence_pointers.size()
+	ui_manager.current_animation_slots = seq_local.sequence_pointers.size()
 	clear_grid_container(animations_grid_parent, 1)
 	
 	for index in seq_local.sequence_pointers.size():
@@ -326,13 +334,13 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 
 func _on_animation_option_button_item_selected(index: int) -> void:
 	var sequence: Sequence = seq.sequences[index]
-	settings_ui.row_spinbox.max_value = sequence.seq_parts.size() - 1
+	ui_manager.row_spinbox.max_value = sequence.seq_parts.size() - 1
 	populate_opcode_list(opcode_list_container, index)
 
 
 func _on_insert_opcode_pressed() -> void:
-	var seq_part_id: int = settings_ui.row_spinbox.value
-	var seq_id: int = settings_ui.animation_name_options.selected
+	var seq_part_id: int = ui_manager.row_spinbox.value
+	var seq_id: int = ui_manager.animation_name_options.selected
 	
 	var previous_length: int = seq.sequences[seq_id].length
 	# set up seq_part
@@ -340,18 +348,18 @@ func _on_insert_opcode_pressed() -> void:
 	new_seq_part.parameters.resize(2)
 	new_seq_part.parameters.fill(0)
 	
-	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.insert(seq_part_id, new_seq_part)
-	settings_ui.current_bytes = seq.toal_length
+	seq.sequences[ui_manager.animation_name_options.selected].seq_parts.insert(seq_part_id, new_seq_part)
+	ui_manager.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
 
 
 func _on_delete_opcode_pressed() -> void:
-	var seq_part_id: int = settings_ui.row_spinbox.value
-	var seq_id: int = settings_ui.animation_name_options.selected
+	var seq_part_id: int = ui_manager.row_spinbox.value
+	var seq_id: int = ui_manager.animation_name_options.selected
 	var previous_length: int = seq.sequences[seq_id].length
 	
-	seq.sequences[settings_ui.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
-	settings_ui.current_bytes = seq.toal_length
+	seq.sequences[ui_manager.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
+	ui_manager.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
 
 
@@ -368,28 +376,28 @@ func _on_new_animation_pressed() -> void:
 	seq.sequence_pointers.append(seq.sequences.size() - 1) # add pointer to the new sequence
 	populate_animation_list(animation_list_container, seq)
 	
-	settings_ui.animation_id_spinbox.max_value = seq.sequences.size() - 1
-	settings_ui.animation_id_spinbox.value = seq.sequences.size() - 1
+	ui_manager.animation_id_spinbox.max_value = seq.sequences.size() - 1
+	ui_manager.animation_id_spinbox.value = seq.sequences.size() - 1
 
 
 func _on_delete_animation_pressed() -> void:
-	seq.sequences.remove_at(settings_ui.animation_id_spinbox.value)
-	settings_ui.animation_id_spinbox.max_value = seq.sequences.size() - 1
+	seq.sequences.remove_at(ui_manager.animation_id_spinbox.value)
+	ui_manager.animation_id_spinbox.max_value = seq.sequences.size() - 1
 	for pointer_index: int in seq.sequence_pointers.size():
-		if seq.sequence_pointers[pointer_index] >= settings_ui.animation_id_spinbox.max_value:
+		if seq.sequence_pointers[pointer_index] >= ui_manager.animation_id_spinbox.max_value:
 			seq.sequence_pointers[pointer_index] = 0
 	populate_animation_list(animation_list_container, seq)
-	settings_ui.update_animation_description_options(seq)
-	populate_opcode_list(opcode_list_container, settings_ui.animation_id_spinbox.value)
+	ui_manager.update_animation_description_options(seq)
+	populate_opcode_list(opcode_list_container, ui_manager.animation_id_spinbox.value)
 
 
 func _on_add_pointer_pressed() -> void:
 	seq.sequence_pointers.append(0)
-	settings_ui.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
+	ui_manager.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
 	populate_animation_list(animation_list_container, seq)
 
 
 func _on_delete_pointer_pressed() -> void:
-	seq.sequence_pointers.remove_at(settings_ui.pointer_index_spinbox.value)
-	settings_ui.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
+	seq.sequence_pointers.remove_at(ui_manager.pointer_index_spinbox.value)
+	ui_manager.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
 	populate_animation_list(animation_list_container, seq)

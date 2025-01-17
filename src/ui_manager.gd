@@ -1,9 +1,12 @@
-class_name SettingsUi
+class_name UiManager
 extends Node
 
 @export var seq_options: OptionButton
-@export var animations_slots_text: Label
-@export var bytes_text: Label
+@export var animations_pointers_text: Label
+@export var animations_bytes_text: Label
+@export var shp_options: OptionButton
+@export var sprite_options: OptionButton
+
 @export var patch_name_edit: LineEdit
 @export var author_name_edit: LineEdit
 @export var patch_description_edit: TextEdit
@@ -44,26 +47,26 @@ var current_animation_slots: int = 0:
 		return current_animation_slots
 	set(value):
 		current_animation_slots = value
-		update_info_text(current_animation_slots, max_animation_slots, animations_slots_text)
+		update_info_text(current_animation_slots, max_animation_slots, animations_pointers_text)
 var max_animation_slots: int = 0:
 	get:
 		return max_animation_slots
 	set(value):
 		max_animation_slots = value
-		update_info_text(current_animation_slots, max_animation_slots, animations_slots_text)
+		update_info_text(current_animation_slots, max_animation_slots, animations_pointers_text)
 
 var current_bytes: int = 0:
 	get:
 		return current_bytes
 	set(value):
 		current_bytes = value
-		update_info_text(current_bytes, max_bytes, bytes_text)
+		update_info_text(current_bytes, max_bytes, animations_bytes_text)
 var max_bytes: int = 0:
 	get:
 		return max_bytes
 	set(value):
 		max_bytes = value
-		update_info_text(current_bytes, max_bytes, bytes_text)
+		update_info_text(current_bytes, max_bytes, animations_bytes_text)
 
 
 func _ready() -> void:
