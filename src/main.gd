@@ -97,6 +97,27 @@ func _ready() -> void:
 		settings_ui.patch_type_options.add_item(key)
 
 
+func _on_load_rom_dialog_file_selected(path: String) -> void:
+	
+	# for each SEQ in ROM
+	seq = Seq.new()
+	seq.set_data_from_seq_file(path)
+	
+	# for each SHP in ROM
+	var shp = Shp.new()
+	
+	
+	# for each SPR in ROM
+	# create bmp?
+	
+	settings_ui.on_seq_data_loaded(seq)
+	save_xml_button.disabled = false
+	save_seq_button.disabled = false
+	
+	populate_animation_list(animation_list_container, seq)
+	populate_opcode_list(opcode_list_container, settings_ui.animation_name_options.selected)
+
+
 func _on_load_seq_pressed() -> void:
 	load_file_dialog.visible = true
 
