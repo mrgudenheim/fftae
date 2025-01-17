@@ -99,12 +99,6 @@ func _ready() -> void:
 		var sector_delta: int = sector - directory_start_sector
 		var sector_split_bytes: int = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
 		shp_metadata_size_offsets[key] = shp_metadata_size_offsets[key] - (directory_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
-	
-	settings_ui.patch_type_options.clear()
-	settings_ui.patch_type_options.add_item("custom")
-	
-	for key: String in seq_metadata_size_offsets.keys():
-		settings_ui.patch_type_options.add_item(key)
 
 
 func _on_load_rom_pressed() -> void:
@@ -138,23 +132,30 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 		var file_data: PackedByteArray = record.get_file_data(rom)
 		match record.name.get_extension():
 			"SPR":
-				var spr: Spr = Spr.new()
-				spr.set_data(file_data)
-				sprites[record.name] = spr
+				var new_spr: Spr = Spr.new()
+				new_spr.set_data(file_data)
+				sprites[record.name] = new_spr
 			"SHP":
-				var shp: Shp = Shp.new()
-				shp.set_name(record.name)
-				shp.set_data_from_shp_bytes(file_data)
-				shps[record.name] = shp
+				var new_shp: Shp = Shp.new()
+				new_shp.set_name(record.name)
+				new_shp.set_data_from_shp_bytes(file_data)
+				shps[record.name] = new_shp
 			"SEQ":
-				var seq: Seq = Seq.new()
-				seq.set_name(record.name)
-				seq.set_data_from_seq_bytes(file_data)
-				seqs[record.name] = seq
+				var new_seq: Seq = Seq.new()
+				new_seq.set_name(record.name)
+				new_seq.set_data_from_seq_bytes(file_data)
+				seqs[record.name] = new_seq
 			_:
-				push_warning(record.name + ": Don't recognize file extension")
+				push_warning(record.name + ": File extension not recognized")
 	
+	settings_ui.seq_options.clear()
+	for key: String in seqs.keys():
+		settings_ui.seq_options.add_item(key)
 	
+	save_xml_button.disabled = false
+	save_seq_button.disabled = false
+	
+	settings_ui._on_seq_file_options_item_selected(settings_ui.seq_options.selected)
 
 
 func _on_load_seq_pressed() -> void:
@@ -298,7 +299,6 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> void:
 	clear_grid_container(opcode_grid_parent, 1) # keep header row
 	
-	var seq_temp: Seq = FFTae.seq
 	for seq_part_index: int in FFTae.seq.sequences[seq_id].seq_parts.size():
 		var id_label: Label = Label.new()
 		id_label.text = str(seq_part_index)
@@ -320,7 +320,6 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 				opcode_options.item_selected.emit(opcode_options_index)
 				break
 		
-		var seq_temp2: Seq = FFTae.seq
 		for param_index: int in FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
 			opcode_options.param_spinboxes[param_index].value = FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
 

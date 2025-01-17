@@ -1,7 +1,7 @@
 class_name SettingsUi
 extends Node
 
-@export var patch_type_options: OptionButton
+@export var seq_options: OptionButton
 @export var animations_slots_text: Label
 @export var bytes_text: Label
 @export var patch_name_edit: LineEdit
@@ -76,7 +76,7 @@ func update_info_text(current: int, max_value: int, ui: Label) -> void:
 	var percent_of_max:String = " (%.f%%)" % [100 * current/float(max_value)]
 	ui.text = str(current) + "/" + str(max_value) + percent_of_max
 	
-	var type: String = patch_type_options.get_item_text(patch_type_options.selected)
+	var type: String = seq_options.get_item_text(seq_options.selected)
 	if current > max_value:
 		ui.label_settings.font_color = Color.DARK_RED
 	elif FFTae.original_sizes.has(type):
@@ -86,32 +86,6 @@ func update_info_text(current: int, max_value: int, ui: Label) -> void:
 			ui.label_settings.font_color = Color.WHITE
 	else:
 		ui.label_settings.font_color = Color.WHITE
-
-
-func on_seq_data_loaded(seq: Seq) -> void:
-	for index in patch_type_options.item_count:
-		if patch_type_options.get_item_text(index) == seq.file_name:
-			patch_type_options.select(index)
-			_on_patch_type_item_selected(patch_type_options.selected)
-			break
-	
-	current_animation_slots = seq.sequence_pointers.size()
-	max_animation_slots = seq.section2_length / 4
-	current_bytes = seq.toal_length
-	
-	if FFTae.original_sizes.has(seq.file_name):
-		max_bytes = ceil(FFTae.original_sizes[seq.file_name] / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
-	
-	var type: String = patch_type_options.get_item_text(patch_type_options.selected)
-	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
-	patch_name_edit.placeholder_text = type + "_animation_edit"
-	
-	animation_id_spinbox.max_value = seq.sequences.size() - 1
-	animation_id_spinbox.editable = true
-	
-	pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
-	
-	update_animation_description_options(seq)
 
 
 func update_animation_description_options(seq: Seq) -> void:
@@ -127,11 +101,30 @@ func update_animation_description_options(seq: Seq) -> void:
 		animation_name_options.disabled = false
 
 
-func _on_patch_type_item_selected(index: int) -> void:
-	var type: String = patch_type_options.get_item_text(index)
+func _on_seq_file_options_item_selected(index: int) -> void:
+	var type: String = seq_options.get_item_text(index)
+	FFTae.seq = FFTae.ae.seqs[type]
 	
-	if FFTae.original_sizes.has(type):
-		max_bytes = ceil(FFTae.original_sizes[type] / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
+	if FFTae.ae.file_records.has(type):
+		max_bytes = ceil(FFTae.ae.file_records[type].size / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
 	
 	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
 	patch_name_edit.placeholder_text = type + "_animation_edit"
+	
+	current_animation_slots = FFTae.seq.sequence_pointers.size()
+	max_animation_slots = FFTae.seq.section2_length / 4
+	current_bytes = FFTae.seq.toal_length
+	
+	animation_id_spinbox.max_value = FFTae.seq.sequences.size() - 1
+	animation_id_spinbox.editable = true
+	
+	pointer_index_spinbox.max_value = FFTae.seq.sequence_pointers.size() - 1
+	
+	update_animation_description_options(FFTae.seq)
+	
+	FFTae.ae.populate_animation_list(FFTae.ae.animation_list_container, FFTae.seq)
+	FFTae.ae.populate_opcode_list(FFTae.ae.opcode_list_container, animation_name_options.selected)
+
+
+func get_options_button_selected_text(option_box: OptionButton) -> String:
+	return option_box.get_item_text(option_box.selected)

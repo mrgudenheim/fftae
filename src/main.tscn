@@ -35,12 +35,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("patch_type_options", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox")]
+[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_slots_text", "bytes_text", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
-patch_type_options = NodePath("MarginContainer/VBoxContainer/Info/PatchType")
-animations_slots_text = NodePath("MarginContainer/VBoxContainer/Info/EmptyAnimationSlotsNum")
-bytes_text = NodePath("MarginContainer/VBoxContainer/Info/EmptyBytesNum")
+seq_options = NodePath("MarginContainer/VBoxContainer/Info/SeqFileOptions")
+animations_slots_text = NodePath("MarginContainer/VBoxContainer/Info/NumEmptyAnimationPointers")
+bytes_text = NodePath("MarginContainer/VBoxContainer/Info/NumEmptySeqBytes")
 patch_name_edit = NodePath("MarginContainer/VBoxContainer/Info/PatchNameLineEdit")
 author_name_edit = NodePath("MarginContainer/VBoxContainer/Info/AuthorLineEdit")
 patch_description_edit = NodePath("MarginContainer/VBoxContainer/DescriptionTextEdit")
@@ -91,33 +91,69 @@ use_native_dialog = true
 layout_mode = 2
 columns = 2
 
-[node name="PatchStart" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="SeqFile" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
-text = "Seq Type: "
+text = "SEQ: "
 horizontal_alignment = 2
 
-[node name="PatchType" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="SeqFileOptions" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 
-[node name="EmptyAnimationSlots" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="EmptyAnimationPointers" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
-text = "Pointers: "
+text = "Animation Pointers: "
 horizontal_alignment = 2
 
-[node name="EmptyAnimationSlotsNum" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="NumEmptyAnimationPointers" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "0/256"
 label_settings = SubResource("LabelSettings_8s6nw")
 
-[node name="EmptyBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="EmptySeqBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "Bytes: "
 horizontal_alignment = 2
 
-[node name="EmptyBytesNum" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+[node name="NumEmptySeqBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
 text = "2048/2048"
 label_settings = SubResource("LabelSettings_bugng")
+
+[node name="ShpFile" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
+text = "SHP: "
+horizontal_alignment = 2
+
+[node name="ShpFileSelector" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
+
+[node name="EmptyFramePointers" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
+text = "Frame Pointers: "
+horizontal_alignment = 2
+
+[node name="NumEmptyFramePoitners" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
+text = "0/256"
+label_settings = SubResource("LabelSettings_8s6nw")
+
+[node name="EmptyShpBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
+text = "Bytes: "
+horizontal_alignment = 2
+
+[node name="NumEmptyShpBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
+text = "2048/2048"
+label_settings = SubResource("LabelSettings_bugng")
+
+[node name="Sprite" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
+text = "Sprite:"
+horizontal_alignment = 2
+
+[node name="SpriteSelector" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
+layout_mode = 2
 
 [node name="PatchNameLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info"]
 layout_mode = 2
@@ -337,7 +373,7 @@ horizontal_alignment = 1
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadRom/LoadRomDialog" to="." method="_on_load_rom_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ" to="." method="_on_load_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
-[connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info/PatchType" to="HBoxContainer/SettingsPanel" method="_on_patch_type_item_selected"]
+[connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info/SeqFileOptions" to="HBoxContainer/SettingsPanel" method="_on_seq_file_options_item_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml" to="." method="_on_save_as_xml_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
