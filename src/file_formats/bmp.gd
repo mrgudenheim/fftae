@@ -127,8 +127,6 @@ func set_color_indexed_data(image:Image, palette:Array[Color]):
 				push_warning(str(Vector2i(x, height - y - 1)) + " - Color not in palette: " + color_string)
 			else:
 				color_indices[x + (y * width)] = color_palette_lookup[color_string] # stores data left to right, bottom to top
-			
-			
 
 
 func get_color_index(x:int, y:int) -> int:

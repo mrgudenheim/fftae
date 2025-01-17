@@ -3,10 +3,12 @@ class_name Spr extends Bmp
 
 func _init() -> void:
 	file_name = "spr_file"
+	if file_name == "OTHER":
+		num_colors = 512
 	bits_per_pixel = 4
 	palette_data_start = 0
-	pixel_data_start = 0x200 # after 256 color palette, 2 bytes per color - 1 bit for alpha, followed by 5 bits per channel (B,G,R)
-	width = 256
+	pixel_data_start = num_colors * 2 # after 256 color palette, 2 bytes per color - 1 bit for alpha, followed by 5 bits per channel (B,G,R)
+	width = 256 # pixels
 	height = 256 # need to set based on file?
 	num_pixels = width * height
 
@@ -28,7 +30,7 @@ func set_palette_data(spr_file: PackedByteArray) -> void:
 		color.r8 = color_bits & 0b0000_0000_0001_1111
 		
 		# convert 5 bit channels to 8 bit
-		color.a8 = (255 * color.a8) # first bit is alpha (if bit is zero, color is opaque)
+		color.a8 = 255 * color.a8 # first bit is alpha (if bit is zero, color is opaque)
 		color.b8 = roundi(255 * (color.b8 / float(31))) # then 5 bits each: blue, green, red
 		color.g8 = roundi(255 * (color.g8 / float(31)))
 		color.r8 = roundi(255 * (color.r8 / float(31)))
