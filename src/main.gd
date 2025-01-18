@@ -384,7 +384,7 @@ func populate_frame_list(frame_grid_parent: GridContainer, shp_local: Shp) -> vo
 		var preview_image_size: Vector2i = Vector2i(120, 120)
 		var preview_image: Image = shp.create_blank_frame(Color.BLACK, preview_image_size)
 		var assembled_frame: Image = shp.get_assembled_frame(index, spr.spritesheet, 0, Vector2i(60, 60), 10)
-		assembled_frame.resize(preview_image_size.x, preview_image_size.y, 0)
+		assembled_frame.resize(preview_image_size.x, preview_image_size.y, Image.INTERPOLATE_NEAREST)
 		preview_image.blend_rect(assembled_frame, Rect2i(Vector2i.ZERO, preview_image_size), Vector2i.ZERO)
 		frame_preview.texture = ImageTexture.create_from_image(preview_image)
 		frame_preview.rotation_degrees = frame.y_rotation
