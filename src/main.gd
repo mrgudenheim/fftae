@@ -207,18 +207,25 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 	var xml_author: String = '<Author>' + ui_manager.patch_author + '</Author>'
 	var xml_description: String = '<Description>' + ui_manager.patch_description + '</Description>'
 	
-	var seq_file: String = ui_manager.patch_type_options.get_item_text(ui_manager.patch_type_options.selected)
-	var xml_size_location_start: String = '<Location offset="%08x" ' % seq_metadata_size_offsets[seq_file]
-	xml_size_location_start += ('sector="%x">' % directory_start_sector)
-	var bytes_size: String = '%04x' % seq.toal_length
-	bytes_size = bytes_size.right(2) + bytes_size.left(2)
+	var file: String = seq.file_name.to_upper() + ".SEQ"
+	var xml_size_location_start: String = '<Location offset="%08x" ' % (file_records[file].record_location_offset + FileRecord.OFFSET_SIZE - bytes_per_sector_header)
+	xml_size_location_start += ('sector="%x">' % file_records[file].record_location_sector)
+	var file_size_hex: String = '%08x' % seq.toal_length
+	var file_size_hex_bytes: PackedStringArray = [
+		file_size_hex.substr(0,2),
+		file_size_hex.substr(2,2),
+		file_size_hex.substr(4,2),
+		file_size_hex.substr(6,2),
+		]
+	var bytes_size: String = file_size_hex_bytes[3] + file_size_hex_bytes[2] + file_size_hex_bytes[1] + file_size_hex_bytes[0] # little-endian
+	bytes_size += file_size_hex_bytes[0] + file_size_hex_bytes[1] + file_size_hex_bytes[2] + file_size_hex_bytes[3] # big-endian
 	var xml_size_location_end: String = '</Location>'
 	
 	var seq_bytes: PackedByteArray = seq.get_seq_bytes()
 	var bytes: String = seq_bytes.hex_encode()
 	var location_start: int = 0
 	var xml_location_start: String = '<Location offset="%08x" ' % location_start
-	xml_location_start += 'file="BATTLE_' + seq_file.to_upper() + '_SEQ">'
+	xml_location_start += 'file="BATTLE_' + seq.file_name.to_upper() + '_SEQ">'
 	var xml_location_end: String = '</Location>'
 	
 	var xml_end: String = '</Patch>\n</Patches>'

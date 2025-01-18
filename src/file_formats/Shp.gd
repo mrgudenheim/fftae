@@ -652,7 +652,7 @@ func get_assembled_frame(frame_index: int, source_image: Image, animation_index:
 	
 	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly
 		var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
-		push_warning(frame.subframes[subframe_index])
+		#push_warning(frame.subframes[subframe_index])
 		#var subframe_in_bottom:bool = frame_index >= shp.attack_start_index
 		#var use_sp2:bool = (shp.file_name.contains("mon") 
 				#and subframe_in_bottom 
