@@ -47,7 +47,7 @@ func set_color_indices(spr_file: PackedByteArray) -> void:
 	color_indices.resize(num_pixels)
 	for i: int in num_pixels:
 		var pixel_offset: int = (i * bits_per_pixel)/8
-		var byte = spr_file.decode_u8(pixel_data_start + pixel_offset)
+		var byte: int = spr_file.decode_u8(pixel_data_start + pixel_offset)
 		
 		if i % 2 == 1: # get 4 leftmost bits
 			color_indices[i] = byte >> 4

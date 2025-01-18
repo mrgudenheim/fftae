@@ -43,9 +43,9 @@ func get_file_data(rom: PackedByteArray) -> PackedByteArray:
 		file_data.append_array(sector_data)
 	
 	# add data from last sector
-	var sector_data_start: int = file_data_start + (num_sectors_full * FFTae.bytes_per_sector)
-	var sector_data_end: int = sector_data_start + (size % FFTae.data_bytes_per_sector)
-	var sector_data: PackedByteArray = rom.slice(sector_data_start, sector_data_end)
-	file_data.append_array(sector_data)	
+	var last_sector_data_start: int = file_data_start + (num_sectors_full * FFTae.bytes_per_sector)
+	var last_sector_data_end: int = last_sector_data_start + (size % FFTae.data_bytes_per_sector)
+	var last_sector_data: PackedByteArray = rom.slice(last_sector_data_start, last_sector_data_end)
+	file_data.append_array(last_sector_data)
 	
 	return file_data

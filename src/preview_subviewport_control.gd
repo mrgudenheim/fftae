@@ -35,7 +35,7 @@ var should_tween := true
 @onready var viewport := get_viewport()
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
+func _ready() -> void:
 	viewport.size_changed.connect(_update_viewport_transform)
 	#Global.project_switched.connect(_project_switched)
 	if not DisplayServer.is_touchscreen_available():

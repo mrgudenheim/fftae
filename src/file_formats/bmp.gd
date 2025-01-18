@@ -22,7 +22,7 @@ const BIT_DEPTH = {
 	TWENTYFOUR = 24
 }
 
-func _init(bmp_file:PackedByteArray = [], new_name:String = "file_name"):
+func _init(bmp_file:PackedByteArray = [], new_name:String = "file_name") -> void:
 	file_name = new_name
 	if bmp_file.size() == 0:
 		file_name = "empty_file"
@@ -58,8 +58,8 @@ func _init(bmp_file:PackedByteArray = [], new_name:String = "file_name"):
 	else:
 		color_indices.resize(num_pixels)
 		for i in num_pixels:
-			var pixel_offset:int = (i * bits_per_pixel)/8
-			var byte = bmp_file.decode_u8(pixel_data_start + pixel_offset)
+			var pixel_offset: int = (i * bits_per_pixel)/8
+			var byte: int = bmp_file.decode_u8(pixel_data_start + pixel_offset)
 			
 			if bits_per_pixel == 1:
 				color_indices[i] = byte & (2**(i % 8))
@@ -74,22 +74,22 @@ func _init(bmp_file:PackedByteArray = [], new_name:String = "file_name"):
 	# store colors
 	pixel_colors.resize(num_pixels)
 	if bits_per_pixel <= 8:
-		for i in color_indices.size():
+		for i: int in color_indices.size():
 			pixel_colors[i] = color_palette[color_indices[i]]
 	elif bits_per_pixel == 16 and compression == 0: # compression is not handled by this utility
-		for i in num_pixels:
-			var pixel_offset = i * 2
-			var word = bmp_file.decode_u16(pixel_data_start + pixel_offset)
-			var color:Color = Color.BLACK
+		for i: int in num_pixels:
+			var pixel_offset: int = i * 2
+			var word: int = bmp_file.decode_u16(pixel_data_start + pixel_offset)
+			var color: Color = Color.BLACK
 			
 			color.b8 = word & 0b0000000000011111 # blue is least significant 5 bits
 			color.g8 = word & 0b0000001111100000 >> 5 # green is next least significant 5 bits
 			color.r8 = word & 0b0111110000000000 >> 10 # red is next least significant 5 bits
 			pixel_colors[i] = color
 	elif bits_per_pixel == 24 and compression == 0: # compression is not handled by this utility
-		for i in num_pixels:
-			var pixel_offset = i * 3
-			var word = bmp_file.decode_u16(pixel_data_start + pixel_offset)
+		for i: int in num_pixels:
+			var pixel_offset: int = i * 3
+			var word: int = bmp_file.decode_u16(pixel_data_start + pixel_offset)
 			var color:Color = Color.BLACK
 			
 			color.b8 = word & bmp_file.decode_u8(pixel_data_start + pixel_offset) # blue
@@ -100,7 +100,7 @@ func _init(bmp_file:PackedByteArray = [], new_name:String = "file_name"):
 		push_warning("Bit depth != 1, 4, 8, 16, or 24")
 
 
-func set_color_indexed_data(image:Image, palette:Array[Color]):
+func set_color_indexed_data(image: Image, palette: Array[Color]) -> void:
 	if image.get_width() != width or image.get_height() != height:
 		width = image.get_width()
 		height = image.get_height()
@@ -120,9 +120,9 @@ func set_color_indexed_data(image:Image, palette:Array[Color]):
 	
 	for x in width:
 		for y in height:
-			var pixel_color:Color = image.get_pixel(x, height - y - 1) # stores data left to right, bottom to top
+			var pixel_color: Color = image.get_pixel(x, height - y - 1) # stores data left to right, bottom to top
 			pixel_colors[x + (y * width)] = pixel_color
-			var color_string = str(pixel_color)
+			var color_string: String = str(pixel_color)
 			if not color_palette_lookup.has(color_string):
 				push_warning(str(Vector2i(x, height - y - 1)) + " - Color not in palette: " + color_string)
 			else:
@@ -165,23 +165,23 @@ func set_colors_by_indices() -> void:
 		push_warning("Bit depth > 8, colors are not indexed")
 
 
-static func create_paletted_bmp(image:Image, palette:Array[Color], bits_per_pixel = 8) -> PackedByteArray:
+static func create_paletted_bmp(image: Image, palette: Array[Color], local_bits_per_pixel: int = 8) -> PackedByteArray:
 	var bmp_file:PackedByteArray = []
-	if not (bits_per_pixel == 1 or bits_per_pixel == 4 or bits_per_pixel == 8 or bits_per_pixel == 16 or bits_per_pixel == 24):
-		push_warning("not valid bits_per_pixel: " + str(bits_per_pixel))
+	if not (local_bits_per_pixel == 1 or local_bits_per_pixel == 4 or local_bits_per_pixel == 8 or local_bits_per_pixel == 16 or local_bits_per_pixel == 24):
+		push_warning("not valid bits_per_pixel: " + str(local_bits_per_pixel))
 		return bmp_file
 	
 	#image.convert(Image.FORMAT_RGBAF)
 		
 	var pixel_count: int = image.get_height() * image.get_width()
 	var palette_num_colors:int = 0
-	if bits_per_pixel <= 8:
-		palette_num_colors = mini(2**bits_per_pixel, palette.size())
+	if local_bits_per_pixel <= 8:
+		palette_num_colors = mini(2**local_bits_per_pixel, palette.size())
 	
 	var header_size: int = 54
 	var palette_data_size: int = palette_num_colors * 4
-	var pixel_data_start: int = header_size + palette_data_size
-	var pixel_data_size:int = pixel_count * (bits_per_pixel/8.0)
+	var new_pixel_data_start: int = header_size + palette_data_size
+	var pixel_data_size:int = pixel_count * (local_bits_per_pixel/8.0)
 	var file_size: int = header_size + palette_data_size + pixel_data_size
 	bmp_file.resize(file_size)
 	bmp_file.fill(0)
@@ -191,14 +191,14 @@ static func create_paletted_bmp(image:Image, palette:Array[Color], bits_per_pixe
 	bmp_file.encode_u16(0x0000, 0x4D42) # signature (2 bytes) - BM
 	bmp_file.encode_u32(0x0002, file_size) # FileSize (4 bytes) 0x0002
 	#bmp_file.encode_u32(0x000A, 0x0) # reserved (4 bytes) 0x0006 - always zero?
-	bmp_file.encode_u32(0x000A, pixel_data_start) # DataOffset (4 bytes) 0x000A - 0x76 for 4bpp with 16 colors, 0x436 for 8bpp with 256 colors
+	bmp_file.encode_u32(0x000A, new_pixel_data_start) # DataOffset (4 bytes) 0x000A - 0x76 for 4bpp with 16 colors, 0x436 for 8bpp with 256 colors
 
 	# InfoHeader
 	bmp_file.encode_u32(0x000E, 0x28) # Info Header Size (4 bytes) 0x000E
 	bmp_file.encode_u32(0x0012, image.get_size().x) # Width (4 bytes) 0x0012
 	bmp_file.encode_u32(0x0016, image.get_size().y) # Height (4 bytes) 0x0016
 	bmp_file.encode_u16(0x001A, 0x01) # Planes (2 bytes) 0x001A
-	bmp_file.encode_u16(0x001C, bits_per_pixel) # Bits per Pixel (2 bytes) 0x001C - 0x04 for 4bpp, 0x08 for 8bpp
+	bmp_file.encode_u16(0x001C, local_bits_per_pixel) # Bits per Pixel (2 bytes) 0x001C - 0x04 for 4bpp, 0x08 for 8bpp
 	#bmp_file.encode_u32(0x001E, 0) # Compression (4 bytes) 0x001E - 0 for none
 	#bmp_file.encode_u32(0x0022, 0) # ImageSize (4 bytes) 0x0022 - 0 if no compression
 	bmp_file.encode_u32(0x0026, 0x0EC4) # XpixelsPerMeter (4 bytes) 0x0026
@@ -235,20 +235,20 @@ static func create_paletted_bmp(image:Image, palette:Array[Color], bits_per_pixe
 				push_warning("color at " + str(Vector2i(x,y)) + " not in palette: " + color_string + " - " + str(color * 255))
 				index = 0
 				
-			if bits_per_pixel <= 8:
-				var index_shifted = index << (8-bits_per_pixel) - (bits_per_pixel * (pixel_index % (8/bits_per_pixel))) # shift to position
-				index_shifted = index_shifted | bmp_file.decode_u8(pixel_data_start + floor(pixel_index/(8/bits_per_pixel))) # keep all bits
-				bmp_file.encode_u8(pixel_data_start + floor(pixel_index/(8/bits_per_pixel)), index_shifted)
-			elif bits_per_pixel == 16:
-				var word = bmp_file.decode_u16(pixel_data_start + (pixel_index * 2))
+			if local_bits_per_pixel <= 8:
+				var index_shifted: int = index << (8-local_bits_per_pixel) - (local_bits_per_pixel * (local_bits_per_pixel % (8/local_bits_per_pixel))) # shift to position
+				index_shifted = index_shifted | bmp_file.decode_u8(new_pixel_data_start + floor(pixel_index/(8/local_bits_per_pixel))) # keep all bits
+				bmp_file.encode_u8(new_pixel_data_start + floor(pixel_index/(8/local_bits_per_pixel)), index_shifted)
+			elif local_bits_per_pixel == 16:
+				var word: int = bmp_file.decode_u16(new_pixel_data_start + (pixel_index * 2))
 				word = word | color.b8 # blue is least significant 5 bits
 				word = word | (color.g8 << 5) # green is next least significant 5 bits
 				word = word | (color.r8 << 10) # red is next least significant 5 bits, most significant bit is not used
-				bmp_file.encode_u16(pixel_data_start + (pixel_index * 2), word)
-			elif bits_per_pixel == 24:
-				bmp_file.encode_u8(pixel_data_start + (pixel_index * 3), color.b8) # blue
-				bmp_file.encode_u8(pixel_data_start + (pixel_index * 3) + 1, color.g8) # green
-				bmp_file.encode_u8(pixel_data_start + (pixel_index * 3) + 2, color.r8) # red
+				bmp_file.encode_u16(new_pixel_data_start + (pixel_index * 2), word)
+			elif local_bits_per_pixel == 24:
+				bmp_file.encode_u8(new_pixel_data_start + (pixel_index * 3), color.b8) # blue
+				bmp_file.encode_u8(new_pixel_data_start + (pixel_index * 3) + 1, color.g8) # green
+				bmp_file.encode_u8(new_pixel_data_start + (pixel_index * 3) + 2, color.r8) # red
 			
 			#if bits_per_pixel == 8:
 				#bmp_file.encode_u8(pixel_data_start + pixel_index, index)
