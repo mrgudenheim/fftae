@@ -650,9 +650,8 @@ func get_assembled_frame(frame_index: int, source_image: Image, animation_index:
 	var frame: FrameData = frames[frame_index]
 	var assembled_image: Image = create_blank_frame()
 	
-	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly 
-		var v_offset: int = 0 # TODO set this
-		#var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
+	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly
+		var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
 		
 		#var subframe_in_bottom:bool = frame_index >= shp.attack_start_index
 		#var use_sp2:bool = (shp.file_name.contains("mon") 
@@ -668,17 +667,20 @@ func get_assembled_frame(frame_index: int, source_image: Image, animation_index:
 	return assembled_image
 
 
-#func get_v_offset(shp: Shp, frame_index:int, subframe_index:int = 0, animation_index:int = 0) -> int:
-	#var v_offset:int = 0
-	#var y_top = shp.get_frame(frame_index, submerged_depth_options.selected).subframes[subframe_index].load_location_y
-	#if frame_index >= shp.attack_start_index:
-		#v_offset += 256
-	#
-	#if shp.file_name.contains("wep"):
-		#v_offset = weapon_v_offset
-	#elif shp.file_name.contains("other"):
-		#v_offset = other_type_index * 24 * 2 # 2 rows each of chicken and frog frames
-	#elif shp.file_name.contains("mon") and use_frame_id_for_sp2_offset and frame_index >= sp2_start_frame_id: # game uses animation index, not the frame index to determine sp2 lookup
+func get_v_offset(frame_index:int, subframe_index:int = 0, animation_index:int = 0) -> int:
+	var v_offset: int = 0
+	var submerged_depth: int = 0 # TODO get this
+	var other_type_index: int = 0 # TODO get this
+	var weapon_v_offset: int = 0 # TODO get this
+	var y_top = get_frame(frame_index, submerged_depth).subframes[subframe_index].load_location_y
+	if frame_index >= attack_start_index:
+		v_offset += 256
+	
+	if file_name.contains("wep"):
+		v_offset = weapon_v_offset
+	elif file_name.contains("other"):
+		v_offset = other_type_index * 24 * 2 # 2 rows each of chicken and frog frames
+	#elif file_name.contains("mon") and use_frame_id_for_sp2_offset and frame_index >= sp2_start_frame_id: # game uses animation index, not the frame index to determine sp2 lookup
 		#if use_separate_sp2:
 			#v_offset = -256
 		#else:
@@ -695,9 +697,9 @@ func get_assembled_frame(frame_index: int, source_image: Image, animation_index:
 			#v_offset = constant_sp2_v_offsets[animation_index]
 		#elif animation_index >= sp2_start_animation_id:
 			#v_offset = sp2_v_offset
-	#
-	#
-	#return v_offset
+	
+	
+	return v_offset
 
 
 func add_subframe(subframe: SubFrameData, source_image: Image, assembled_image: Image, v_offset: int) -> Image:
