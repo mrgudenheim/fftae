@@ -8,6 +8,8 @@ const OFFSET_FLAGS: int = 25
 const OFFSET_NAME_LENGTH: int = 32 # in num characters, includes the ending characters ';1', so actual file name length is 2 shorter
 const OFFSET_NAME: int = 33
 
+var record_location_sector: int = 0
+var record_location_offset: int = 0
 var record_length: int = 0
 var sector_location: int = 0
 var size: int = 0

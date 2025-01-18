@@ -137,6 +137,8 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 			var record_length: int = directory_data.decode_u8(byte_index)
 			var record_data: PackedByteArray = directory_data.slice(byte_index, byte_index + record_length)
 			var record: FileRecord = FileRecord.new(record_data)
+			record.record_location_sector = directory_sector
+			record.record_location_offset = byte_index
 			file_records[record.name] = record
 			
 			byte_index += record_length
