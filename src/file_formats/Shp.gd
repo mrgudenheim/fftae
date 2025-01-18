@@ -49,6 +49,13 @@ const ROTATIONS_DEGREES: PackedFloat64Array = [
 	164.971,
 ]
 
+var frame_size: Vector2i:
+	get:
+		if (file_name.to_lower().contains("kanzen") or file_name.to_lower().contains("arute")):
+			return Vector2i(120, 180)
+		else:
+			return Vector2i(120, 120)
+
 const PIXELS_PER_TILE = 8
 
 static var shp_aliases: Dictionary = {
@@ -628,3 +635,90 @@ func write_csvs() -> void:
 		frame_offset_data = frame_offset_data + ",".join(zero_frames)
 		var save_file_offset:FileAccess = FileAccess.open("user://FFTorama/frame_offset_data_"+file_name+".txt", FileAccess.WRITE)
 		save_file_offset.store_string(frame_offset_data);
+
+
+func create_blank_frame(color: Color = Color.TRANSPARENT) -> Image:
+	var blank_image: Image = Image.create(
+		frame_size.x, frame_size.y, false, Image.FORMAT_RGBA8
+	)
+	blank_image.fill(color)
+	
+	return blank_image
+
+
+func get_assembled_frame(frame_index: int, source_image: Image, animation_index:int = 0) -> Image:
+	var frame: FrameData = frames[frame_index]
+	var assembled_image: Image = create_blank_frame()
+	
+	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly 
+		var v_offset: int = 0 # TODO set this
+		#var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
+		
+		#var subframe_in_bottom:bool = frame_index >= shp.attack_start_index
+		#var use_sp2:bool = (shp.file_name.contains("mon") 
+				#and subframe_in_bottom 
+				#and not use_frame_id_for_sp2_offset 
+				#and use_separate_sp2 
+				#and animation_index >= sp2_start_animation_id)
+		#if use_sp2:
+			#source_image = sp2_cel_selector.cel_image
+		
+		assembled_image = add_subframe(frame.subframes[subframe_index], source_image, assembled_image, v_offset)
+	
+	return assembled_image
+
+
+#func get_v_offset(shp: Shp, frame_index:int, subframe_index:int = 0, animation_index:int = 0) -> int:
+	#var v_offset:int = 0
+	#var y_top = shp.get_frame(frame_index, submerged_depth_options.selected).subframes[subframe_index].load_location_y
+	#if frame_index >= shp.attack_start_index:
+		#v_offset += 256
+	#
+	#if shp.file_name.contains("wep"):
+		#v_offset = weapon_v_offset
+	#elif shp.file_name.contains("other"):
+		#v_offset = other_type_index * 24 * 2 # 2 rows each of chicken and frog frames
+	#elif shp.file_name.contains("mon") and use_frame_id_for_sp2_offset and frame_index >= sp2_start_frame_id: # game uses animation index, not the frame index to determine sp2 lookup
+		#if use_separate_sp2:
+			#v_offset = -256
+		#else:
+			#v_offset = sp2_v_offset
+		## var sp_num:int = (frame_index/sp2_start_frame_id)
+		## if sp_num <= 1:
+		## 	v_offset = sp2_v_offset * sp_num
+		## else:
+		## 	v_offset = sp2_v_offset + (sp2_v_offset2 * (sp_num - 1))
+	#elif shp.file_name.contains("mon") and y_top >= 256 and not use_frame_id_for_sp2_offset: # if y_top left is in bottom half, check if it should look into sp2
+		#if use_separate_sp2 and animation_index >= sp2_start_animation_id:
+			#v_offset = -256
+		#elif use_hardcoded_offsets && constant_sp2_v_offsets.has(animation_index):
+			#v_offset = constant_sp2_v_offsets[animation_index]
+		#elif animation_index >= sp2_start_animation_id:
+			#v_offset = sp2_v_offset
+	#
+	#
+	#return v_offset
+
+
+func add_subframe(subframe: SubFrameData, source_image: Image, assembled_image: Image, v_offset: int) -> Image:
+	var y_top_left: int = subframe.load_location_y + v_offset
+	
+	var destination_pos: Vector2i = Vector2i(subframe.shift_x + (frame_size.x / 2), subframe.shift_y + frame_size.y - 40) # adjust by 40 to prevent frame from spilling over bottom
+	var source_rect: Rect2i = Rect2i(subframe.load_location_x, y_top_left, subframe.rect_size.x, subframe.rect_size.y)
+	
+	if (subframe.flip_x or subframe.flip_y):
+		var flipped_image: Image = Image.create(
+			source_rect.size.x, source_rect.size.y, false, Image.FORMAT_RGBA8
+		)
+		flipped_image.blend_rect(source_image, source_rect, Vector2i.ZERO)
+		if (subframe.flip_x):
+			flipped_image.flip_x()
+		if (subframe.flip_y):
+			flipped_image.flip_y()
+		
+		source_rect = Rect2i(0, 0, subframe.rect_size.x, subframe.rect_size.y)
+		source_image = flipped_image
+	
+	assembled_image.blend_rect(source_image, source_rect, destination_pos)
+	#assembled_image.blit_rect(source_image, source_rect, destination_pos)
+	return assembled_image

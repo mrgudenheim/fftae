@@ -28,7 +28,7 @@ static var directory_start_sector: int = 56436
 static var directory_data_sectors: PackedInt32Array = [56436, 56437, 56438, 56439, 56440, 56441]
 const OFFSET_RECORD_DATA_START: int = 0x60
 var file_records: Dictionary = {}
-var sprites: Dictionary = {}
+var sprs: Dictionary = {}
 var shps: Dictionary = {}
 var seqs: Dictionary = {}
 
@@ -66,24 +66,17 @@ var shp_metadata_size_offsets: Dictionary = {
 	"wep2": 0x07e99880, 
 	}
 
-static var original_sizes: Dictionary = {
-	"arute": 2476,
-	"cyoko": 3068,
-	"eff1": 1244,
-	"eff2": 1244,
-	"kanzen": 2068,
-	"mon": 5882,
-	"other": 2414,
-	"ruka": 2482,
-	"type1": 6754,
-	"type2": 6545,
-	"type3": 6820,
-	"type4": 6634,
-	"wep1": 2607,
-	"wep2": 2607,
-	}
+var seq: Seq:
+	get:
+		return seqs[ui_manager.seq_options.get_item_text(ui_manager.seq_options.selected)]
 
-static var seq: Seq = Seq.new()
+var shp: Shp:
+	get:
+		return shps[ui_manager.shp_options.get_item_text(ui_manager.shp_options.selected)]
+
+var spr: Spr:
+	get:
+		return sprs[ui_manager.sprite_options.get_item_text(ui_manager.sprite_options.selected)]
 
 func _ready() -> void:
 	ae = self
@@ -134,7 +127,7 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 			"SPR":
 				var new_spr: Spr = Spr.new()
 				new_spr.set_data(file_data)
-				sprites[record.name] = new_spr
+				sprs[record.name] = new_spr
 			"SHP":
 				var new_shp: Shp = Shp.new()
 				new_shp.set_name(record.name)
@@ -157,13 +150,21 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 		ui_manager.shp_options.add_item(key)
 	
 	ui_manager.sprite_options.clear()
-	for key: String in sprites.keys():
+	for key: String in sprs.keys():
 		ui_manager.sprite_options.add_item(key)
 	
 	save_xml_button.disabled = false
 	save_seq_button.disabled = false
 	
 	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
+	
+	# try to load defaults
+	ui_manager.option_button_select_text(ui_manager.seq_options, "TYPE1.SEQ")
+	ui_manager.option_button_select_text(ui_manager.shp_options, "TYPE1.SHP")
+	ui_manager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
+	draw_assembled_frame(6, shp, spr.spritesheet)
+	
+	ui_manager.preview_viewport.camera_control._update_viewport_transform()
 
 
 func _on_load_seq_pressed() -> void:
@@ -307,7 +308,7 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> void:
 	clear_grid_container(opcode_grid_parent, 1) # keep header row
 	
-	for seq_part_index: int in FFTae.seq.sequences[seq_id].seq_parts.size():
+	for seq_part_index: int in FFTae.ae.seq.sequences[seq_id].seq_parts.size():
 		var id_label: Label = Label.new()
 		id_label.text = str(seq_part_index)
 		id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -320,16 +321,25 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 		
 		opcode_options.seq_id = seq_id
 		opcode_options.seq_part_id = seq_part_index
-		opcode_options.seq_part = FFTae.seq.sequences[seq_id].seq_parts[seq_part_index]
+		opcode_options.seq_part = FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index]
 		opcode_grid_parent.add_child(opcode_options)
 		for opcode_options_index: int in opcode_options.item_count:
-			if opcode_options.get_item_text(opcode_options_index) == FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].opcode_name:
+			if opcode_options.get_item_text(opcode_options_index) == FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].opcode_name:
 				opcode_options.select(opcode_options_index)
 				opcode_options.item_selected.emit(opcode_options_index)
 				break
 		
-		for param_index: int in FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
-			opcode_options.param_spinboxes[param_index].value = FFTae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
+		for param_index: int in FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
+			opcode_options.param_spinboxes[param_index].value = FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
+
+
+func draw_assembled_frame(frame_index: int, shp: Shp, spritesheet: Image) -> void:
+	var animation_id: int = 0 # TODO how is this used?
+	var submerged_depth: int = 0 # TODO make ui setting
+	var assembled_image: Image = shp.get_assembled_frame(frame_index, spritesheet, animation_id)
+	ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(assembled_image)
+	var image_rotation: float = shp.get_frame(frame_index, submerged_depth).y_rotation
+	(ui_manager.preview_viewport.sprite_primary.get_parent() as Node2D).rotation_degrees = image_rotation
 
 
 func _on_animation_option_button_item_selected(index: int) -> void:
@@ -401,3 +411,11 @@ func _on_delete_pointer_pressed() -> void:
 	seq.sequence_pointers.remove_at(ui_manager.pointer_index_spinbox.value)
 	ui_manager.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
 	populate_animation_list(animation_list_container, seq)
+
+
+func _on_shp_file_options_item_selected(index: int) -> void:
+	draw_assembled_frame(6, shps[ui_manager.shp_options.get_item_text(index)], spr.spritesheet)
+
+
+func _on_sprite_options_item_selected(index: int) -> void:
+	draw_assembled_frame(6, shp, sprs[ui_manager.sprite_options.get_item_text(index)].spritesheet)

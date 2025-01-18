@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dgp4s8ucc0j6n"]
+[gd_scene load_steps=7 format=3 uid="uid://dgp4s8ucc0j6n"]
 
 [ext_resource type="Theme" uid="uid://bhwwwa4jiaiop" path="res://src/ui_theme.tres" id="1_13w5h"]
 [ext_resource type="Script" path="res://src/main.gd" id="1_lyv0c"]
 [ext_resource type="Script" path="res://src/ui_manager.gd" id="2_hmnjv"]
+[ext_resource type="PackedScene" uid="uid://g0s3vevocg3" path="res://src/preview_subviewport_container.tscn" id="4_ero0u"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_8s6nw"]
 
@@ -29,13 +30,12 @@ opcode_list_container = NodePath("HBoxContainer/AnimationEditor/MarginContainer/
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 9
 anchor_bottom = 1.0
-grow_horizontal = 2
+offset_right = 1121.0
 grow_vertical = 2
 
-[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_pointers_text", "animations_bytes_text", "shp_options", "sprite_options", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox")]
+[node name="SettingsPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_pointers_text", "animations_bytes_text", "shp_options", "sprite_options", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox", "preview_viewport")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
 seq_options = NodePath("MarginContainer/VBoxContainer/Info/SeqFileOptions")
@@ -50,6 +50,7 @@ animation_id_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContaine
 animation_name_options = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton")
 row_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Functions/RowSpinBox")
 pointer_index_spinbox = NodePath("../AnimationsList/MarginContainer/VBoxContainer/Functions/PointerSpinBox")
+preview_viewport = NodePath("MarginContainer/VBoxContainer/PreviewSubViewportContainer")
 
 [node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/SettingsPanel"]
 layout_mode = 2
@@ -187,6 +188,14 @@ layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Patch description goes here..."
 wrap_mode = 1
+
+[node name="PreviewLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Preview:"
+
+[node name="PreviewSubViewportContainer" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer" instance=ExtResource("4_ero0u")]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
 
 [node name="SaveAsXml" type="Button" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -376,6 +385,8 @@ horizontal_alignment = 1
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ" to="." method="_on_load_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/LoadSEQ/LoadFileDialog" to="." method="_on_load_file_dialog_file_selected"]
 [connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info/SeqFileOptions" to="HBoxContainer/SettingsPanel" method="_on_seq_file_options_item_selected"]
+[connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info/ShpFileOptions" to="." method="_on_shp_file_options_item_selected"]
+[connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Info/SpriteOptions" to="." method="_on_sprite_options_item_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml" to="." method="_on_save_as_xml_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]

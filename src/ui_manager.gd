@@ -17,6 +17,8 @@ extends Node
 @export var row_spinbox: SpinBox
 @export var pointer_index_spinbox: SpinBox
 
+@export var preview_viewport: PreviewSubViewportContainer
+
 var patch_name: String = "default patch name":
 	get:
 		if not patch_name_edit.text.is_empty():
@@ -82,8 +84,8 @@ func update_info_text(current: int, max_value: int, ui: Label) -> void:
 	var type: String = seq_options.get_item_text(seq_options.selected)
 	if current > max_value:
 		ui.label_settings.font_color = Color.DARK_RED
-	elif FFTae.original_sizes.has(type):
-		if current == FFTae.original_sizes[type]:
+	elif FFTae.ae.file_records.has(type):
+		if current == FFTae.ae.file_records[type].size:
 			ui.label_settings.font_color = Color.WEB_GREEN
 		else:
 			ui.label_settings.font_color = Color.WHITE
@@ -106,7 +108,7 @@ func update_animation_description_options(seq: Seq) -> void:
 
 func _on_seq_file_options_item_selected(index: int) -> void:
 	var type: String = seq_options.get_item_text(index)
-	FFTae.seq = FFTae.ae.seqs[type]
+	FFTae.ae.seq = FFTae.ae.seqs[type]
 	
 	if FFTae.ae.file_records.has(type):
 		max_bytes = ceil(FFTae.ae.file_records[type].size / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
@@ -114,20 +116,31 @@ func _on_seq_file_options_item_selected(index: int) -> void:
 	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
 	patch_name_edit.placeholder_text = type + "_animation_edit"
 	
-	current_animation_slots = FFTae.seq.sequence_pointers.size()
-	max_animation_slots = FFTae.seq.section2_length / 4
-	current_bytes = FFTae.seq.toal_length
+	current_animation_slots = FFTae.ae.seq.sequence_pointers.size()
+	max_animation_slots = FFTae.ae.seq.section2_length / 4
+	current_bytes = FFTae.ae.seq.toal_length
 	
-	animation_id_spinbox.max_value = FFTae.seq.sequences.size() - 1
+	animation_id_spinbox.max_value = FFTae.ae.seq.sequences.size() - 1
 	animation_id_spinbox.editable = true
 	
-	pointer_index_spinbox.max_value = FFTae.seq.sequence_pointers.size() - 1
+	pointer_index_spinbox.max_value = FFTae.ae.seq.sequence_pointers.size() - 1
 	
-	update_animation_description_options(FFTae.seq)
+	update_animation_description_options(FFTae.ae.seq)
 	
-	FFTae.ae.populate_animation_list(FFTae.ae.animation_list_container, FFTae.seq)
+	FFTae.ae.populate_animation_list(FFTae.ae.animation_list_container, FFTae.ae.seq)
 	FFTae.ae.populate_opcode_list(FFTae.ae.opcode_list_container, animation_name_options.selected)
 
 
-func get_options_button_selected_text(option_box: OptionButton) -> String:
-	return option_box.get_item_text(option_box.selected)
+func get_options_button_selected_text(option_button: OptionButton) -> String:
+	return option_button.get_item_text(option_button.selected)
+
+func option_button_select_text(option_button: OptionButton, text: String) -> void:
+	var found_text: bool = false
+	for index: int in option_button.item_count:
+		if option_button.get_item_text(index) == text:
+			found_text = true
+			option_button.select(index)
+			break
+	
+	if not found_text:
+		push_warning(option_button.name + "does not have item with text: " + text) 
