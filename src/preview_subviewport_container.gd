@@ -9,15 +9,15 @@ extends SubViewportContainer
 @export var sprite_background: Sprite2D
 @export var sprite_item: Sprite2D
 
-func _on_mouse_entered():
+func _on_mouse_entered() -> void:
 	camera_control.set_process_input(true)
 
 
-func _on_mouse_exited():
+func _on_mouse_exited() -> void:
 	camera_control.set_process_input(false)
 
 
-func flip_h():
+func flip_h() -> void:
 	sprite_primary.flip_h = not sprite_primary.flip_h
 	sprite_weapon.flip_h = not sprite_weapon.flip_h
 	sprite_effect.flip_h = not sprite_effect.flip_h

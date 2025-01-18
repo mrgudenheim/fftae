@@ -178,13 +178,13 @@ func set_data_from_shp_bytes(bytes: PackedByteArray) -> void:
 	if (file_name.begins_with("wep") or file_name.begins_with("eff")):
 		attack_start_index = 9999; # these types do not have a second (lower) half
 		
-		var initial_offset = 6 # skip first bytes and unarmed
+		var initial_offset: int = 6 # skip first bytes and unarmed
 		for index in ((section1_length - initial_offset) / 2):
 			var zero_frame:int = bytes.decode_u16(initial_offset + (index*2))
 			zero_frames.append(zero_frame)
 		
 	
-	for frame_index in (section2_length / 4):
+	for frame_index: int in (section2_length / 4):
 		var frame_pointer:int = bytes.decode_u32(section1_length + (frame_index * 4))
 		if frame_index > 0 and frame_pointer == 0:
 			break # skip to section 3 if no more pointers in section 2
@@ -193,7 +193,7 @@ func set_data_from_shp_bytes(bytes: PackedByteArray) -> void:
 			var frame_pointer_submerged:int = bytes.decode_u32(swim_pointer + (frame_index * 4))
 			frame_pointers_submerged.append(frame_pointer_submerged)
 	
-	var frame_data_start = section1_length + section2_length + 2
+	var frame_data_start: int = section1_length + section2_length + 2
 	frames.clear()
 	for frame_pointer in frame_pointers:
 		var frame_offset:int = frame_data_start + frame_pointer
@@ -203,7 +203,7 @@ func set_data_from_shp_bytes(bytes: PackedByteArray) -> void:
 	
 	# submerged frames
 	if has_submerged_data:
-		var frame_submerged_data_start = swim_pointer + section2_length + 2
+		var frame_submerged_data_start: int = swim_pointer + section2_length + 2
 		frames_submerged.clear()
 		for frame_pointer_submerged in frame_pointers_submerged:
 			var frame_offset:int = frame_submerged_data_start + frame_pointer_submerged
@@ -213,7 +213,7 @@ func set_data_from_shp_bytes(bytes: PackedByteArray) -> void:
 
 
 func _get_frame_data(bytes:PackedByteArray) -> FrameData:
-	var frame_data = FrameData.new()
+	var frame_data := FrameData.new()
 	
 	frame_data.num_subframes = 1 + (bytes.decode_u8(0) & 0x07)
 	var y_rotation_pointer:int = (bytes.decode_u8(0) & 0xF8) >> 3
@@ -223,7 +223,7 @@ func _get_frame_data(bytes:PackedByteArray) -> FrameData:
 	frame_data.byte2_3 = (bytes.decode_u8(1) & 0x1E) >> 1
 	frame_data.byte2_4 = (bytes.decode_u8(1) & 0x80) >> 7
 	
-	for subframe_index in frame_data.num_subframes:
+	for subframe_index: int in frame_data.num_subframes:
 		var subframe_start:int = 2 + (subframe_index * 4)
 		var subframe_bytes:PackedByteArray = bytes.slice(subframe_start, subframe_start + 4)
 		frame_data.subframes.append(_get_subframe_data(subframe_bytes))
@@ -237,7 +237,7 @@ func _get_subframe_data(bytes:PackedByteArray) -> SubFrameData:
 	subframe.shift_x = bytes.decode_s8(0)
 	subframe.shift_y = bytes.decode_s8(1)
 	
-	var bytes23 = bytes.decode_u16(2)
+	var bytes23: int = bytes.decode_u16(2)
 	subframe.load_location_x = (bytes23 & 0x001F) * PIXELS_PER_TILE # pixels
 	subframe.load_location_y = ((bytes23 & 0x03E0) >> 5) * PIXELS_PER_TILE # pixels
 	var rect_size_index:int = (bytes23 & 0x3C00) >> 10
@@ -293,7 +293,7 @@ func _write_sections23_bytes(bytes:PackedByteArray,  data_start_pointer:int, poi
 	# section 3
 	bytes.encode_u16(data_start_pointer + section2_length, section3data_length)
 	
-	var frame_data_start_pointer = data_start_pointer + section2_length + 2
+	var frame_data_start_pointer: int = data_start_pointer + section2_length + 2
 	for frame_index:int in pointers.size():
 		var frame_offset:int = frame_data_start_pointer + pointers[frame_index]
 		var frame_data:FrameData = frames_list[frame_index]
@@ -357,11 +357,11 @@ func set_data_from_cfg(filepath:String) -> void:
 		frames_submerged = _get_frames_from_cfg(cfg, frame_pointers_submerged, file_name + "-submerged")
 
 
-func _get_frames_from_cfg(cfg:ConfigFile, pointers:Array[int], file_name:String) -> Array[FrameData]:
-	var temp_frames:Array[FrameData] = []
+func _get_frames_from_cfg(cfg: ConfigFile, pointers: Array[int], cfg_file_name: String) -> Array[FrameData]:
+	var temp_frames: Array[FrameData] = []
 	
 	for frame_index in pointers.size():
-		var frame_label:String = file_name + "-" + str(frame_index)
+		var frame_label:String = cfg_file_name + "-" + str(frame_index)
 		temp_frames.append(FrameData.new())
 		temp_frames[frame_index].num_subframes = cfg.get_value(frame_label, "num_subframes")
 		temp_frames[frame_index].y_rotation = cfg.get_value(frame_label, "y_rotation")
@@ -402,9 +402,9 @@ func write_cfg() -> void:
 	cfg.save("user://FFTorama/"+file_name+"_shp.cfg")
 
 
-func _write_cfg_frames(cfg:ConfigFile, temp_frames:Array[FrameData], file_name:String) -> ConfigFile:
+func _write_cfg_frames(cfg:ConfigFile, temp_frames:Array[FrameData], cfg_file_name:String) -> ConfigFile:
 	for frame_index:int in temp_frames.size():
-		var frame_label:String = file_name + "-" + str(frame_index)
+		var frame_label:String = cfg_file_name + "-" + str(frame_index)
 		var frame_data:FrameData = temp_frames[frame_index]
 		cfg.set_value(frame_label, "num_subframes", frame_data.num_subframes)
 		cfg.set_value(frame_label, "y_rotation", frame_data.y_rotation)
@@ -480,8 +480,8 @@ func set_frames_from_csv(filepath:String) -> void:
 			new_subframe.shift_y = frame_text_split[subframe_offset + 1 + (subframe_length*i)] as int
 			new_subframe.load_location_x = frame_text_split[subframe_offset + 2 + (subframe_length*i)] as int
 			new_subframe.load_location_y = frame_text_split[subframe_offset + 3 + (subframe_length*i)] as int
-			var rect_size_x = frame_text_split[subframe_offset + 4 + (subframe_length*i)] as int
-			var rect_size_y = frame_text_split[subframe_offset + 5 + (subframe_length*i)] as int
+			var rect_size_x: int = frame_text_split[subframe_offset + 4 + (subframe_length*i)] as int
+			var rect_size_y: int = frame_text_split[subframe_offset + 5 + (subframe_length*i)] as int
 			new_subframe.rect_size = Vector2i(rect_size_x, rect_size_y)
 			new_subframe.flip_x = frame_text_split[subframe_offset + 6 + (subframe_length*i)].to_lower() == "true" as bool
 			new_subframe.flip_y = frame_text_split[subframe_offset + 7 + (subframe_length*i)].to_lower() == "true" as bool
@@ -652,7 +652,7 @@ func get_assembled_frame(frame_index: int, source_image: Image, animation_index:
 	
 	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly
 		var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
-		
+		push_warning(frame.subframes[subframe_index])
 		#var subframe_in_bottom:bool = frame_index >= shp.attack_start_index
 		#var use_sp2:bool = (shp.file_name.contains("mon") 
 				#and subframe_in_bottom 
@@ -672,7 +672,7 @@ func get_v_offset(frame_index:int, subframe_index:int = 0, animation_index:int =
 	var submerged_depth: int = 0 # TODO get this
 	var other_type_index: int = 0 # TODO get this
 	var weapon_v_offset: int = 0 # TODO get this
-	var y_top = get_frame(frame_index, submerged_depth).subframes[subframe_index].load_location_y
+	var y_top: int = get_frame(frame_index, submerged_depth).subframes[subframe_index].load_location_y
 	if frame_index >= attack_start_index:
 		v_offset += 256
 	

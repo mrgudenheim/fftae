@@ -155,7 +155,7 @@ func get_pointer_address(pointer: int) -> int:
 
 func get_pointer_from_address(address: int) -> int:
 	var index: int = 0
-	var total_length = 0
+	var total_length: int = 0
 	while total_length < address:
 		total_length += sequences[index].length
 		index += 1
@@ -163,7 +163,7 @@ func get_pointer_from_address(address: int) -> int:
 	return index
 
 
-func set_sequence_names():
+func set_sequence_names() -> void:
 	if seq_names.has(name_alias):
 		#push_warning(sequence_pointers)
 		#push_warning(seq_names[name_alias])

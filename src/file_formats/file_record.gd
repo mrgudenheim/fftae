@@ -33,8 +33,8 @@ func get_file_data(rom: PackedByteArray) -> PackedByteArray:
 	var file_data: PackedByteArray = []
 	var file_data_start: int = (sector_location * FFTae.bytes_per_sector) + FFTae.bytes_per_sector_header
 	var num_sectors_full: int = floor(size / float(FFTae.data_bytes_per_sector))
-	var extra_size_sector_bytes =  num_sectors_full * (FFTae.bytes_per_sector_footer + FFTae.bytes_per_sector_header)
-	var file_data_end: int = file_data_start + size + extra_size_sector_bytes
+	#var extra_size_sector_bytes: int =  num_sectors_full * (FFTae.bytes_per_sector_footer + FFTae.bytes_per_sector_header)
+	#var file_data_end: int = file_data_start + size + extra_size_sector_bytes
 	
 	for sector_index: int in num_sectors_full:
 		var sector_data_start: int = file_data_start + (sector_index * FFTae.bytes_per_sector)

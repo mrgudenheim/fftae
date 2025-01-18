@@ -164,7 +164,7 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	ui_manager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
 	
 	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
-	draw_assembled_frame(6, shp, spr.spritesheet)
+	draw_assembled_frame(6)
 	
 	var background_image: Image = shp.create_blank_frame(Color.BLACK)
 	ui_manager.preview_viewport.sprite_background.texture = ImageTexture.create_from_image(background_image)
@@ -338,10 +338,10 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 			opcode_options.param_spinboxes[param_index].value = FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
 
 
-func draw_assembled_frame(frame_index: int, shp: Shp, spritesheet: Image) -> void:
+func draw_assembled_frame(frame_index: int) -> void:
 	var animation_id: int = 0 # TODO how is this used?
 	var submerged_depth: int = 0 # TODO make ui setting
-	var assembled_image: Image = shp.get_assembled_frame(frame_index, spritesheet, animation_id)
+	var assembled_image: Image = shp.get_assembled_frame(frame_index, spr.spritesheet, animation_id)
 	ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(assembled_image)
 	var image_rotation: float = shp.get_frame(frame_index, submerged_depth).y_rotation
 	(ui_manager.preview_viewport.sprite_primary.get_parent() as Node2D).rotation_degrees = image_rotation
@@ -357,7 +357,7 @@ func _on_insert_opcode_pressed() -> void:
 	var seq_part_id: int = ui_manager.row_spinbox.value
 	var seq_id: int = ui_manager.animation_name_options.selected
 	
-	var previous_length: int = seq.sequences[seq_id].length
+	#var previous_length: int = seq.sequences[seq_id].length
 	# set up seq_part
 	var new_seq_part: SeqPart = SeqPart.new()
 	new_seq_part.parameters.resize(2)
@@ -371,7 +371,7 @@ func _on_insert_opcode_pressed() -> void:
 func _on_delete_opcode_pressed() -> void:
 	var seq_part_id: int = ui_manager.row_spinbox.value
 	var seq_id: int = ui_manager.animation_name_options.selected
-	var previous_length: int = seq.sequences[seq_id].length
+	#var previous_length: int = seq.sequences[seq_id].length
 	
 	seq.sequences[ui_manager.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
 	ui_manager.current_bytes = seq.toal_length
@@ -418,9 +418,9 @@ func _on_delete_pointer_pressed() -> void:
 	populate_animation_list(animation_list_container, seq)
 
 
-func _on_shp_file_options_item_selected(index: int) -> void:
-	draw_assembled_frame(6, shps[ui_manager.shp_options.get_item_text(index)], spr.spritesheet)
+func _on_shp_file_options_item_selected(_index: int) -> void:
+	draw_assembled_frame(6)
 
 
-func _on_sprite_options_item_selected(index: int) -> void:
-	draw_assembled_frame(6, shp, sprs[ui_manager.sprite_options.get_item_text(index)].spritesheet)
+func _on_sprite_options_item_selected(_index: int) -> void:
+	draw_assembled_frame(6)
