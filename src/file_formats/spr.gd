@@ -1,5 +1,5 @@
 class_name Spr extends Bmp
-
+var spritesheet: Image
 
 func _init() -> void:
 	file_name = "spr_file"
@@ -17,6 +17,7 @@ func set_data(spr_file: PackedByteArray) -> void:
 	set_palette_data(spr_file)
 	set_color_indices(spr_file)
 	set_pixel_colors()
+	spritesheet = get_rgba8_image()
 
 
 func set_palette_data(spr_file: PackedByteArray) -> void:
