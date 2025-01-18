@@ -59,3 +59,15 @@ func set_pixel_colors(palette_id: int = 0) -> void:
 	pixel_colors.resize(num_pixels)
 	for i: int in color_indices.size():
 		pixel_colors[i] = color_palette[color_indices[i] + (16 * palette_id)]
+
+
+func get_rgba8_image() -> Image:
+	var image:Image = Image.create_empty(width, height, false, Image.FORMAT_RGBA8)
+	
+	for x in width:
+		for y in height:
+			var color:Color = pixel_colors[x + (y * width)]
+			var color8:Color = Color8(color.r8, color.g8, color.b8, color.a8) # use Color8 function to prevent issues with format conversion changing color by 1/255
+			image.set_pixel(x,y, color8) # spr stores pixel data left to right, top to bottm
+	
+	return image

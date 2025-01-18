@@ -166,7 +166,8 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	ui_manager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
 	
 	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
-	draw_assembled_frame(6)
+	draw_assembled_frame(11)
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	
 	var background_image: Image = shp.create_blank_frame(Color.BLACK)
 	ui_manager.preview_viewport.sprite_background.texture = ImageTexture.create_from_image(background_image)
