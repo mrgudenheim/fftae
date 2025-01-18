@@ -68,15 +68,38 @@ var shp_metadata_size_offsets: Dictionary = {
 
 var seq: Seq:
 	get:
-		return seqs[ui_manager.seq_options.get_item_text(ui_manager.seq_options.selected)]
+		var file_name: String = ui_manager.seq_options.get_item_text(ui_manager.seq_options.selected)
+		if seqs.has(file_name):
+			return seqs[file_name]
+		else:
+			var new_seq: Seq = Seq.new()
+			new_seq.set_name(file_name)
+			new_seq.set_data_from_seq_bytes(file_records[file_name].get_file_data(rom))
+			seqs[file_name] = new_seq
+			return seqs[file_name]
 
 var shp: Shp:
 	get:
-		return shps[ui_manager.shp_options.get_item_text(ui_manager.shp_options.selected)]
+		var file_name: String = ui_manager.shp_options.get_item_text(ui_manager.shp_options.selected)
+		if shps.has(file_name):
+			return shps[file_name]
+		else:
+			var new_shp: Shp = Shp.new()
+			new_shp.set_name(file_name)
+			new_shp.set_data_from_shp_bytes(file_records[file_name].get_file_data(rom))
+			shps[file_name] = new_shp
+			return shps[file_name]
 
 var spr: Spr:
 	get:
-		return sprs[ui_manager.sprite_options.get_item_text(ui_manager.sprite_options.selected)]
+		var file_name: String = ui_manager.sprite_options.get_item_text(ui_manager.sprite_options.selected)
+		if sprs.has(file_name):
+			return sprs[file_name]
+		else:
+			var new_spr: Spr = Spr.new()
+			new_spr.set_data(file_records[file_name].get_file_data(rom))
+			sprs[file_name] = new_spr
+			return sprs[file_name]
 
 func _ready() -> void:
 	ae = self
@@ -122,41 +145,20 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	
 	for record: FileRecord in file_records.values():
 		#push_warning(record.to_string())
-		var file_data: PackedByteArray = record.get_file_data(rom)
 		match record.name.get_extension():
 			"SPR":
-				var new_spr: Spr = Spr.new()
-				new_spr.set_data(file_data)
-				sprs[record.name] = new_spr
+				ui_manager.sprite_options.add_item(record.name)
 			"SHP":
-				var new_shp: Shp = Shp.new()
-				new_shp.set_name(record.name)
-				new_shp.set_data_from_shp_bytes(file_data)
-				shps[record.name] = new_shp
+				ui_manager.shp_options.add_item(record.name)
 			"SEQ":
-				var new_seq: Seq = Seq.new()
-				new_seq.set_name(record.name)
-				new_seq.set_data_from_seq_bytes(file_data)
-				seqs[record.name] = new_seq
+				ui_manager.seq_options.add_item(record.name)
 			_:
 				push_warning(record.name + ": File extension not recognized")
-	
-	ui_manager.seq_options.clear()
-	for key: String in seqs.keys():
-		ui_manager.seq_options.add_item(key)
-	
-	ui_manager.shp_options.clear()
-	for key: String in shps.keys():
-		ui_manager.shp_options.add_item(key)
-	
-	ui_manager.sprite_options.clear()
-	for key: String in sprs.keys():
-		ui_manager.sprite_options.add_item(key)
 	
 	save_xml_button.disabled = false
 	save_seq_button.disabled = false
 	
-	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
+	#ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
 	
 	# try to load defaults
 	ui_manager.option_button_select_text(ui_manager.seq_options, "TYPE1.SEQ")

@@ -108,7 +108,7 @@ func update_animation_description_options(seq: Seq) -> void:
 
 func _on_seq_file_options_item_selected(index: int) -> void:
 	var type: String = seq_options.get_item_text(index)
-	FFTae.ae.seq = FFTae.ae.seqs[type]
+	#FFTae.ae.seq = FFTae.ae.seqs[type]
 	
 	if FFTae.ae.file_records.has(type):
 		max_bytes = ceil(FFTae.ae.file_records[type].size / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
