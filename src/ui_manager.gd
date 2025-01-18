@@ -86,7 +86,7 @@ func update_info_text(current: int, max_value: int, ui: Label) -> void:
 		ui.label_settings.font_color = Color.DARK_RED
 	elif FFTae.ae.file_records.has(type):
 		if current == FFTae.ae.file_records[type].size:
-			ui.label_settings.font_color = Color.WEB_GREEN
+			ui.label_settings.font_color = Color.LIME_GREEN
 		else:
 			ui.label_settings.font_color = Color.WHITE
 	else:
@@ -111,6 +111,8 @@ func _on_seq_file_options_item_selected(index: int) -> void:
 	
 	if FFTae.ae.file_records.has(type):
 		max_bytes = ceil(FFTae.ae.file_records[type].size / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
+	
+	FFTae.ae.animation_list_container.get_parent().get_parent().get_parent().name = FFTae.ae.seq.file_name + " Animations"
 	
 	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
 	patch_name_edit.placeholder_text = type + "_animation_edit"

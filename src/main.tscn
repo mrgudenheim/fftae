@@ -9,7 +9,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_bugng"]
 
-[node name="Main" type="Control" node_paths=PackedStringArray("ui_manager", "load_rom_dialog", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container")]
+[node name="Main" type="Control" node_paths=PackedStringArray("ui_manager", "load_rom_dialog", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container", "frame_list_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,8 +25,9 @@ save_xml_button = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxCont
 save_xml_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog")
 save_seq_button = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ")
 save_seq_dialog = NodePath("HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog")
-animation_list_container = NodePath("HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer")
+animation_list_container = NodePath("HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer")
 opcode_list_container = NodePath("HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes")
+frame_list_container = NodePath("HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer/FrameListGrid")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -48,8 +49,8 @@ patch_description_edit = NodePath("MarginContainer/VBoxContainer/DescriptionText
 animation_id_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/IdSpinBox")
 animation_name_options = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton")
 row_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Functions/RowSpinBox")
-pointer_index_spinbox = NodePath("../AnimationsList/MarginContainer/VBoxContainer/Functions/PointerSpinBox")
-preview_viewport = NodePath("MarginContainer/VBoxContainer/PreviewSubViewportContainer")
+pointer_index_spinbox = NodePath("../TabContainer/Animations/VBoxContainer/Functions/PointerSpinBox")
+preview_viewport = NodePath("MarginContainer/VBoxContainer/PanelContainer/PreviewSubViewportContainer")
 
 [node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/SettingsPanel"]
 layout_mode = 2
@@ -192,7 +193,10 @@ wrap_mode = 1
 layout_mode = 2
 text = "Preview:"
 
-[node name="PreviewSubViewportContainer" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer" instance=ExtResource("4_ero0u")]
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PreviewSubViewportContainer" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/PanelContainer" instance=ExtResource("4_ero0u")]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 
@@ -223,56 +227,112 @@ access = 2
 filters = PackedStringArray("*.seq")
 use_native_dialog = true
 
-[node name="AnimationsList" type="PanelContainer" parent="HBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="HBoxContainer"]
+layout_mode = 2
+current_tab = 0
+
+[node name="Animations" type="MarginContainer" parent="HBoxContainer/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/TabContainer/Animations"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/AnimationsList"]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer"]
-layout_mode = 2
-
-[node name="AddPointer" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
+[node name="AddPointer" type="Button" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
 text = "Add Pointer"
 
-[node name="Functions" type="HBoxContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
+[node name="Functions" type="HBoxContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
 
-[node name="DeletePointer" type="Button" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions"]
+[node name="DeletePointer" type="Button" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions"]
 layout_mode = 2
 text = "Delete Pointer"
 
-[node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions"]
+[node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions"]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="AnimationListGridContainer" type="GridContainer" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="AnimationListGridContainer" type="GridContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 columns = 4
 
-[node name="Pointer ID" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
+[node name="Pointer ID" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Pointer ID"
 horizontal_alignment = 1
 
-[node name="Anim ID" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
+[node name="Anim ID" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Anim ID"
 horizontal_alignment = 1
 
-[node name="Desription" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
+[node name="Desription" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Description"
 horizontal_alignment = 1
 
-[node name="Opcodes" type="Label" parent="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
+[node name="Opcodes" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
 layout_mode = 2
 text = "Opcodes"
+horizontal_alignment = 1
+
+[node name="Frames" type="MarginContainer" parent="HBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/TabContainer/Frames"]
+layout_mode = 2
+
+[node name="AddPointer" type="Button" parent="HBoxContainer/TabContainer/Frames/VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Add Pointer"
+
+[node name="Functions" type="HBoxContainer" parent="HBoxContainer/TabContainer/Frames/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="DeletePointer" type="Button" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/Functions"]
+layout_mode = 2
+text = "Delete Pointer"
+
+[node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/Functions"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/TabContainer/Frames/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="FrameListGrid" type="GridContainer" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+columns = 4
+
+[node name="FrameId" type="Label" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer/FrameListGrid"]
+layout_mode = 2
+text = "Frame ID"
+horizontal_alignment = 1
+
+[node name="Rotation" type="Label" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer/FrameListGrid"]
+layout_mode = 2
+text = "Rotation (deg)"
+horizontal_alignment = 1
+
+[node name="Subframes" type="Label" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer/FrameListGrid"]
+layout_mode = 2
+text = "Subframes
+x, y, u, v, rect, flip_x, flip_y"
+horizontal_alignment = 1
+
+[node name="Preview" type="Label" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer/FrameListGrid"]
+layout_mode = 2
+text = "Preview"
 horizontal_alignment = 1
 
 [node name="AnimationEditor" type="PanelContainer" parent="HBoxContainer"]
@@ -390,8 +450,10 @@ horizontal_alignment = 1
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
-[connection signal="pressed" from="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/AddPointer" to="." method="_on_add_pointer_pressed"]
-[connection signal="pressed" from="HBoxContainer/AnimationsList/MarginContainer/VBoxContainer/Functions/DeletePointer" to="." method="_on_delete_pointer_pressed"]
+[connection signal="pressed" from="HBoxContainer/TabContainer/Animations/VBoxContainer/AddPointer" to="." method="_on_add_pointer_pressed"]
+[connection signal="pressed" from="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions/DeletePointer" to="." method="_on_delete_pointer_pressed"]
+[connection signal="pressed" from="HBoxContainer/TabContainer/Frames/VBoxContainer/AddPointer" to="." method="_on_add_pointer_pressed"]
+[connection signal="pressed" from="HBoxContainer/TabContainer/Frames/VBoxContainer/Functions/DeletePointer" to="." method="_on_delete_pointer_pressed"]
 [connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/NewAnimation" to="." method="_on_new_animation_pressed"]
 [connection signal="pressed" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/DeleteAnimation" to="." method="_on_delete_animation_pressed"]
 [connection signal="item_selected" from="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton" to="." method="_on_animation_option_button_item_selected"]

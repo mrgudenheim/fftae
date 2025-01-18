@@ -637,18 +637,18 @@ func write_csvs() -> void:
 		save_file_offset.store_string(frame_offset_data);
 
 
-func create_blank_frame(color: Color = Color.TRANSPARENT) -> Image:
+func create_blank_frame(color: Color = Color.TRANSPARENT, new_frame_size: Vector2i = frame_size) -> Image:
 	var blank_image: Image = Image.create(
-		frame_size.x, frame_size.y, false, Image.FORMAT_RGBA8
+		new_frame_size.x, new_frame_size.y, false, Image.FORMAT_RGBA8
 	)
 	blank_image.fill(color)
 	
 	return blank_image
 
 
-func get_assembled_frame(frame_index: int, source_image: Image, animation_index:int = 0) -> Image:
+func get_assembled_frame(frame_index: int, source_image: Image, animation_index:int = 0, new_frame_size: Vector2i = frame_size, y_offset: int = 40) -> Image:
 	var frame: FrameData = frames[frame_index]
-	var assembled_image: Image = create_blank_frame()
+	var assembled_image: Image = create_blank_frame(Color.TRANSPARENT, new_frame_size)
 	
 	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly
 		var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
@@ -662,7 +662,7 @@ func get_assembled_frame(frame_index: int, source_image: Image, animation_index:
 		#if use_sp2:
 			#source_image = sp2_cel_selector.cel_image
 		
-		assembled_image = add_subframe(frame.subframes[subframe_index], source_image, assembled_image, v_offset)
+		assembled_image = add_subframe(frame.subframes[subframe_index], source_image, assembled_image, v_offset, new_frame_size, y_offset)
 	
 	return assembled_image
 
@@ -702,10 +702,10 @@ func get_v_offset(frame_index:int, subframe_index:int = 0, animation_index:int =
 	return v_offset
 
 
-func add_subframe(subframe: SubFrameData, source_image: Image, assembled_image: Image, v_offset: int) -> Image:
+func add_subframe(subframe: SubFrameData, source_image: Image, assembled_image: Image, v_offset: int, new_frame_size: Vector2i = frame_size, y_offset: int = 40) -> Image:
 	var y_top_left: int = subframe.load_location_y + v_offset
 	
-	var destination_pos: Vector2i = Vector2i(subframe.shift_x + (frame_size.x / 2), subframe.shift_y + frame_size.y - 40) # adjust by 40 to prevent frame from spilling over bottom
+	var destination_pos: Vector2i = Vector2i(subframe.shift_x + (new_frame_size.x / 2), subframe.shift_y + new_frame_size.y - y_offset) # adjust by 40 (for full 120px size frame) to prevent frame from spilling over bottom
 	var source_rect: Rect2i = Rect2i(subframe.load_location_x, y_top_left, subframe.rect_size.x, subframe.rect_size.y)
 	
 	if (subframe.flip_x or subframe.flip_y):

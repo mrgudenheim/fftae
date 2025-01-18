@@ -14,6 +14,7 @@ static var rom:PackedByteArray = []
 
 @export var animation_list_container: GridContainer
 @export var opcode_list_container: GridContainer
+@export var frame_list_container: GridContainer
 
 # https://en.wikipedia.org/wiki/CD-ROM#CD-ROM_XA_extension
 static var bytes_per_sector: int = 0 # 2352 bytes
@@ -168,8 +169,8 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	ui_manager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
 	
 	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
+	_on_shp_file_options_item_selected(ui_manager.shp_options.selected)
 	draw_assembled_frame(11)
-	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	
 	var background_image: Image = shp.create_blank_frame(Color.BLACK)
 	ui_manager.preview_viewport.sprite_background.texture = ImageTexture.create_from_image(background_image)
@@ -343,6 +344,50 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 			opcode_options.param_spinboxes[param_index].value = FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
 
 
+func populate_frame_list(frame_grid_parent: GridContainer, shp_local: Shp) -> void:
+	#ui_manager.current_animation_slots = shp_local.frames.size()
+	clear_grid_container(frame_grid_parent, 1)
+	
+	for index in shp.frame_pointers.size():
+		var pointer: int = shp.frame_pointers[index]
+		var frame: FrameData = shp.frames[index]
+		var id_hex: String = " (0x%02x)" % index
+		var id: String = str(index) + id_hex
+		var y_rotation: String = str(frame.y_rotation)
+		var subframe_strings: String = frame.get_subframes_string()
+		
+		var pointer_id_label: Label = Label.new()
+		pointer_id_label.text = id
+		pointer_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		
+		var rotation_label: Label = Label.new()
+		rotation_label.text = str(y_rotation)
+		rotation_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		
+		var subframes_label: Label = Label.new()
+		subframes_label.text = subframe_strings
+		subframes_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		var subframes_label_panel_margin: MarginContainer = MarginContainer.new()
+		subframes_label_panel_margin.add_child(subframes_label)
+		var subframes_panel: PanelContainer = PanelContainer.new()
+		subframes_panel.add_child(subframes_label_panel_margin)
+		subframes_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		
+		var frame_preview: TextureRect = TextureRect.new()
+		var preview_image_size: Vector2i = Vector2i(120, 120)
+		var preview_image: Image = shp.create_blank_frame(Color.BLACK, preview_image_size)
+		var assembled_frame: Image = shp.get_assembled_frame(index, spr.spritesheet, 0, Vector2i(60, 60), 10)
+		assembled_frame.resize(preview_image_size.x, preview_image_size.y, 0)
+		preview_image.blend_rect(assembled_frame, Rect2i(Vector2i.ZERO, preview_image_size), Vector2i.ZERO)
+		frame_preview.texture = ImageTexture.create_from_image(preview_image)
+		frame_preview.rotation_degrees = frame.y_rotation
+		
+		frame_grid_parent.add_child(pointer_id_label)
+		frame_grid_parent.add_child(rotation_label)
+		frame_grid_parent.add_child(subframes_panel)
+		frame_grid_parent.add_child(frame_preview)
+
+
 func draw_assembled_frame(frame_index: int) -> void:
 	var animation_id: int = 0 # TODO how is this used?
 	var submerged_depth: int = 0 # TODO make ui setting
@@ -424,8 +469,11 @@ func _on_delete_pointer_pressed() -> void:
 
 
 func _on_shp_file_options_item_selected(_index: int) -> void:
-	draw_assembled_frame(6)
+	frame_list_container.get_parent().get_parent().get_parent().name = shp.file_name + " Frames"
+	populate_frame_list(frame_list_container, shp)
+	#draw_assembled_frame(6)
 
 
 func _on_sprite_options_item_selected(_index: int) -> void:
-	draw_assembled_frame(6)
+	populate_frame_list(frame_list_container, shp)
+	#draw_assembled_frame(6)
