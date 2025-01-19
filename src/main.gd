@@ -64,7 +64,7 @@ var spr: Spr:
 		else:
 			var new_spr: Spr = Spr.new()
 			new_spr.set_data(file_records[file_name].get_file_data(rom), file_name.get_basename())
-			new_spr.get_sp2s(file_records, rom)
+			new_spr.set_sp2s(file_records, rom)
 			sprs[file_name] = new_spr
 			return sprs[file_name]
 

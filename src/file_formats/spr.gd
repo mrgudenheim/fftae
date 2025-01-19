@@ -180,7 +180,7 @@ func decompress(compressed_bytes: PackedByteArray) -> PackedByteArray:
 	return decompressed_bytes
 
 
-func get_sp2s(file_records: Dictionary, rom: PackedByteArray) -> void:
+func set_sp2s(file_records: Dictionary, rom: PackedByteArray) -> void:
 	for file_record: FileRecord in file_records.values():
 		var extension: String = file_record.name.get_extension()
 		var base_name: String = file_record.name.get_basename()
