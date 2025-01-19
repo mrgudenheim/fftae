@@ -17,8 +17,14 @@ func set_data(spr_file: PackedByteArray) -> void:
 	if file_name.to_upper() == "OTHER":
 		num_colors = 512
 		has_compressed = false
-	elif file_name.to_upper().contains("WEP") or file_name.to_upper().contains("EFF"):
-		has_compressed = false
+	elif (file_name.to_upper().contains("WEP") 
+		or file_name.to_upper().contains("EFF")
+		or file_name.to_upper().contains("0")
+		or file_name.to_upper().contains("CYOMON")
+		or file_name.to_upper().contains("DAMI")
+		or file_name.to_upper().contains("FURAIA")
+		):
+			has_compressed = false
 	
 	var num_palette_bytes: int = num_colors * 2
 	var palette_bytes: PackedByteArray = spr_file.slice(0, num_palette_bytes)
