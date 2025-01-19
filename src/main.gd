@@ -33,40 +33,6 @@ var sprs: Dictionary = {}
 var shps: Dictionary = {}
 var seqs: Dictionary = {}
 
-# location of file size (4 bytes) in full ROM
-# the 4 bytes after are also the file size, but in big-endian format
-# sector location (aka LBA) of the file is the 8 bytes before this (both-endian format)
-var seq_metadata_size_offsets: Dictionary = {
-	"arute": 0x07e96dd0, 
-	"cyoko": 0x07e97100, 
-	"eff1": 0x07e976c0, 
-	"eff2": 0x07e97734, 
-	"kanzen": 0x07e9819e, 
-	"mon": 0x07e98748, 
-	"other": 0x07e98a80, 
-	"ruka": 0x07e98d06, 
-	"type1": 0x07e9937c, 
-	"type2": 0x07e993f0, 
-	"type3": 0x07e99464, 
-	"type4": 0x07e9949e, 
-	"wep1": 0x07e997d2,  
-	"wep2": 0x07e99846,  
-	}
-
-var shp_metadata_size_offsets: Dictionary = {
-	"arute": 0x07e96e0a, 
-	"cyoko": 0x07e9713a, 
-	"eff1": 0x07e976fa, 
-	"eff2": 0x07e9776e, 
-	"kanzen": 0x07e981da, 
-	"mon": 0x07e98780, 
-	"other": 0x07e98aba, 
-	"type1": 0x07e993b6, 
-	"type2": 0x07e9942a, 
-	"wep1": 0x07e9980c, 
-	"wep2": 0x07e99880, 
-	}
-
 var seq: Seq:
 	get:
 		var file_name: String = ui_manager.seq_options.get_item_text(ui_manager.seq_options.selected)
@@ -98,6 +64,7 @@ var spr: Spr:
 			return sprs[file_name]
 		else:
 			var new_spr: Spr = Spr.new()
+			new_spr.file_name = file_name.get_basename()
 			new_spr.set_data(file_records[file_name].get_file_data(rom))
 			sprs[file_name] = new_spr
 			return sprs[file_name]
@@ -105,17 +72,6 @@ var spr: Spr:
 func _ready() -> void:
 	ae = self
 	bytes_per_sector = data_bytes_per_sector + bytes_per_sector_header + bytes_per_sector_footer
-	for key: String in seq_metadata_size_offsets.keys():
-		var sector: int = seq_metadata_size_offsets[key] / bytes_per_sector
-		var sector_delta: int = sector - directory_start_sector
-		var sector_split_bytes: int = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
-		seq_metadata_size_offsets[key] = seq_metadata_size_offsets[key] - (directory_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
-	
-	for key: String in shp_metadata_size_offsets.keys():
-		var sector: int = shp_metadata_size_offsets[key] / bytes_per_sector
-		var sector_delta: int = sector - directory_start_sector
-		var sector_split_bytes: int = sector_delta * (bytes_per_sector_header + bytes_per_sector_footer)
-		shp_metadata_size_offsets[key] = shp_metadata_size_offsets[key] - (directory_start_sector * bytes_per_sector) - sector_split_bytes - bytes_per_sector_header
 
 
 func _on_load_rom_pressed() -> void:

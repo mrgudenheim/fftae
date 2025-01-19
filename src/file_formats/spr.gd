@@ -1,11 +1,10 @@
 class_name Spr extends Bmp
 var spritesheet: Image
 static var portrait_height: int = 32 # pixels
+var has_compressed: bool = true
 
 func _init() -> void:
 	file_name = "spr_file"
-	if file_name == "OTHER":
-		num_colors = 512
 	bits_per_pixel = 4
 	palette_data_start = 0
 	pixel_data_start = num_colors * 2 # after 256 color palette, 2 bytes per color - 1 bit for alpha, followed by 5 bits per channel (B,G,R)
@@ -15,13 +14,19 @@ func _init() -> void:
 
 
 func set_data(spr_file: PackedByteArray) -> void:
+	if file_name.to_upper() == "OTHER":
+		num_colors = 512
+		has_compressed = false
+	elif file_name.to_upper().contains("WEP") or file_name.to_upper().contains("EFF"):
+		has_compressed = false
+	
 	var num_palette_bytes: int = num_colors * 2
 	var palette_bytes: PackedByteArray = spr_file.slice(0, num_palette_bytes)
 	var num_bytes_top: int = (width * 256) /2
 	var normal_pixels: PackedByteArray = spr_file.slice(num_palette_bytes, num_palette_bytes + num_bytes_top)
 	var num_bytes_portrait_rows: int = (width * portrait_height) /2
 	var portrait_rows_pixels: PackedByteArray = spr_file.slice(num_palette_bytes + num_bytes_top, num_palette_bytes + num_bytes_top + num_bytes_portrait_rows)
-	var spr_compressed_bytes: PackedByteArray = spr_file.slice(0x9200)
+	var spr_compressed_bytes: PackedByteArray = spr_file.slice(0x9200) if has_compressed else []
 	var spr_decompressed_bytes: PackedByteArray = decompress(spr_compressed_bytes)
 	
 	var spr_total_decompressed_bytes: PackedByteArray = []
@@ -89,7 +94,7 @@ func get_rgba8_image() -> Image:
 
 
 func decompress(compressed_bytes: PackedByteArray) -> PackedByteArray:
-	var num_pixels_compressed: int = 200 * width # 200 rows
+	var num_pixels_compressed: int = 200 * width if has_compressed else 0
 	
 	var decompressed_bytes: PackedByteArray = []
 	decompressed_bytes.resize(num_pixels_compressed / 2)
