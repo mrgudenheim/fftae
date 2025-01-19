@@ -161,8 +161,6 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	save_xml_button.disabled = false
 	save_seq_button.disabled = false
 	
-	#ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
-	
 	# try to load defaults
 	ui_manager.option_button_select_text(ui_manager.seq_options, "TYPE1.SEQ")
 	ui_manager.option_button_select_text(ui_manager.shp_options, "TYPE1.SHP")
@@ -170,7 +168,8 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	
 	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
 	_on_shp_file_options_item_selected(ui_manager.shp_options.selected)
-	draw_assembled_frame(11)
+	
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	
 	var background_image: Image = shp.create_blank_frame(Color.BLACK)
 	ui_manager.preview_viewport.sprite_background.texture = ImageTexture.create_from_image(background_image)
@@ -235,7 +234,7 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 		xml_patch_name,
 		xml_author,
 		xml_description,
-		"<!-- file size -->",
+		"<!-- file size (both endian) -->",
 		xml_size_location_start,
 		bytes_size,
 		xml_size_location_end,
@@ -383,7 +382,7 @@ func populate_frame_list(frame_grid_parent: GridContainer, shp_local: Shp) -> vo
 		var frame_preview: TextureRect = TextureRect.new()
 		var preview_image_size: Vector2i = Vector2i(120, 120)
 		var preview_image: Image = shp.create_blank_frame(Color.BLACK, preview_image_size)
-		var assembled_frame: Image = shp.get_assembled_frame(index, spr.spritesheet, 0, Vector2i(60, 60), 10)
+		var assembled_frame: Image = shp.get_assembled_frame(index, spr.spritesheet, 0, Vector2i(60, 60), 15)
 		assembled_frame.resize(preview_image_size.x, preview_image_size.y, Image.INTERPOLATE_NEAREST)
 		preview_image.blend_rect(assembled_frame, Rect2i(Vector2i.ZERO, preview_image_size), Vector2i.ZERO)
 		frame_preview.texture = ImageTexture.create_from_image(preview_image)
@@ -476,11 +475,13 @@ func _on_delete_pointer_pressed() -> void:
 
 
 func _on_shp_file_options_item_selected(_index: int) -> void:
+	draw_assembled_frame(11)
 	frame_list_container.get_parent().get_parent().get_parent().name = shp.file_name + " Frames"
 	populate_frame_list(frame_list_container, shp)
 	#draw_assembled_frame(6)
 
 
 func _on_sprite_options_item_selected(_index: int) -> void:
+	draw_assembled_frame(11)
 	populate_frame_list(frame_list_container, shp)
 	#draw_assembled_frame(6)

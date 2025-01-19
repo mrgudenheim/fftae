@@ -1,5 +1,6 @@
 class_name Spr extends Bmp
 var spritesheet: Image
+static var portrait_height: int = 32 # pixels
 
 func _init() -> void:
 	file_name = "spr_file"
@@ -9,22 +10,36 @@ func _init() -> void:
 	palette_data_start = 0
 	pixel_data_start = num_colors * 2 # after 256 color palette, 2 bytes per color - 1 bit for alpha, followed by 5 bits per channel (B,G,R)
 	width = 256 # pixels
-	height = 256 # need to set based on file?
+	height = 488 # need to set based on file?
 	num_pixels = width * height
 
 
 func set_data(spr_file: PackedByteArray) -> void:
-	set_palette_data(spr_file)
-	set_color_indices(spr_file)
+	var num_palette_bytes: int = num_colors * 2
+	var palette_bytes: PackedByteArray = spr_file.slice(0, num_palette_bytes)
+	var num_bytes_top: int = (width * 256) /2
+	var normal_pixels: PackedByteArray = spr_file.slice(num_palette_bytes, num_palette_bytes + num_bytes_top)
+	var num_bytes_portrait_rows: int = (width * portrait_height) /2
+	var portrait_rows_pixels: PackedByteArray = spr_file.slice(num_palette_bytes + num_bytes_top, num_palette_bytes + num_bytes_top + num_bytes_portrait_rows)
+	var spr_compressed_bytes: PackedByteArray = spr_file.slice(0x9200)
+	var spr_decompressed_bytes: PackedByteArray = decompress(spr_compressed_bytes)
+	
+	var spr_total_decompressed_bytes: PackedByteArray = []
+	spr_total_decompressed_bytes.append_array(normal_pixels)
+	spr_total_decompressed_bytes.append_array(spr_decompressed_bytes)
+	spr_total_decompressed_bytes.append_array(portrait_rows_pixels)
+	
+	set_palette_data(palette_bytes)
+	set_color_indices(spr_total_decompressed_bytes)
 	set_pixel_colors()
 	spritesheet = get_rgba8_image()
 
 
-func set_palette_data(spr_file: PackedByteArray) -> void:
+func set_palette_data(palette_bytes: PackedByteArray) -> void:
 	color_palette.resize(num_colors)
 	for i: int in num_colors:
 		var color: Color = Color.BLACK
-		var color_bits: int = spr_file.decode_u16(palette_data_start + (i*2))
+		var color_bits: int = palette_bytes.decode_u16(palette_data_start + (i*2))
 		color.a8 = 1 - ((color_bits & 0b1000_0000_0000_0000) >> 15) # first bit is alpha (if bit is zero, color is opaque)
 		color.b8 = (color_bits & 0b0111_1100_0000_0000) >> 10 # then 5 bits each: blue, green, red
 		color.g8 = (color_bits & 0b0000_0011_1110_0000) >> 5
@@ -37,17 +52,17 @@ func set_palette_data(spr_file: PackedByteArray) -> void:
 		color.r8 = roundi(255 * (color.r8 / float(31)))
 		
 		# if first color in 16 color palette is black, treat it as transparent
-		if (i % 8 == 0
+		if (i % 16 == 0
 			and color == Color.BLACK):
 				color.a8 = 0
 		color_palette[i] = color
 
 
-func set_color_indices(spr_file: PackedByteArray) -> void:
+func set_color_indices(pixel_bytes: PackedByteArray) -> void:
 	color_indices.resize(num_pixels)
 	for i: int in num_pixels:
 		var pixel_offset: int = (i * bits_per_pixel)/8
-		var byte: int = spr_file.decode_u8(pixel_data_start + pixel_offset)
+		var byte: int = pixel_bytes.decode_u8(pixel_offset)
 		
 		if i % 2 == 1: # get 4 leftmost bits
 			color_indices[i] = byte >> 4
@@ -71,3 +86,64 @@ func get_rgba8_image() -> Image:
 			image.set_pixel(x,y, color8) # spr stores pixel data left to right, top to bottm
 	
 	return image
+
+
+func decompress(compressed_bytes: PackedByteArray) -> PackedByteArray:
+	var num_pixels_compressed: int = 200 * width # 200 rows
+	
+	var decompressed_bytes: PackedByteArray = []
+	decompressed_bytes.resize(num_pixels_compressed / 2)
+	decompressed_bytes.fill(0)
+	
+	var half_byte_data: PackedByteArray = []
+	half_byte_data.resize(compressed_bytes.size() * 2)
+	half_byte_data.fill(0)
+	
+	var decompressed_full_bytes: PackedByteArray = []
+	decompressed_full_bytes.resize(num_pixels_compressed)
+	decompressed_full_bytes.fill(0)
+	
+	# get half bytes
+	for i: int in compressed_bytes.size():
+		var byte: int = compressed_bytes.decode_u8(i)
+		half_byte_data[i * 2] = byte >> 4 # get 4 leftmost bits
+		half_byte_data[(i * 2) + 1] = byte & 0b0000_1111 # get 4 rightmost bits
+	
+	# decompress
+	var half_byte_index: int = 0
+	var decompressed_full_byte_index: int = 0
+	while half_byte_index < half_byte_data.size():
+		var half_byte: int = half_byte_data[half_byte_index]
+		if half_byte != 0:
+			decompressed_full_bytes[decompressed_full_byte_index] = half_byte_data[half_byte_index]
+			half_byte_index += 1
+			decompressed_full_byte_index += 1
+			continue
+		elif half_byte_index + 1 < half_byte_data.size(): # if 0, start compressed area
+			var next_half: int = half_byte_data[half_byte_index + 1]
+			var num_zeroes: int = next_half
+			
+			if next_half == 0:
+				num_zeroes = half_byte_data[half_byte_index + 2]
+				decompressed_full_byte_index += num_zeroes
+				half_byte_index += 3
+			elif next_half == 7:
+				num_zeroes = half_byte_data[half_byte_index + 2] + (half_byte_data[half_byte_index + 3] << 4)
+				decompressed_full_byte_index += num_zeroes
+				half_byte_index += 4
+			elif next_half == 8:
+				num_zeroes = half_byte_data[half_byte_index + 2] + (half_byte_data[half_byte_index + 3] << 4) + (half_byte_data[half_byte_index + 4] << 8)
+				decompressed_full_byte_index += num_zeroes
+				half_byte_index += 5
+			else:
+				decompressed_full_byte_index += num_zeroes
+				half_byte_index += 2
+		else:
+			half_byte_index += 1
+	
+	# full bytes to half bytes
+	for index: int in decompressed_full_bytes.size() / 2:
+		decompressed_bytes[index] = decompressed_full_bytes[index * 2] << 4
+		decompressed_bytes[index] = decompressed_bytes[index] | decompressed_full_bytes[(index * 2) + 1]
+	
+	return decompressed_bytes
