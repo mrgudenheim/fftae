@@ -145,14 +145,13 @@ func set_data_from_shp_object(shp_object:Shp) -> void:
 
 func set_data_from_shp_file(filepath:String) -> void:	
 	var new_file_name:String = filepath.get_file()
-	set_name(new_file_name)
 	
 	var bytes:PackedByteArray = FileAccess.get_file_as_bytes(filepath)
 	if bytes.size() == 0:
 		push_warning("Open Error: " + filepath)
 		return
 	else:
-		set_data_from_shp_bytes(bytes)
+		set_data_from_shp_bytes(bytes, new_file_name)
 
 
 func set_name(new_file_name: String) -> void:
@@ -169,7 +168,9 @@ func set_name(new_file_name: String) -> void:
 		name_alias = file_name
 
 
-func set_data_from_shp_bytes(bytes: PackedByteArray) -> void:	
+func set_data_from_shp_bytes(bytes: PackedByteArray, new_name: String) -> void:	
+	set_name(new_name)
+	
 	swim_pointer = bytes.decode_u32(0)
 	attack_start_index = bytes.decode_u16(4)
 	sp_extra = bytes.decode_u16(6)

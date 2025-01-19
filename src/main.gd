@@ -52,8 +52,7 @@ var shp: Shp:
 			return shps[file_name]
 		else:
 			var new_shp: Shp = Shp.new()
-			new_shp.set_name(file_name)
-			new_shp.set_data_from_shp_bytes(file_records[file_name].get_file_data(rom))
+			new_shp.set_data_from_shp_bytes(file_records[file_name].get_file_data(rom), file_name)
 			shps[file_name] = new_shp
 			return shps[file_name]
 
@@ -64,8 +63,8 @@ var spr: Spr:
 			return sprs[file_name]
 		else:
 			var new_spr: Spr = Spr.new()
-			new_spr.file_name = file_name.get_basename()
-			new_spr.set_data(file_records[file_name].get_file_data(rom))
+			new_spr.set_data(file_records[file_name].get_file_data(rom), file_name.get_basename())
+			new_spr.get_sp2s(file_records, rom)
 			sprs[file_name] = new_spr
 			return sprs[file_name]
 

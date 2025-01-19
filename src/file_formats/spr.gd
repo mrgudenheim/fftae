@@ -1,7 +1,11 @@
 class_name Spr extends Bmp
+
+const PORTRAIT_HEIGHT: int = 32 # pixels
+
 var spritesheet: Image
-static var portrait_height: int = 32 # pixels
 var has_compressed: bool = true
+var is_sp2: bool = false
+var sp2s: Dictionary = {}
 
 func _init() -> void:
 	file_name = "spr_file"
@@ -13,8 +17,24 @@ func _init() -> void:
 	num_pixels = width * height
 
 
-func set_data(spr_file: PackedByteArray) -> void:
-	if file_name.to_upper() == "OTHER":
+func init_sp2(new_name: String, new_color_palette: Array[Color], sp2_pixel_data: PackedByteArray) -> void:
+	is_sp2 = true
+	num_colors = 0
+	pixel_data_start = num_colors * 2
+	height = 256
+	num_pixels = width * height
+	
+	file_name = new_name
+	color_palette = new_color_palette
+	set_color_indices(sp2_pixel_data)
+	set_pixel_colors()
+	spritesheet = get_rgba8_image()
+
+func set_data(spr_file: PackedByteArray, new_name: String) -> void:
+	file_name = new_name
+	if is_sp2:
+		push_warning("sp2 file type should not use set_data function. Use init_sp2")
+	elif file_name.to_upper() == "OTHER":
 		num_colors = 512
 		has_compressed = false
 	elif (file_name.to_upper().contains("WEP") 
@@ -30,7 +50,7 @@ func set_data(spr_file: PackedByteArray) -> void:
 	var palette_bytes: PackedByteArray = spr_file.slice(0, num_palette_bytes)
 	var num_bytes_top: int = (width * 256) /2
 	var normal_pixels: PackedByteArray = spr_file.slice(num_palette_bytes, num_palette_bytes + num_bytes_top)
-	var num_bytes_portrait_rows: int = (width * portrait_height) /2
+	var num_bytes_portrait_rows: int = (width * PORTRAIT_HEIGHT) /2
 	var portrait_rows_pixels: PackedByteArray = spr_file.slice(num_palette_bytes + num_bytes_top, num_palette_bytes + num_bytes_top + num_bytes_portrait_rows)
 	var spr_compressed_bytes: PackedByteArray = spr_file.slice(0x9200) if has_compressed else []
 	var spr_decompressed_bytes: PackedByteArray = decompress(spr_compressed_bytes)
@@ -158,3 +178,17 @@ func decompress(compressed_bytes: PackedByteArray) -> PackedByteArray:
 		decompressed_bytes[index] = decompressed_bytes[index] | decompressed_full_bytes[(index * 2) + 1]
 	
 	return decompressed_bytes
+
+
+func get_sp2s(file_records: Dictionary, rom: PackedByteArray) -> void:
+	for file_record: FileRecord in file_records.values():
+		var extension: String = file_record.name.get_extension()
+		var base_name: String = file_record.name.get_basename()
+		var sp2_name: String = file_name.get_basename()
+		if sp2_name == "TETSU":
+			sp2_name = "IRON"
+		if base_name.contains(sp2_name) and extension == "SP2":
+			var sp2_data: PackedByteArray = file_record.get_file_data(rom)
+			var sp2_spr: Spr = Spr.new()
+			sp2_spr.init_sp2(file_record.name, color_palette, sp2_data)
+			sp2s[file_record.name] = sp2_spr

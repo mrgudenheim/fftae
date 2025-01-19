@@ -15,6 +15,7 @@ This tool streamlines creating xml patches for FFT that edit animations.
 - Having two Move opcodes in a row (ex. MoveForward2() followed by MoveForward2()) may cause weird issues
 - Recommend against deleting vanilla animations. Deleting an animation will cause any pointer that points past the end to instead point to the first animation
 - Pointers above the max limit will not be saved in seq or xml
+- Sp2 files not handled
 
 # Future Improvements
 - Improve UI
