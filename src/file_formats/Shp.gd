@@ -452,7 +452,7 @@ func _write_cfg_subframes(cfg:ConfigFile, temp_frame_data:FrameData, frame_label
 func set_frames_from_csv(filepath:String) -> void:
 	frames.clear()
 	
-	var file = FileAccess.open(filepath, FileAccess.READ)
+	var file := FileAccess.open(filepath, FileAccess.READ)
 	if file == null:
 		push_warning(FileAccess.get_open_error())
 		return
@@ -510,7 +510,7 @@ func set_frames_from_csv(filepath:String) -> void:
 func set_zero_frames_from_csv(filepath:String) -> void:
 	zero_frames.clear()
 	
-	var file = FileAccess.open(filepath, FileAccess.READ)
+	var file := FileAccess.open(filepath, FileAccess.READ)
 	if file == null:
 		push_warning(FileAccess.get_open_error())
 		return
@@ -616,8 +616,8 @@ func write_csvs() -> void:
 		
 		frame_id_submerged += 1
 	
-	DirAccess.make_dir_recursive_absolute("user://FFTorama")
-	var save_file = FileAccess.open("user://FFTorama/frame_data_"+file_name+".txt", FileAccess.WRITE)
+	DirAccess.make_dir_recursive_absolute("user://FFTae")
+	var save_file := FileAccess.open("user://FFTae/frame_data_"+file_name+".txt", FileAccess.WRITE)
 	save_file.store_string(output)
 	
 	if (file_name.begins_with("wep") || file_name.begins_with("eff")):		
@@ -661,22 +661,19 @@ func create_blank_frame(color: Color = Color.TRANSPARENT, new_frame_size: Vector
 	return blank_image
 
 
-func get_assembled_frame(frame_index: int, source_image: Image, animation_index:int = 0, new_frame_size: Vector2i = frame_size, y_offset: int = 40) -> Image:
-	var frame: FrameData = frames[frame_index]
+func get_assembled_frame(frame_index: int, source_image: Image, animation_index: int, other_type_index: int, weapon_v_offset: int, submerged_depth: int, new_frame_size: Vector2i = frame_size, y_offset: int = 40) -> Image:
+	var frame: FrameData = get_frame(frame_index, submerged_depth)
 	var assembled_image: Image = create_blank_frame(Color.TRANSPARENT, new_frame_size)
 	
 	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly
-		var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
+		var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index, other_type_index, weapon_v_offset, submerged_depth)
 		assembled_image = add_subframe(frame.subframes[subframe_index], source_image, assembled_image, v_offset, new_frame_size, y_offset)
 	
 	return assembled_image
 
 
-func get_v_offset(frame_index:int, subframe_index:int = 0, animation_index:int = 0) -> int:
+func get_v_offset(frame_index:int, subframe_index:int, animation_index: int, other_type_index: int, weapon_v_offset: int, submerged_depth: int) -> int:
 	var v_offset: int = 0
-	var submerged_depth: int = 0 # TODO get this
-	var other_type_index: int = 0 # TODO get this
-	var weapon_v_offset: int = 0 # TODO get this
 	var y_top: int = get_frame(frame_index, submerged_depth).subframes[subframe_index].load_location_y
 	if frame_index >= attack_start_index:
 		v_offset += 256

@@ -50,7 +50,7 @@ func set_data(spr_file: PackedByteArray, new_name: String) -> void:
 	var top_pixels_bytes: PackedByteArray = spr_file.slice(num_palette_bytes, num_palette_bytes + num_bytes_top)
 	var num_bytes_portrait_rows: int = (width * PORTRAIT_HEIGHT) /2
 	var portrait_rows_pixels: PackedByteArray = spr_file.slice(num_palette_bytes + num_bytes_top, num_palette_bytes + num_bytes_top + num_bytes_portrait_rows)
-	var spr_compressed_bytes: PackedByteArray = spr_file.slice(0x9200) if has_compressed else []
+	var spr_compressed_bytes: PackedByteArray = spr_file.slice(0x9200) if has_compressed else PackedByteArray()
 	var spr_decompressed_bytes: PackedByteArray = decompress(spr_compressed_bytes)
 	
 	var spr_total_decompressed_bytes: PackedByteArray = []
@@ -187,7 +187,7 @@ func set_sp2s(file_records: Dictionary, rom: PackedByteArray) -> void:
 		sp2_name_base = "IRON"
 	
 	for file_num: int in range(5):
-		var sp2_name = sp2_name_base + str(file_num) + ".SP2"
+		var sp2_name: String = sp2_name_base + str(file_num) + ".SP2"
 		if file_records.has(sp2_name):
 			var file_record: FileRecord = file_records[sp2_name]
 			var sp2_data: PackedByteArray = file_record.get_file_data(rom)

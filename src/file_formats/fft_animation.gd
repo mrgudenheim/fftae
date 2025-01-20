@@ -23,7 +23,7 @@ var primary_anim_opcode_part_id: int = 0 # used for nested loops in animations
 
 
 func get_duplicate() -> FftAnimation:
-	var new_fft_animation = FftAnimation.new()
+	var new_fft_animation: FftAnimation = FftAnimation.new()
 	new_fft_animation.seq = seq
 	new_fft_animation.shp = shp
 	new_fft_animation.sequence = sequence
