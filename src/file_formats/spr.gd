@@ -17,24 +17,22 @@ func _init() -> void:
 	num_pixels = width * height
 
 
-func init_sp2(new_name: String, new_color_palette: Array[Color], sp2_pixel_data: PackedByteArray) -> void:
-	is_sp2 = true
-	num_colors = 0
-	pixel_data_start = num_colors * 2
-	height = 256
-	num_pixels = width * height
-	
-	file_name = new_name
-	color_palette = new_color_palette
-	set_color_indices(sp2_pixel_data)
-	set_pixel_colors()
-	spritesheet = get_rgba8_image()
+#func init_sp2(new_name: String, new_color_palette: Array[Color], sp2_pixel_data: PackedByteArray) -> void:
+	#is_sp2 = true
+	#num_colors = 0
+	#pixel_data_start = 0
+	#height = 256
+	#num_pixels = width * height
+	#
+	#file_name = new_name
+	#color_palette = new_color_palette
+	#set_color_indices(sp2_pixel_data)
+	#set_pixel_colors()
+	#spritesheet = get_rgba8_image()
 
 func set_data(spr_file: PackedByteArray, new_name: String) -> void:
 	file_name = new_name
-	if is_sp2:
-		push_warning("sp2 file type should not use set_data function. Use init_sp2")
-	elif file_name.to_upper() == "OTHER":
+	if file_name.to_upper() == "OTHER":
 		num_colors = 512
 		has_compressed = false
 	elif (file_name.to_upper().contains("WEP") 
@@ -49,19 +47,19 @@ func set_data(spr_file: PackedByteArray, new_name: String) -> void:
 	var num_palette_bytes: int = num_colors * 2
 	var palette_bytes: PackedByteArray = spr_file.slice(0, num_palette_bytes)
 	var num_bytes_top: int = (width * 256) /2
-	var normal_pixels: PackedByteArray = spr_file.slice(num_palette_bytes, num_palette_bytes + num_bytes_top)
+	var top_pixels_bytes: PackedByteArray = spr_file.slice(num_palette_bytes, num_palette_bytes + num_bytes_top)
 	var num_bytes_portrait_rows: int = (width * PORTRAIT_HEIGHT) /2
 	var portrait_rows_pixels: PackedByteArray = spr_file.slice(num_palette_bytes + num_bytes_top, num_palette_bytes + num_bytes_top + num_bytes_portrait_rows)
 	var spr_compressed_bytes: PackedByteArray = spr_file.slice(0x9200) if has_compressed else []
 	var spr_decompressed_bytes: PackedByteArray = decompress(spr_compressed_bytes)
 	
 	var spr_total_decompressed_bytes: PackedByteArray = []
-	spr_total_decompressed_bytes.append_array(normal_pixels)
+	spr_total_decompressed_bytes.append_array(top_pixels_bytes)
 	spr_total_decompressed_bytes.append_array(spr_decompressed_bytes)
 	spr_total_decompressed_bytes.append_array(portrait_rows_pixels)
 	
 	set_palette_data(palette_bytes)
-	set_color_indices(spr_total_decompressed_bytes)
+	color_indices = set_color_indices(spr_total_decompressed_bytes)
 	set_pixel_colors()
 	spritesheet = get_rgba8_image()
 
@@ -89,27 +87,30 @@ func set_palette_data(palette_bytes: PackedByteArray) -> void:
 		color_palette[i] = color
 
 
-func set_color_indices(pixel_bytes: PackedByteArray) -> void:
-	color_indices.resize(num_pixels)
-	for i: int in num_pixels:
+func set_color_indices(pixel_bytes: PackedByteArray) -> Array[int]:
+	var new_color_indicies: Array[int] = []
+	new_color_indicies.resize(pixel_bytes.size() * 2)
+	
+	for i: int in new_color_indicies.size():
 		var pixel_offset: int = (i * bits_per_pixel)/8
 		var byte: int = pixel_bytes.decode_u8(pixel_offset)
 		
 		if i % 2 == 1: # get 4 leftmost bits
-			color_indices[i] = byte >> 4
+			new_color_indicies[i] = byte >> 4
 		else:
-			color_indices[i] = byte & 0b0000_1111 # get 4 rightmost bits
-
+			new_color_indicies[i] = byte & 0b0000_1111 # get 4 rightmost bits
+	
+	return new_color_indicies
 
 func set_pixel_colors(palette_id: int = 0) -> void:
-	pixel_colors.resize(num_pixels)
+	pixel_colors.resize(color_indices.size())
 	for i: int in color_indices.size():
 		pixel_colors[i] = color_palette[color_indices[i] + (16 * palette_id)]
 
 
 func get_rgba8_image() -> Image:
+	height = color_indices.size() / width
 	var image:Image = Image.create_empty(width, height, false, Image.FORMAT_RGBA8)
-	
 	for x in width:
 		for y in height:
 			var color:Color = pixel_colors[x + (y * width)]
@@ -181,14 +182,19 @@ func decompress(compressed_bytes: PackedByteArray) -> PackedByteArray:
 
 
 func set_sp2s(file_records: Dictionary, rom: PackedByteArray) -> void:
-	for file_record: FileRecord in file_records.values():
-		var extension: String = file_record.name.get_extension()
-		var base_name: String = file_record.name.get_basename()
-		var sp2_name: String = file_name.get_basename()
-		if sp2_name == "TETSU":
-			sp2_name = "IRON"
-		if base_name.contains(sp2_name) and extension == "SP2":
+	var sp2_name_base: String = file_name.get_basename()
+	if sp2_name_base == "TETSU":
+		sp2_name_base = "IRON"
+	
+	for file_num: int in range(5):
+		var sp2_name = sp2_name_base + str(file_num) + ".SP2"
+		if file_records.has(sp2_name):
+			var file_record: FileRecord = file_records[sp2_name]
 			var sp2_data: PackedByteArray = file_record.get_file_data(rom)
-			var sp2_spr: Spr = Spr.new()
-			sp2_spr.init_sp2(file_record.name, color_palette, sp2_data)
-			sp2s[file_record.name] = sp2_spr
+			color_indices.append_array(set_color_indices(sp2_data))
+	
+	set_pixel_colors()
+	spritesheet = get_rgba8_image()
+			#var sp2_spr: Spr = Spr.new()
+			#sp2_spr.init_sp2(file_record.name, color_palette, sp2_data)
+			#sp2s[file_record.name] = sp2_spr

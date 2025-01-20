@@ -73,6 +73,20 @@ static var shp_aliases: Dictionary = {
 	"item":"item",
 }
 
+const SP2_START_ANIMATION_ID: int = 194
+const SP2_V_OFFSET: int = 232 # pixels
+const SP2_V_OFFSET2: int = 256 # pixels
+const constant_sp2_v_offsets: Dictionary = {
+	234: SP2_V_OFFSET,
+	235: SP2_V_OFFSET,
+	236: SP2_V_OFFSET + (SP2_V_OFFSET2 * 1),
+	237: SP2_V_OFFSET + (SP2_V_OFFSET2 * 1),
+	232: SP2_V_OFFSET + (SP2_V_OFFSET2 * 2),
+	233: SP2_V_OFFSET + (SP2_V_OFFSET2 * 2),
+	230: SP2_V_OFFSET + (SP2_V_OFFSET2 * 3),
+	231: SP2_V_OFFSET + (SP2_V_OFFSET2 * 3),
+	}
+
 
 var file_name:String = "default_file_name"
 var name_alias:String = "default_name_alias"
@@ -653,16 +667,6 @@ func get_assembled_frame(frame_index: int, source_image: Image, animation_index:
 	
 	for subframe_index in range(frame.num_subframes-1, -1, -1): # reverse order to layer them correctly
 		var v_offset:int = get_v_offset(frame_index, subframe_index, animation_index)
-		#push_warning(frame.subframes[subframe_index])
-		#var subframe_in_bottom:bool = frame_index >= shp.attack_start_index
-		#var use_sp2:bool = (shp.file_name.contains("mon") 
-				#and subframe_in_bottom 
-				#and not use_frame_id_for_sp2_offset 
-				#and use_separate_sp2 
-				#and animation_index >= sp2_start_animation_id)
-		#if use_sp2:
-			#source_image = sp2_cel_selector.cel_image
-		
 		assembled_image = add_subframe(frame.subframes[subframe_index], source_image, assembled_image, v_offset, new_frame_size, y_offset)
 	
 	return assembled_image
@@ -681,24 +685,11 @@ func get_v_offset(frame_index:int, subframe_index:int = 0, animation_index:int =
 		v_offset = weapon_v_offset
 	elif file_name.contains("other"):
 		v_offset = other_type_index * 24 * 2 # 2 rows each of chicken and frog frames
-	#elif file_name.contains("mon") and use_frame_id_for_sp2_offset and frame_index >= sp2_start_frame_id: # game uses animation index, not the frame index to determine sp2 lookup
-		#if use_separate_sp2:
-			#v_offset = -256
-		#else:
-			#v_offset = sp2_v_offset
-		## var sp_num:int = (frame_index/sp2_start_frame_id)
-		## if sp_num <= 1:
-		## 	v_offset = sp2_v_offset * sp_num
-		## else:
-		## 	v_offset = sp2_v_offset + (sp2_v_offset2 * (sp_num - 1))
-	#elif shp.file_name.contains("mon") and y_top >= 256 and not use_frame_id_for_sp2_offset: # if y_top left is in bottom half, check if it should look into sp2
-		#if use_separate_sp2 and animation_index >= sp2_start_animation_id:
-			#v_offset = -256
-		#elif use_hardcoded_offsets && constant_sp2_v_offsets.has(animation_index):
-			#v_offset = constant_sp2_v_offsets[animation_index]
-		#elif animation_index >= sp2_start_animation_id:
-			#v_offset = sp2_v_offset
-	
+	elif file_name.contains("mon") and y_top >= 256: # if y_top left is in bottom half, check if it should look into sp2
+		if constant_sp2_v_offsets.has(animation_index):
+			v_offset = constant_sp2_v_offsets[animation_index]
+		elif animation_index >= SP2_START_ANIMATION_ID:
+			v_offset = SP2_V_OFFSET
 	
 	return v_offset
 

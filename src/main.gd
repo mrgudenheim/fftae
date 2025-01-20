@@ -430,6 +430,7 @@ func _on_delete_pointer_pressed() -> void:
 
 
 func _on_shp_file_options_item_selected(_index: int) -> void:
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	draw_assembled_frame(11)
 	frame_list_container.get_parent().get_parent().get_parent().name = shp.file_name + " Frames"
 	populate_frame_list(frame_list_container, shp)
@@ -437,6 +438,7 @@ func _on_shp_file_options_item_selected(_index: int) -> void:
 
 
 func _on_sprite_options_item_selected(_index: int) -> void:
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	draw_assembled_frame(11)
 	populate_frame_list(frame_list_container, shp)
 	#draw_assembled_frame(6)
