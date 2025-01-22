@@ -30,6 +30,7 @@ save_seq_dialog = NodePath("HBoxContainer/PatchPanel/MarginContainer/VBoxContain
 animation_list_container = NodePath("HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer")
 opcode_list_container = NodePath("HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes")
 frame_list_container = NodePath("HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer/FrameListGrid")
+item_frames_csv_filepath = "res://src/frame_data_item.txt"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1

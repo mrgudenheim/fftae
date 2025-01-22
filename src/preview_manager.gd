@@ -73,6 +73,8 @@ func _ready() -> void:
 	
 	item_options.clear()
 	for item_list_index: int in item_list.size():
+		if item_list[item_list_index].size() < 2: # ignore blank lines
+			break
 		item_options.add_item(str(item_list[item_list_index][1]))
 
 
@@ -272,11 +274,11 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 			target_sprite_pivot.position = Vector2(-(seq_part.parameters[0]), (seq_part.parameters[1]) + 20) # assume facing left, add 20 because it is y position from bottom of unit
 		elif seq_part.opcode_name == "LoadMFItem":
 			var item_frame_id: int = item_index # assumes loading item
-			var item_sheet_type:Shp = FFTae.ae.shps["item"]
+			var item_sheet_type:Shp = FFTae.ae.shps["ITEM.SHP"]
 			var item_image: Image = FFTae.ae.sprs["ITEM"].spritesheet
 			
 			if item_index >= 180:
-				item_sheet_type = FFTae.ae.shps["other"]
+				item_sheet_type = FFTae.ae.shps["OTHER"]
 				item_image = FFTae.ae.sprs["OTHER.SPR"].spritesheet
 				
 				if item_index <= 187: # load crystal

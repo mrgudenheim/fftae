@@ -18,6 +18,8 @@ static var global_fft_animation: FftAnimation = FftAnimation.new()
 @export var opcode_list_container: GridContainer
 @export var frame_list_container: GridContainer
 
+@export_file("*.txt") var item_frames_csv_filepath: String
+
 # https://en.wikipedia.org/wiki/CD-ROM#CD-ROM_XA_extension
 const bytes_per_sector: int = 2352
 const bytes_per_sector_header: int = 24
@@ -279,6 +281,12 @@ func cache_associated_files() -> void:
 	var wep_spr_end = 256 * 256 # wep is 256 pixels tall
 	var wep_spr: Spr = sprs["WEP.SPR"].get_sub_spr("WEP.SPR", wep_spr_start, wep_spr_end)
 	sprs["WEP.SPR"] = wep_spr
+	
+	var item_shp_name = "ITEM.SHP"
+	var item_shp: Shp = Shp.new()
+	item_shp.set_name(item_shp_name)
+	item_shp.set_frames_from_csv(item_frames_csv_filepath)
+	shps[item_shp_name] = item_shp
 
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
 	ui_manager.current_animation_slots = seq_local.sequence_pointers.size()
@@ -488,7 +496,7 @@ func _on_shp_file_options_item_selected(_index: int) -> void:
 
 
 func _on_sprite_options_item_selected(_index: int) -> void:
-	ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["WEP.SPR"].spritesheet)
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	#draw_assembled_frame(11)
