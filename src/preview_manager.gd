@@ -204,7 +204,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 				new_animation.seq = FFTae.ae.seqs[eff_file_name + ".SEQ"]
 				new_animation.shp = FFTae.ae.shps[eff_file_name + ".SHP"]
 				new_animation.sequence = new_animation.seq.sequences[seq_part.parameters[1]]
-				new_animation.image = FFTae.ae.sprs["WEP.SPR"].spritesheet
+				new_animation.image = FFTae.ae.sprs["EFF.SPR"].spritesheet
 				new_animation.is_primary_anim = false
 				new_animation.flipped_h = fft_animation.flipped_h
 				
@@ -273,12 +273,10 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 		elif seq_part.opcode_name == "LoadMFItem":
 			var item_frame_id: int = item_index # assumes loading item
 			var item_sheet_type:Shp = FFTae.ae.shps["item"]
-			#var item_cel_image = ExtensionsApi.project.get_cel_at(ExtensionsApi.project.current_project, item_frame, item_layer)
 			var item_image: Image = FFTae.ae.sprs["ITEM"].spritesheet
 			
 			if item_index >= 180:
 				item_sheet_type = FFTae.ae.shps["other"]
-				#item_cel_image = ExtensionsApi.project.get_cel_at(ExtensionsApi.project.current_project, other_frame, other_layer)
 				item_image = FFTae.ae.sprs["OTHER.SPR"].spritesheet
 				
 				if item_index <= 187: # load crystal

@@ -263,7 +263,22 @@ func cache_associated_files() -> void:
 				new_seq.set_name(file_name)
 				new_seq.set_data_from_seq_bytes(file_records[file_name].get_file_data(rom))
 				seqs[file_name] = new_seq
-
+	
+	# getting effect / weapon trail / glint
+	var eff_spr_name: String = "EFF.SPR"
+	var eff_spr: Spr = Spr.new()
+	eff_spr.height = 144
+	eff_spr.set_data(file_records["WEP.SPR"].get_file_data(rom).slice(0x8200, 0x10400), eff_spr_name)
+	sprs[eff_spr_name] = eff_spr
+	ui_manager.sprite_options.add_item(eff_spr_name)
+	
+	# TODO get trap effects - not useful for this tool at this time
+	
+	# crop wep spr
+	var wep_spr_start = 0
+	var wep_spr_end = 256 * 256 # wep is 256 pixels tall
+	var wep_spr: Spr = sprs["WEP.SPR"].get_sub_spr("WEP.SPR", wep_spr_start, wep_spr_end)
+	sprs["WEP.SPR"] = wep_spr
 
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
 	ui_manager.current_animation_slots = seq_local.sequence_pointers.size()
@@ -466,13 +481,15 @@ func _on_delete_pointer_pressed() -> void:
 
 
 func _on_shp_file_options_item_selected(_index: int) -> void:
-	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
 	#draw_assembled_frame(11)
 	frame_list_container.get_parent().get_parent().get_parent().name = shp.file_name + " Frames"
 	populate_frame_list(frame_list_container, shp)
 
 
 func _on_sprite_options_item_selected(_index: int) -> void:
+	ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["WEP.SPR"].spritesheet)
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	#draw_assembled_frame(11)
 	populate_frame_list(frame_list_container, shp)

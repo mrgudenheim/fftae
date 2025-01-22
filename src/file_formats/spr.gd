@@ -17,22 +17,19 @@ func _init() -> void:
 	num_pixels = width * height
 
 
-#func init_sp2(new_name: String, new_color_palette: Array[Color], sp2_pixel_data: PackedByteArray) -> void:
-	#is_sp2 = true
-	#num_colors = 0
-	#pixel_data_start = 0
-	#height = 256
-	#num_pixels = width * height
-	#
-	#file_name = new_name
-	#color_palette = new_color_palette
-	#set_color_indices(sp2_pixel_data)
-	#set_pixel_colors()
-	#spritesheet = get_rgba8_image()
+func get_sub_spr(new_name: String, start_pixel: int, end_pixel: int) -> Spr:
+	var sub_spr: Spr = Spr.new()
+	sub_spr.file_name = new_name
+	sub_spr.color_palette = color_palette
+	sub_spr.color_indices = color_indices.slice(start_pixel, end_pixel)
+	sub_spr.set_pixel_colors()
+	sub_spr.spritesheet = sub_spr.get_rgba8_image()
+	
+	return sub_spr
 
 func set_data(spr_file: PackedByteArray, new_name: String) -> void:
 	file_name = new_name
-	if file_name.to_upper() == "OTHER":
+	if file_name.to_upper().contains("OTHER"):
 		num_colors = 512
 		has_compressed = false
 	elif (file_name.to_upper().contains("WEP") 
@@ -75,7 +72,8 @@ func set_palette_data(palette_bytes: PackedByteArray) -> void:
 		color.r8 = color_bits & 0b0000_0000_0001_1111
 		
 		# convert 5 bit channels to 8 bit
-		color.a8 = 255 * color.a8 # first bit is alpha (if bit is zero, color is opaque)
+		#color.a8 = 255 * color.a8 # first bit is alpha (if bit is zero, color is opaque)
+		color.a8 = 255 # TODO use alpha correctly
 		color.b8 = roundi(255 * (color.b8 / float(31))) # then 5 bits each: blue, green, red
 		color.g8 = roundi(255 * (color.g8 / float(31)))
 		color.r8 = roundi(255 * (color.r8 / float(31)))
@@ -103,9 +101,15 @@ func set_color_indices(pixel_bytes: PackedByteArray) -> Array[int]:
 	return new_color_indicies
 
 func set_pixel_colors(palette_id: int = 0) -> void:
-	pixel_colors.resize(color_indices.size())
+	var new_pixel_colors: PackedColorArray = []
+	var new_size: int = color_indices.size()
+	var err: int = new_pixel_colors.resize(new_size)
+	#pixel_colors.resize(color_indices.size())
+	new_pixel_colors.fill(Color.BLACK)
 	for i: int in color_indices.size():
-		pixel_colors[i] = color_palette[color_indices[i] + (16 * palette_id)]
+		new_pixel_colors[i] = color_palette[color_indices[i] + (16 * palette_id)]
+	
+	pixel_colors = new_pixel_colors
 
 
 func get_rgba8_image() -> Image:

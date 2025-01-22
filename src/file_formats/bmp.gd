@@ -10,9 +10,9 @@ var palette_data_start := 0x0036
 var num_colors:int = 256
 var compression:int = 0
 
-var color_palette: Array[Color] = []
+var color_palette: PackedColorArray = []
 var color_indices: Array[int] = []
-var pixel_colors: Array[Color] = []
+var pixel_colors: PackedColorArray = []
 
 const BIT_DEPTH = {
 	ONE = 1,
