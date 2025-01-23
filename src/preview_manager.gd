@@ -160,8 +160,8 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 	
 	# handle LoadFrameWait
 	if not seq_part.isOpcode:
-		var new_frame_id:int = seq_part.parameters[0]
-		var frame_id_offset:int = get_animation_frame_offset(fft_animation.weapon_frame_offset_index, fft_animation.shp)
+		var new_frame_id: int = seq_part.parameters[0]
+		var frame_id_offset: int = get_animation_frame_offset(fft_animation.weapon_frame_offset_index, fft_animation.shp)
 		new_frame_id = new_frame_id + frame_id_offset + opcode_frame_offset
 		frame_id_label = str(new_frame_id)
 	
@@ -194,6 +194,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 				var wep_file_name: String = "WEP" + str(weapon_shp_num)
 				new_animation.seq = FFTae.ae.seqs[wep_file_name + ".SEQ"]
 				new_animation.shp = FFTae.ae.shps[wep_file_name + ".SHP"]
+				new_animation.weapon_frame_offset_index = global_weapon_frame_offset_index
 				new_animation.sequence = new_animation.seq.sequences[seq_part.parameters[1]]
 				new_animation.image = FFTae.ae.sprs["WEP.SPR"].spritesheet
 				new_animation.is_primary_anim = false
@@ -205,6 +206,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 				var eff_file_name: String = "EFF" + str(effect_type)
 				new_animation.seq = FFTae.ae.seqs[eff_file_name + ".SEQ"]
 				new_animation.shp = FFTae.ae.shps[eff_file_name + ".SHP"]
+				new_animation.weapon_frame_offset_index = global_weapon_frame_offset_index
 				new_animation.sequence = new_animation.seq.sequences[seq_part.parameters[1]]
 				new_animation.image = FFTae.ae.sprs["EFF.SPR"].spritesheet
 				new_animation.is_primary_anim = false
@@ -212,7 +214,6 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 				
 				start_animation(new_animation, ui_manager.preview_viewport.sprite_effect, true, false, false)
 			else:
-				print_debug("Error: QueueSpriteAnim: " + seq_part.to_string() + "\n" + fft_animation.sequence.to_string())
 				push_warning("Error: QueueSpriteAnim: " + seq_part.to_string() + "\n" + fft_animation.sequence.to_string())
 		elif seq_part.opcode_name.begins_with("Move"):
 			if seq_part.opcode_name == "MoveUnitFB":
@@ -398,6 +399,7 @@ func _on_animation_changed() -> void:
 	# reset position
 	(preview_viewport.sprite_primary.get_parent().get_parent() as Node2D).position = Vector2.ZERO
 	(preview_viewport.sprite_item.get_parent() as Node2D).position = Vector2.ZERO
+	(preview_viewport.sprite_item.get_parent() as Node2D).rotation = 0
 	preview_viewport.sprite_item.texture = ImageTexture.create_from_image(FFTae.ae.shp.create_blank_frame())
 	
 	# reset layer priority
@@ -463,6 +465,6 @@ func _on_submerged_options_item_selected(index: int) -> void:
 	_on_animation_changed()
 
 
-func _on_face_right_check_toggled(toggled_on: bool) -> void:	
+func _on_face_right_check_toggled(_toggled_on: bool) -> void:	
 	preview_viewport.flip_h()
 	_on_animation_changed()
