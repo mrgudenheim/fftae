@@ -18,7 +18,10 @@ var name_length: int = 0 # in num characters, includes the ending characters ';1
 var name: String = ""
 
 
-func _init(record: PackedByteArray) -> void:
+func _init(record: PackedByteArray = []) -> void:
+	if record.size() == 0:
+		return
+	
 	record_length = record.decode_u8(OFFSET_RECORD_LENGTH)
 	sector_location = record.decode_u32(OFFSET_SECTOR_LOCATION)
 	size = record.decode_u32(OFFSET_SIZE)

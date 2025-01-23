@@ -282,11 +282,31 @@ func cache_associated_files() -> void:
 	var wep_spr: Spr = sprs["WEP.SPR"].get_sub_spr("WEP.SPR", wep_spr_start, wep_spr_end)
 	sprs["WEP.SPR"] = wep_spr
 	
+	# get shp for item graphics
 	var item_shp_name = "ITEM.SHP"
 	var item_shp: Shp = Shp.new()
 	item_shp.set_name(item_shp_name)
 	item_shp.set_frames_from_csv(item_frames_csv_filepath)
 	shps[item_shp_name] = item_shp
+	
+	# get item graphics
+	var item_record: FileRecord = FileRecord.new()
+	item_record.sector_location = 6297 # ITEM.BIN is in EVENT not BATTLE, so needs a new record created
+	item_record.size = 33280
+	item_record.name = "ITEM.BIN"
+	file_records[item_record.name] = item_record
+	
+	var item_spr_data: PackedByteArray = file_records[item_record.name].get_file_data(rom)
+	var item_spr: Spr = Spr.new()
+	item_spr.height = 256
+	item_spr.set_palette_data(item_spr_data.slice(0x8000, 0x8200))
+	item_spr.color_indices = item_spr.set_color_indices(item_spr_data.slice(0, 0x8000))
+	item_spr.set_pixel_colors()
+	item_spr.spritesheet = item_spr.get_rgba8_image()
+	sprs[item_record.name] = item_spr
+	ui_manager.sprite_options.add_item(item_record.name)
+	
+
 
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
 	ui_manager.current_animation_slots = seq_local.sequence_pointers.size()
@@ -498,6 +518,6 @@ func _on_shp_file_options_item_selected(_index: int) -> void:
 func _on_sprite_options_item_selected(_index: int) -> void:
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["WEP.SPR"].spritesheet)
-	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
+	ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	#draw_assembled_frame(11)
 	populate_frame_list(frame_list_container, shp)

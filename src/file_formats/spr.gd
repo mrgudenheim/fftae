@@ -38,6 +38,7 @@ func set_data(spr_file: PackedByteArray, new_name: String) -> void:
 		or file_name.to_upper().contains("CYOMON")
 		or file_name.to_upper().contains("DAMI")
 		or file_name.to_upper().contains("FURAIA")
+		or file_name.to_upper().contains("ITEM")
 		):
 			has_compressed = false
 	

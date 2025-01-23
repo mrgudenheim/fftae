@@ -275,7 +275,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 		elif seq_part.opcode_name == "LoadMFItem":
 			var item_frame_id: int = item_index # assumes loading item
 			var item_sheet_type:Shp = FFTae.ae.shps["ITEM.SHP"]
-			var item_image: Image = FFTae.ae.sprs["ITEM"].spritesheet
+			var item_image: Image = FFTae.ae.sprs["ITEM.BIN"].spritesheet
 			
 			if item_index >= 180:
 				item_sheet_type = FFTae.ae.shps["OTHER"]
