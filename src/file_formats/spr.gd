@@ -205,18 +205,18 @@ func set_sp2s(file_records: Dictionary, rom: PackedByteArray) -> void:
 	spritesheet = get_rgba8_image()
 
 
-
-func get_spritesheet_data(data_table_bytes: PackedByteArray) -> void:
+func set_spritesheet_data(new_sprite_id: int, battle_bin_bytes: PackedByteArray) -> void:
 	# WEP and EFF partially handled directly in preview_manager QueueSpriteAnim opcode
-	sprite_id = FFTae.ae.spr_file_name_to_id[file_name]
+	# TODO handle WEP and EFF when direclty selected
+	sprite_id = new_sprite_id
 	var spritesheet_data_length: int = 4
 	var spritesheet_data_start: int = 0x2d748 + (sprite_id * spritesheet_data_length)
 	
-	#var spritesheet_data_bytes: PackedByteArray = battle_bin_bytes.slice(spritesheet_data_start, spritesheet_data_start + spritesheet_data_length)
-	var shp_id: int = data_table_bytes[3]
-	var seq_id: int = data_table_bytes[2]
-	var flying_flag: int = data_table_bytes[1]
-	var graphic_height: int = data_table_bytes[0]
+	var spritesheet_data_bytes: PackedByteArray = battle_bin_bytes.slice(spritesheet_data_start, spritesheet_data_start + spritesheet_data_length)
+	var shp_id: int = spritesheet_data_bytes[3]
+	var seq_id: int = spritesheet_data_bytes[2]
+	var flying_flag: int = spritesheet_data_bytes[1]
+	var graphic_height: int = spritesheet_data_bytes[0]
 	
 	match shp_id:
 		0:

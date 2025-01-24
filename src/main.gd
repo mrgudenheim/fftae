@@ -71,6 +71,7 @@ var spr: Spr:
 			var new_spr: Spr = Spr.new()
 			new_spr.set_data(file_records[file_name].get_file_data(rom), file_name.get_basename())
 			new_spr.set_sp2s(file_records, rom)
+			new_spr.set_spritesheet_data(spr_file_name_to_id[file_name], file_records["BATTLE.BIN"].get_file_data(rom))
 			sprs[file_name] = new_spr
 			return sprs[file_name]
 
@@ -147,7 +148,7 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 
 
 # https://ffhacktics.com/wiki/BATTLE.BIN_Data_Tables#Animation_.26_Display_Related_Data
-func load_battle_bin_sprite_data() -> void:
+func _load_battle_bin_sprite_data() -> void:
 	# get BATTLE.BIN file data
 	# get item graphics
 	var battle_bin_record: FileRecord = FileRecord.new()
@@ -158,12 +159,14 @@ func load_battle_bin_sprite_data() -> void:
 	
 	# look up spr file_name based on LBA
 	var spritesheet_file_data_length: int = 8
-	var battle_bin_bytes: PackedByteArray = FFTae.ae.file_records["BATTLE.BIN"].get_file_data(rom)
-	for sprite_id: int in 0x9e:
+	var battle_bin_bytes: PackedByteArray = file_records["BATTLE.BIN"].get_file_data(rom)
+	for sprite_id: int in range(0, 0x9f):
 		var spritesheet_file_data_start: int = 0x2dcd4 + (sprite_id * spritesheet_file_data_length)
 		var spritesheet_file_data_bytes: PackedByteArray = battle_bin_bytes.slice(spritesheet_file_data_start, spritesheet_file_data_start + spritesheet_file_data_length)
 		var spritesheet_lba: int = spritesheet_file_data_bytes.decode_u32(0)
-		var spritesheet_file_name: String = FFTae.ae.lba_to_file_name[spritesheet_lba]
+		var spritesheet_file_name: String = ""
+		if spritesheet_lba != 0:
+			spritesheet_file_name = lba_to_file_name[spritesheet_lba]
 		spr_file_name_to_id[spritesheet_file_name] = sprite_id
 
 
@@ -330,6 +333,7 @@ func cache_associated_files() -> void:
 	sprs[item_record.name] = item_spr
 	ui_manager.sprite_options.add_item(item_record.name)
 	
+	_load_battle_bin_sprite_data()
 
 
 func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
