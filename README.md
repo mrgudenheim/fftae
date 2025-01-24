@@ -9,7 +9,7 @@ This tool streamlines creating xml patches for FFT that edit animations.
 - Add or delete animations
 - Add, delete, or edit animation pointers
 - Create SEQ or xml patch
-- Preview SHP frames
+- Preview animation and SHP frames
 
 # Limitations and Notes
 - Having two Move opcodes in a row (ex. MoveForward2() followed by MoveForward2()) may cause weird issues
@@ -18,7 +18,7 @@ This tool streamlines creating xml patches for FFT that edit animations.
 - Frames are dependent on the following settings:
 	MON.SHP uses Sp2 files based on animation index, so the frames retrieved may change depending on which animation is selected.
 	WEP.SHP offsets the selection vertically based on weapon id
-	OTHER.SHP offsets the selection based on the type
+	OTHER.SHP offsets the selection vertically based on the "other type"
 
 # Future Improvements
 - Improve UI
