@@ -106,32 +106,6 @@ func update_animation_description_options(seq: Seq) -> void:
 		animation_name_options.disabled = false
 
 
-func _on_seq_file_options_item_selected(index: int) -> void:
-	var type: String = seq_options.get_item_text(index)
-	
-	if FFTae.ae.file_records.has(type):
-		max_bytes = ceil(FFTae.ae.file_records[type].size / float(FFTae.data_bytes_per_sector)) * FFTae.data_bytes_per_sector as int
-	
-	FFTae.ae.animation_list_container.get_parent().get_parent().get_parent().name = FFTae.ae.seq.file_name + " Animations"
-	
-	patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
-	patch_name_edit.placeholder_text = type + "_animation_edit"
-	
-	current_animation_slots = FFTae.ae.seq.sequence_pointers.size()
-	max_animation_slots = FFTae.ae.seq.section2_length / 4
-	current_bytes = FFTae.ae.seq.toal_length
-	
-	animation_id_spinbox.max_value = FFTae.ae.seq.sequences.size() - 1
-	animation_id_spinbox.editable = true
-	
-	pointer_index_spinbox.max_value = FFTae.ae.seq.sequence_pointers.size() - 1
-	
-	update_animation_description_options(FFTae.ae.seq)
-	
-	FFTae.ae.populate_animation_list(FFTae.ae.animation_list_container, FFTae.ae.seq)
-	FFTae.ae.populate_opcode_list(FFTae.ae.opcode_list_container, animation_name_options.selected)
-
-
 func get_options_button_selected_text(option_button: OptionButton) -> String:
 	return option_button.get_item_text(option_button.selected)
 

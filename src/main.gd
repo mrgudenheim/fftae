@@ -129,7 +129,7 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	ui_manager.option_button_select_text(ui_manager.shp_options, "TYPE1.SHP")
 	ui_manager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
 	
-	ui_manager._on_seq_file_options_item_selected(ui_manager.seq_options.selected)
+	_on_seq_file_options_item_selected(ui_manager.seq_options.selected)
 	_on_shp_file_options_item_selected(ui_manager.shp_options.selected)
 	
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
@@ -508,16 +508,45 @@ func _on_delete_pointer_pressed() -> void:
 	populate_animation_list(animation_list_container, seq)
 
 
+func _on_seq_file_options_item_selected(index: int) -> void:
+	var type: String = ui_manager.seq_options.get_item_text(index)
+	
+	if file_records.has(type):
+		ui_manager.max_bytes = ceil(file_records[type].size / float(data_bytes_per_sector)) * data_bytes_per_sector as int
+	
+	animation_list_container.get_parent().get_parent().get_parent().name = seq.file_name + " Animations"
+	
+	ui_manager.patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
+	ui_manager.patch_name_edit.placeholder_text = type + "_animation_edit"
+	
+	ui_manager.current_animation_slots = seq.sequence_pointers.size()
+	ui_manager.max_animation_slots = seq.section2_length / 4
+	ui_manager.current_bytes = seq.toal_length
+	
+	ui_manager.animation_id_spinbox.max_value = seq.sequences.size() - 1
+	ui_manager.animation_id_spinbox.editable = true
+	
+	ui_manager.pointer_index_spinbox.max_value = seq.sequence_pointers.size() - 1
+	
+	ui_manager.update_animation_description_options(seq)
+	
+	populate_animation_list(animation_list_container, seq)
+	populate_opcode_list(opcode_list_container, ui_manager.animation_name_options.selected)
+	preview_manager._on_animation_changed()
+
+
 func _on_shp_file_options_item_selected(_index: int) -> void:
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
 	#draw_assembled_frame(11)
 	frame_list_container.get_parent().get_parent().get_parent().name = shp.file_name + " Frames"
 	populate_frame_list(frame_list_container, shp)
+	preview_manager._on_animation_changed()
 
 
 func _on_sprite_options_item_selected(_index: int) -> void:
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["WEP.SPR"].spritesheet)
-	ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
+	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	#draw_assembled_frame(11)
 	populate_frame_list(frame_list_container, shp)
+	preview_manager._on_animation_changed()
