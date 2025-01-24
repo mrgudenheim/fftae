@@ -21,7 +21,7 @@ var weapon_table: Array = []
 var item_list: Array = []
 
 @export var animation_is_playing: bool = true
-@export var animation_speed: float = 60 # frames per sec
+@export var animation_speed: float = 59 # frames per sec
 @export var animation_slider: Slider
 @export var opcode_text: LineEdit
 var opcode_frame_offset: int = 0

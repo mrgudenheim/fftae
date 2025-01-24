@@ -6,6 +6,9 @@ var spritesheet: Image
 var has_compressed: bool = true
 var is_sp2: bool = false
 var sp2s: Dictionary = {}
+var shp_name: String = ""
+var seq_name: String = ""
+var sprite_id: int = 0
 
 func _init() -> void:
 	file_name = "spr_file"
@@ -200,6 +203,53 @@ func set_sp2s(file_records: Dictionary, rom: PackedByteArray) -> void:
 	
 	set_pixel_colors()
 	spritesheet = get_rgba8_image()
-			#var sp2_spr: Spr = Spr.new()
-			#sp2_spr.init_sp2(file_record.name, color_palette, sp2_data)
-			#sp2s[file_record.name] = sp2_spr
+
+
+
+func get_spritesheet_data(data_table_bytes: PackedByteArray) -> void:
+	# WEP and EFF partially handled directly in preview_manager QueueSpriteAnim opcode
+	sprite_id = FFTae.ae.spr_file_name_to_id[file_name]
+	var spritesheet_data_length: int = 4
+	var spritesheet_data_start: int = 0x2d748 + (sprite_id * spritesheet_data_length)
+	
+	#var spritesheet_data_bytes: PackedByteArray = battle_bin_bytes.slice(spritesheet_data_start, spritesheet_data_start + spritesheet_data_length)
+	var shp_id: int = data_table_bytes[3]
+	var seq_id: int = data_table_bytes[2]
+	var flying_flag: int = data_table_bytes[1]
+	var graphic_height: int = data_table_bytes[0]
+	
+	match shp_id:
+		0:
+			shp_name = "TYPE1.SHP"
+		1:
+			shp_name = "TYPE2.SHP"
+		2:
+			shp_name = "CYOKO.SHP"
+		3:
+			shp_name = "MON.SHP"
+		4:
+			shp_name = "OTHER.SHP"
+		5:
+			shp_name = "MON.SHP" # RUKA
+		6:
+			shp_name = "ARUTE.SHP"
+		7:
+			shp_name = "KANZEN.SHP"
+	
+	match seq_id:
+		0:
+			seq_name = "TYPE1.SEQ"
+		1:
+			seq_name = "TYPE3.SEQ"
+		2:
+			seq_name = "CYOKO.SEQ"
+		3:
+			seq_name = "MON.SEQ"
+		4:
+			seq_name = "OTHER.SEQ"
+		5:
+			seq_name = "RUKA.SEQ"
+		6:
+			seq_name = "ARUTE.SHP"
+		7:
+			seq_name = "KANZEN.SEQ"
