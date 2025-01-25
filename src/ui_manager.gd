@@ -109,7 +109,7 @@ func update_animation_description_options(seq: Seq) -> void:
 func get_options_button_selected_text(option_button: OptionButton) -> String:
 	return option_button.get_item_text(option_button.selected)
 
-func option_button_select_text(option_button: OptionButton, text: String) -> void:
+static func option_button_select_text(option_button: OptionButton, text: String) -> void:
 	var found_text: bool = false
 	for index: int in option_button.item_count:
 		if option_button.get_item_text(index) == text:

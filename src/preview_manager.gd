@@ -137,6 +137,7 @@ func play_animation(fft_animation: FftAnimation, draw_target: Sprite2D, isLoopin
 			await get_tree().create_timer(delay_sec).timeout
 		
 	if isLooping:
+		reset_sprites()
 		play_animation(fft_animation, draw_target, isLooping)
 	else: # clear image when animation is over
 		draw_target.texture = ImageTexture.create_from_image(fft_animation.shp.create_blank_frame())
@@ -146,7 +147,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 	# print_debug(str(animation) + " " + str(animation_part_id + 3))
 	var seq_part:SeqPart = fft_animation.sequence.seq_parts[seq_part_id]
 	
-	var frame_id_label:String = ""
+	var frame_id_label: String = ""
 	if seq_part.isOpcode:
 		frame_id_label = seq_part.to_string()
 	else:
@@ -189,7 +190,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 		if seq_part.opcode_name == "QueueSpriteAnim":
 			#print("Performing " + anim_part_start) 
 			if seq_part.parameters[0] == 1: # play weapon animation
-				weapon_shp_num = 2 if FFTae.ae.shp.file_name.to_lower() == "TYPE2.SHP" else 1
+				weapon_shp_num = 2 if FFTae.ae.shp.file_name.to_upper().contains("TYPE2") else 1
 				var new_animation := FftAnimation.new()
 				var wep_file_name: String = "WEP" + str(weapon_shp_num)
 				new_animation.seq = FFTae.ae.seqs[wep_file_name + ".SEQ"]
@@ -393,6 +394,19 @@ func get_sub_animation(length:int, sub_animation_end_part_id:int, parent_animati
 
 
 func _on_animation_changed() -> void:
+	reset_sprites()
+	
+	#if (FFTae.ae.seqs.has(FFTae.ae.seq.name_alias)):
+	var new_fft_animation: FftAnimation = get_animation_from_globals()
+	
+	var num_parts: int = new_fft_animation.sequence.seq_parts.size()
+	animation_slider.tick_count = num_parts
+	animation_slider.max_value = num_parts - 1
+	
+	start_animation(new_fft_animation, preview_viewport.sprite_primary, animation_is_playing, true)
+
+
+func reset_sprites() -> void:
 	# reset frame offset
 	opcode_frame_offset = 0
 	
@@ -407,15 +421,6 @@ func _on_animation_changed() -> void:
 	preview_viewport.sprite_weapon.z_index = -3
 	preview_viewport.sprite_effect.z_index = -1
 	preview_viewport.sprite_text.z_index = 0
-	
-	#if (FFTae.ae.seqs.has(FFTae.ae.seq.name_alias)):
-	var new_fft_animation: FftAnimation = get_animation_from_globals()
-	
-	var num_parts: int = new_fft_animation.sequence.seq_parts.size()
-	animation_slider.tick_count = num_parts
-	animation_slider.max_value = num_parts - 1
-	
-	start_animation(new_fft_animation, preview_viewport.sprite_primary, animation_is_playing, true)
 
 
 func get_animation_from_globals() -> FftAnimation:

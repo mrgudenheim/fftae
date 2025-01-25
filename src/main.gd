@@ -129,9 +129,9 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	save_seq_button.disabled = false
 	
 	# try to load defaults
-	ui_manager.option_button_select_text(ui_manager.seq_options, "TYPE1.SEQ")
-	ui_manager.option_button_select_text(ui_manager.shp_options, "TYPE1.SHP")
-	ui_manager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
+	UiManager.option_button_select_text(ui_manager.seq_options, "TYPE1.SEQ")
+	UiManager.option_button_select_text(ui_manager.shp_options, "TYPE1.SHP")
+	UiManager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
 	
 	_on_seq_file_options_item_selected(ui_manager.seq_options.selected)
 	_on_shp_file_options_item_selected(ui_manager.shp_options.selected)
@@ -304,13 +304,13 @@ func cache_associated_files() -> void:
 	# TODO get trap effects - not useful for this tool at this time
 	
 	# crop wep spr
-	var wep_spr_start = 0
-	var wep_spr_end = 256 * 256 # wep is 256 pixels tall
+	var wep_spr_start: int = 0
+	var wep_spr_end: int = 256 * 256 # wep is 256 pixels tall
 	var wep_spr: Spr = sprs["WEP.SPR"].get_sub_spr("WEP.SPR", wep_spr_start, wep_spr_end)
 	sprs["WEP.SPR"] = wep_spr
 	
 	# get shp for item graphics
-	var item_shp_name = "ITEM.SHP"
+	var item_shp_name: String = "ITEM.SHP"
 	var item_shp: Shp = Shp.new()
 	item_shp.set_name(item_shp_name)
 	item_shp.set_frames_from_csv(item_frames_csv_filepath)
@@ -564,17 +564,16 @@ func _on_seq_file_options_item_selected(index: int) -> void:
 
 
 func _on_shp_file_options_item_selected(_index: int) -> void:
-	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
-	#draw_assembled_frame(11)
 	frame_list_container.get_parent().get_parent().get_parent().name = shp.file_name + " Frames"
 	populate_frame_list(frame_list_container, shp)
 	preview_manager._on_animation_changed()
 
 
 func _on_sprite_options_item_selected(_index: int) -> void:
-	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["EFF.SPR"].spritesheet)
-	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(sprs["WEP.SPR"].spritesheet)
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
-	#draw_assembled_frame(11)
 	populate_frame_list(frame_list_container, shp)
+	UiManager.option_button_select_text(ui_manager.seq_options, spr.seq_name)
+	ui_manager.seq_options.item_selected.emit(ui_manager.seq_options.selected)
+	UiManager.option_button_select_text(ui_manager.shp_options, spr.shp_name)
+	ui_manager.shp_options.item_selected.emit(ui_manager.shp_options.selected)
 	preview_manager._on_animation_changed()

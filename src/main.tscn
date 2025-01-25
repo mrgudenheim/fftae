@@ -561,7 +561,7 @@ horizontal_alignment = 1
 [connection signal="file_selected" from="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog" to="." method="_on_save_xml_dialog_file_selected"]
 [connection signal="pressed" from="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SaveAsSEQ" to="." method="_on_save_as_seq_pressed"]
 [connection signal="file_selected" from="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog" to="." method="_on_save_seq_dialog_file_selected"]
-[connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/SeqFileOptions" to="HBoxContainer/PatchPanel" method="_on_seq_file_options_item_selected"]
+[connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/SeqFileOptions" to="." method="_on_seq_file_options_item_selected"]
 [connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/ShpFileOptions" to="." method="_on_shp_file_options_item_selected"]
 [connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/SpriteOptions" to="." method="_on_sprite_options_item_selected"]
 [connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/WeaponOptions" to="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/PreviewContainer" method="_on_weapon_options_item_selected"]
