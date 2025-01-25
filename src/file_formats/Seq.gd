@@ -1,26 +1,27 @@
 class_name Seq
 
 static var seq_aliases: Dictionary = {
-	"arute":"Altima/arute",
-	"cyoko":"Chocobo/cyoko",
-	"eff1":"eff1",
-	"eff2":"eff2 (Unused)",
-	"kanzen":"Altima2/kanzen",
-	"mon":"Monster/mon",
-	"other":"other",
-	"ruka":"Lucavi/ruka",
-	"type1":"type1",
-	"type2":"type2 (Unused)",
-	"type3":"type3",
-	"type4":"type4 (Unused)",
-	"wep1":"wep1",
-	"wep2":"wep2"}
+	"ARUTE.SEQ":"Altima/arute",
+	"CYOKO.SEQ":"Chocobo/cyoko",
+	"EFF1.SEQ":"eff1",
+	"EFF2.SEQ":"eff2 (Unused)",
+	"KANZEN.SEQ":"Altima2/kanzen",
+	"MON.SEQ":"Monster/mon",
+	"OTHER.SEQ":"other",
+	"RUKA.SEQ":"Lucavi/ruka",
+	"TYPE1.SEQ":"type1",
+	"TYPE2.SEQ":"type2 (Unused)",
+	"TYPE3.SEQ":"type3",
+	"TYPE4.SEQ":"type4 (Unused)",
+	"WEP1.SEQ":"wep1",
+	"WEP2.SEQ":"wep2"}
 
 # LoadFrameAndWait with 0 delay is also an animation end
 const ending_opcodes: PackedStringArray = [
 	"IncrementLoop",
 	"PauseAnimation",
 	"EndAnimation",
+	"HoldWeapon",
 	"ffc2",
 	]
 
@@ -111,10 +112,10 @@ func set_data_from_seq_file(filepath:String) -> void:
 
 
 func set_name(new_file_name: String) -> void:
-	new_file_name = new_file_name.trim_suffix(".seq")
-	new_file_name = new_file_name.trim_suffix(".SEQ")
-	new_file_name = new_file_name.trim_suffix(".Seq")
-	new_file_name = new_file_name.to_lower()
+	#new_file_name = new_file_name.trim_suffix(".seq")
+	#new_file_name = new_file_name.trim_suffix(".SEQ")
+	#new_file_name = new_file_name.trim_suffix(".Seq")
+	#new_file_name = new_file_name.to_lower()
 	
 	file_name = new_file_name
 	
