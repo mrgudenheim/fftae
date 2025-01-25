@@ -38,7 +38,7 @@ anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="PatchPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_pointers_text", "animations_bytes_text", "shp_options", "sprite_options", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox", "preview_viewport")]
+[node name="PatchPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_pointers_text", "animations_bytes_text", "shp_options", "sprite_options", "animation_table", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox", "preview_viewport")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
 seq_options = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/SeqFileOptions")
@@ -46,6 +46,7 @@ animations_pointers_text = NodePath("../SettingsPanel/MarginContainer/VBoxContai
 animations_bytes_text = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/NumEmptySeqBytes")
 shp_options = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/ShpFileOptions")
 sprite_options = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/SpriteOptions")
+animation_table = NodePath("../TabContainer/Animations/VBoxContainer/AnimationTree")
 patch_name_edit = NodePath("MarginContainer/VBoxContainer/GridContainer/PatchNameLineEdit")
 author_name_edit = NodePath("MarginContainer/VBoxContainer/GridContainer/AuthorLineEdit")
 patch_description_edit = NodePath("MarginContainer/VBoxContainer/DescriptionTextEdit")
@@ -258,21 +259,25 @@ horizontal_alignment = 2
 layout_mode = 2
 
 [node name="EmptyFramePointers" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
+visible = false
 layout_mode = 2
 text = "Pointers: "
 horizontal_alignment = 2
 
 [node name="NumEmptyFramePoitners" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
+visible = false
 layout_mode = 2
 text = "0/256"
 label_settings = SubResource("LabelSettings_8s6nw")
 
 [node name="EmptyShpBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
+visible = false
 layout_mode = 2
 text = "Bytes: "
 horizontal_alignment = 2
 
 [node name="NumEmptyShpBytes" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
+visible = false
 layout_mode = 2
 text = "2048/2048"
 label_settings = SubResource("LabelSettings_bugng")
@@ -363,6 +368,16 @@ text = "Delete Pointer"
 
 [node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions"]
 layout_mode = 2
+
+[node name="AnimationTree" type="Tree" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 4
+column_titles_visible = true
+hide_folding = true
+hide_root = true
+select_mode = 1
+scroll_horizontal_enabled = false
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
