@@ -197,28 +197,51 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 	var xml_header: String = '<?xml version="1.0" encoding="utf-8" ?>\n<Patches>'
 	var xml_patch_name: String = '<Patch name="' + ui_manager.patch_name + '">'
 	var xml_author: String = '<Author>' + ui_manager.patch_author + '</Author>'
-	var xml_description: String = '<Description>' + ui_manager.patch_description + '</Description>'
 	
-	var file: String = seq.file_name.to_upper() + ".SEQ"
-	var xml_size_location_start: String = '<Location offset="%08x" ' % (file_records[file].record_location_offset + FileRecord.OFFSET_SIZE - bytes_per_sector_header)
-	xml_size_location_start += ('sector="%x">' % file_records[file].record_location_sector)
-	var file_size_hex: String = '%08x' % seq.toal_length
-	var file_size_hex_bytes: PackedStringArray = [
-		file_size_hex.substr(0,2),
-		file_size_hex.substr(2,2),
-		file_size_hex.substr(4,2),
-		file_size_hex.substr(6,2),
-		]
-	var bytes_size: String = file_size_hex_bytes[3] + file_size_hex_bytes[2] + file_size_hex_bytes[1] + file_size_hex_bytes[0] # little-endian
-	bytes_size += file_size_hex_bytes[0] + file_size_hex_bytes[1] + file_size_hex_bytes[2] + file_size_hex_bytes[3] # big-endian
-	var xml_size_location_end: String = '</Location>'
+	var files_changed: PackedStringArray = []
+	var xml_files: PackedStringArray = []
+	for file_name in seqs.keys():
+		var seq_temp: Seq = seqs[file_name]
+		var seq_bytes: PackedByteArray = seq_temp.get_seq_bytes() 
+		if file_records[file_name].get_file_data(rom) == seq_bytes:
+			continue
+		
+		var file: String = seq_temp.file_name
+		files_changed.append(file)
+		var xml_size_location_start: String = '<Location offset="%08x" ' % (file_records[file].record_location_offset + FileRecord.OFFSET_SIZE - bytes_per_sector_header)
+		xml_size_location_start += ('sector="%x">' % file_records[file].record_location_sector)
+		var file_size_hex: String = '%08x' % seq_temp.toal_length
+		var file_size_hex_bytes: PackedStringArray = [
+			file_size_hex.substr(0,2),
+			file_size_hex.substr(2,2),
+			file_size_hex.substr(4,2),
+			file_size_hex.substr(6,2),
+			]
+		var bytes_size: String = file_size_hex_bytes[3] + file_size_hex_bytes[2] + file_size_hex_bytes[1] + file_size_hex_bytes[0] # little-endian
+		bytes_size += file_size_hex_bytes[0] + file_size_hex_bytes[1] + file_size_hex_bytes[2] + file_size_hex_bytes[3] # big-endian
+		var xml_size_location_end: String = '</Location>'
+		
+		var bytes: String = seq_bytes.hex_encode()
+		var location_start: int = 0
+		var xml_location_start: String = '<Location offset="%08x" ' % location_start
+		xml_location_start += 'file="BATTLE_' + file.trim_suffix(".SEQ") + '_SEQ">'
+		var xml_location_end: String = '</Location>'
+		
+		xml_files.append_array(PackedStringArray([
+			"<!-- " + file + " ISO 9660 file size (both endian) -->",
+			xml_size_location_start,
+			bytes_size,
+			xml_size_location_end,
+			"<!-- " + file + " data -->",
+			xml_location_start,
+			bytes,
+			xml_location_end,
+			]))
 	
-	var seq_bytes: PackedByteArray = seq.get_seq_bytes()
-	var bytes: String = seq_bytes.hex_encode()
-	var location_start: int = 0
-	var xml_location_start: String = '<Location offset="%08x" ' % location_start
-	xml_location_start += 'file="BATTLE_' + seq.file_name.to_upper() + '_SEQ">'
-	var xml_location_end: String = '</Location>'
+	# set default description as list of changed files
+	var xml_description: String = '<Description> The following files were editing with FFT Animation Edtior: ' + ", ".join(files_changed) + '</Description>'
+	if not ui_manager.patch_description_edit.text.is_empty():
+		xml_description = '<Description>' + ui_manager.patch_description + '</Description>'
 	
 	var xml_end: String = '</Patch>\n</Patches>'
 	
@@ -227,14 +250,7 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 		xml_patch_name,
 		xml_author,
 		xml_description,
-		"<!-- file size (both endian) -->",
-		xml_size_location_start,
-		bytes_size,
-		xml_size_location_end,
-		"<!-- seq data -->",
-		xml_location_start,
-		bytes,
-		xml_location_end,
+		"\n".join(xml_files),
 		xml_end,
 	]
 	
@@ -298,6 +314,8 @@ func cache_associated_files() -> void:
 	var eff_spr: Spr = Spr.new()
 	eff_spr.height = 144
 	eff_spr.set_data(file_records["WEP.SPR"].get_file_data(rom).slice(0x8200, 0x10400), eff_spr_name)
+	eff_spr.shp_name = "EFF1.SHP"
+	eff_spr.seq_name = "EFF1.SEQ"
 	sprs[eff_spr_name] = eff_spr
 	ui_manager.sprite_options.add_item(eff_spr_name)
 	
@@ -307,6 +325,8 @@ func cache_associated_files() -> void:
 	var wep_spr_start: int = 0
 	var wep_spr_end: int = 256 * 256 # wep is 256 pixels tall
 	var wep_spr: Spr = sprs["WEP.SPR"].get_sub_spr("WEP.SPR", wep_spr_start, wep_spr_end)
+	wep_spr.shp_name = "WEP1.SHP"
+	wep_spr.seq_name = "WEP1.SEQ"
 	sprs["WEP.SPR"] = wep_spr
 	
 	# get shp for item graphics
@@ -389,7 +409,7 @@ func populate_animation_list(animations_grid_parent: GridContainer, seq_local: S
 func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> void:
 	clear_grid_container(opcode_grid_parent, 1) # keep header row
 	
-	for seq_part_index: int in FFTae.ae.seq.sequences[seq_id].seq_parts.size():
+	for seq_part_index: int in seq.sequences[seq_id].seq_parts.size():
 		var id_label: Label = Label.new()
 		id_label.text = str(seq_part_index)
 		id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -402,16 +422,16 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 		
 		opcode_options.seq_id = seq_id
 		opcode_options.seq_part_id = seq_part_index
-		opcode_options.seq_part = FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index]
+		opcode_options.seq_part = seq.sequences[seq_id].seq_parts[seq_part_index]
 		opcode_grid_parent.add_child(opcode_options)
 		for opcode_options_index: int in opcode_options.item_count:
-			if opcode_options.get_item_text(opcode_options_index) == FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].opcode_name:
+			if opcode_options.get_item_text(opcode_options_index) == seq.sequences[seq_id].seq_parts[seq_part_index].opcode_name:
 				opcode_options.select(opcode_options_index)
 				opcode_options.item_selected.emit(opcode_options_index)
 				break
 		
-		for param_index: int in FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
-			opcode_options.param_spinboxes[param_index].value = FFTae.ae.seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
+		for param_index: int in seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
+			opcode_options.param_spinboxes[param_index].value = seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
 
 
 func populate_frame_list(frame_grid_parent: GridContainer, shp_local: Shp) -> void:
@@ -544,7 +564,7 @@ func _on_seq_file_options_item_selected(index: int) -> void:
 	
 	animation_list_container.get_parent().get_parent().get_parent().name = seq.file_name + " Animations"
 	
-	ui_manager.patch_description_edit.placeholder_text = type + ".seq edited with FFT Animation Editor"
+	ui_manager.patch_description_edit.placeholder_text = type + " edited with FFT Animation Editor"
 	ui_manager.patch_name_edit.placeholder_text = type + "_animation_edit"
 	
 	ui_manager.current_animation_slots = seq.sequence_pointers.size()
