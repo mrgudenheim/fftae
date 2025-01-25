@@ -23,8 +23,8 @@ This tool streamlines creating xml patches for FFT that edit animations.
 
 # Future Improvements
 - Improve UI
-- Preview animations
 - Allow editing SHPs
+- Support "animation rewrite" ASM hack
 
 # Building From Source
 This project is built with Godot 4.3 
