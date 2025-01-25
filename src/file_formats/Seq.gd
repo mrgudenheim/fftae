@@ -17,12 +17,36 @@ static var seq_aliases: Dictionary = {
 	"wep2":"wep2"}
 
 # LoadFrameAndWait with 0 delay is also an animation end
-static var ending_opcodes: PackedStringArray = [
+const ending_opcodes: PackedStringArray = [
 	"IncrementLoop",
 	"PauseAnimation",
 	"EndAnimation",
 	"ffc2",
 	]
+
+
+var shp_name: String:
+	get:
+		match file_name.to_upper():
+			"TYPE1":
+				return "TYPE1.SHP"
+			"TYPE3":
+				return "TYPE2.SHP"
+			"CYOKO":
+				return "CYOKO.SHP"
+			"MON":
+				return "MON.SHP"
+			"OTHER":
+				return "OTHER.SHP"
+			"RUKA":
+				return "MON.SHP"
+			"ARUTE":
+				return "ARUTE.SHP"
+			"KANZEN":
+				return "KANZEN.SHP"
+			_:
+				push_warning(file_name.to_upper() + " - Can't find associate Shp name")
+				return "TYPE1.SHP"
 
 
 var file_name:String = "default_file_name"

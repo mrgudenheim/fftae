@@ -560,6 +560,9 @@ func _on_seq_file_options_item_selected(index: int) -> void:
 	
 	populate_animation_list(animation_list_container, seq)
 	populate_opcode_list(opcode_list_container, ui_manager.animation_name_options.selected)
+	
+	UiManager.option_button_select_text(ui_manager.shp_options, seq.shp_name)
+	ui_manager.shp_options.item_selected.emit(ui_manager.shp_options.selected)
 	preview_manager._on_animation_changed()
 
 
