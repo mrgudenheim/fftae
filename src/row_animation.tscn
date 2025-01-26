@@ -1,13 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://t3xjefep2ne1"]
+[gd_scene load_steps=3 format=3 uid="uid://t3xjefep2ne1"]
 
 [ext_resource type="ButtonGroup" uid="uid://d3gvtnjq7tpqo" path="res://src/button_group_animations.tres" id="1_7wbbd"]
+[ext_resource type="Script" path="res://src/row_animation.gd" id="1_bnb56"]
 
-[node name="RowMarginContainer" type="MarginContainer"]
+[node name="RowMarginContainer" type="MarginContainer" node_paths=PackedStringArray("pointer_label", "anim_id_spinbox", "description_label", "opcodes_label")]
 clip_contents = true
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 0
+script = ExtResource("1_bnb56")
+pointer_label = NodePath("Row/PointerId")
+anim_id_spinbox = NodePath("Row/MarginContainer/AnimId")
+description_label = NodePath("Row/MarginContainer2/Description")
+opcodes_label = NodePath("Row/MarginContainer3/Opcodes")
 
 [node name="RowButton" type="Button" parent="."]
 layout_mode = 2
@@ -63,6 +69,7 @@ theme_override_constants/margin_right = 5
 [node name="Description" type="Label" parent="Row/MarginContainer2"]
 layout_mode = 2
 text = "Walk Front"
+autowrap_mode = 3
 
 [node name="VSeparator3" type="VSeparator" parent="Row"]
 layout_mode = 2
