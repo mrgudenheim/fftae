@@ -57,6 +57,8 @@ mouse_filter = 2
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 5
 
 [node name="Description" type="Label" parent="Row/MarginContainer2"]
 layout_mode = 2
@@ -69,6 +71,10 @@ mouse_filter = 2
 [node name="MarginContainer3" type="MarginContainer" parent="Row"]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
 
 [node name="Opcodes" type="Label" parent="Row/MarginContainer3"]
 layout_mode = 2

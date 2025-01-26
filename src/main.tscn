@@ -427,6 +427,24 @@ layout_mode = 2
 [node name="HSeparator" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
 layout_mode = 2
 
+[node name="RowMarginContainer3" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer" instance=ExtResource("6_2uymt")]
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="RowMarginContainer4" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer" instance=ExtResource("6_2uymt")]
+layout_mode = 2
+
+[node name="HSeparator3" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="RowMarginContainer5" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer" instance=ExtResource("6_2uymt")]
+layout_mode = 2
+
+[node name="HSeparator4" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
+layout_mode = 2
+
 [node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 visible = false
 layout_mode = 2
