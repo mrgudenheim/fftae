@@ -1,0 +1,76 @@
+[gd_scene load_steps=2 format=3 uid="uid://t3xjefep2ne1"]
+
+[ext_resource type="ButtonGroup" uid="uid://d3gvtnjq7tpqo" path="res://src/button_group_animations.tres" id="1_7wbbd"]
+
+[node name="RowMarginContainer" type="MarginContainer"]
+clip_contents = true
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="RowButton" type="Button" parent="."]
+layout_mode = 2
+mouse_filter = 1
+toggle_mode = true
+button_group = ExtResource("1_7wbbd")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="PointerId" type="Label" parent="Row"]
+custom_minimum_size = Vector2(85, 0)
+layout_mode = 2
+text = "0 (0x00)"
+horizontal_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="Row"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Row"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="AnimId" type="SpinBox" parent="Row/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 1
+max_value = 255.0
+rounded = true
+alignment = 2
+select_all_on_focus = true
+
+[node name="VSeparator2" type="VSeparator" parent="Row"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="Row"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Description" type="Label" parent="Row/MarginContainer2"]
+layout_mode = 2
+text = "Walk Front"
+
+[node name="VSeparator3" type="VSeparator" parent="Row"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MarginContainer3" type="MarginContainer" parent="Row"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Opcodes" type="Label" parent="Row/MarginContainer3"]
+layout_mode = 2
+text = "LoadFrameAndWait(01,04)
+LoadFrameAndWait(02,04)"
