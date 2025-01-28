@@ -163,6 +163,7 @@ layout_mode = 2
 text = "Play?"
 
 [node name="PlayCheckBox" type="CheckBox" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SliderContainer"]
+custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 button_pressed = true
 
@@ -345,6 +346,7 @@ horizontal_alignment = 2
 
 [node name="FaceRightCheckBox" type="CheckBox" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
+size_flags_horizontal = 0
 
 [node name="TabContainer" type="TabContainer" parent="HBoxContainer"]
 layout_mode = 2
