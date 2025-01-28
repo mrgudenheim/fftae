@@ -14,7 +14,8 @@ static var global_fft_animation: FftAnimation = FftAnimation.new()
 @export var save_seq_button: Button
 @export var save_seq_dialog: FileDialog
 
-@export var animation_list_container: GridContainer
+@export var animation_list_container: VBoxContainer
+@export var animation_list_row_tscn: PackedScene
 @export var opcode_list_container: GridContainer
 @export var frame_list_container: GridContainer
 
@@ -356,53 +357,41 @@ func cache_associated_files() -> void:
 	_load_battle_bin_sprite_data()
 
 
-func populate_animation_list(animations_grid_parent: GridContainer, seq_local: Seq) -> void:
-	ui_manager.current_animation_slots = seq_local.sequence_pointers.size()
-	clear_grid_container(animations_grid_parent, 1)
+func populate_animation_list(animations_list_parent: VBoxContainer, seq_local: Seq) -> void:
+	for child: Node in animations_list_parent.get_children():
+		animations_list_parent.remove_child(child)
+		child.queue_free()
 	
-	for index in seq_local.sequence_pointers.size():
+	ui_manager.current_animation_slots = seq_local.sequence_pointers.size()
+	
+	for index in seq_local.sequence_pointers.size():		
 		var pointer: int = seq_local.sequence_pointers[index]
 		var sequence: Sequence = seq_local.sequences[pointer]
-		var is_hex: String = " (0x%02x)" % index
-		var id: String = str(index) + is_hex
 		var description: String = sequence.seq_name
 		var opcodes: String = sequence.to_string_hex("\n")
 		
-		var pointer_id_label: Label = Label.new()
-		pointer_id_label.text = id
-		pointer_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var row_ui: AnimationRow = animation_list_row_tscn.instantiate()
+		animations_list_parent.add_child(row_ui)
+		animations_list_parent.add_child(HSeparator.new())
 		
-		#var anim_id_label: Label = Label.new()
-		#anim_id_label.text = str(pointer)
-		#anim_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		row_ui.pointer_id = index
+		row_ui.anim_id_spinbox.max_value = seq_local.sequences.size() - 1
+		row_ui.anim_id = pointer
+		row_ui.description = description
+		row_ui.opcodes_text = opcodes
 		
-		var anim_id_spinbox: SpinBox = SpinBox.new()
-		anim_id_spinbox.max_value = seq_local.sequences.size() - 1
-		anim_id_spinbox.value = pointer
-		anim_id_spinbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		
-		var description_label: Label = Label.new()
-		description_label.text = description
-		
-		var opcodes_label: Label = Label.new()
-		opcodes_label.text = opcodes
-		var opcodes_panel_margin: MarginContainer = MarginContainer.new()
-		opcodes_panel_margin.add_child(opcodes_label)
-		var opcodes_panel: PanelContainer = PanelContainer.new()
-		opcodes_panel.add_child(opcodes_panel_margin)
-		
-		animations_grid_parent.add_child(pointer_id_label)
-		animations_grid_parent.add_child(anim_id_spinbox)
-		animations_grid_parent.add_child(description_label)
-		animations_grid_parent.add_child(opcodes_panel)
-		
-		# update text for new animation pointed at
-		anim_id_spinbox.value_changed.connect(
+		row_ui.anim_id_spinbox.value_changed.connect(
 			func(new_value: int) -> void: 
 				seq_local.sequence_pointers[index] = new_value
 				var new_sequence: Sequence = seq_local.sequences[new_value]
-				description_label.text = new_sequence.seq_name
-				opcodes_label.text = new_sequence.to_string_hex("\n")
+				row_ui.description = new_sequence.seq_name
+				row_ui.opcodes_text = new_sequence.to_string_hex("\n")
+				)
+		
+		row_ui.button.pressed.connect(
+			func() -> void: 
+				ui_manager.pointer_index_spinbox.value = row_ui.get_index()
+				ui_manager.animation_id_spinbox.value = row_ui.anim_id
 				)
 
 

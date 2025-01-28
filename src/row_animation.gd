@@ -1,12 +1,15 @@
+class_name AnimationRow
 extends MarginContainer
 
 @export var pointer_label: Label
 @export var anim_id_spinbox: SpinBox
 @export var description_label: Label
 @export var opcodes_label: Label
-
+@export var button: Button
 
 @export var pointer_id: int:
+	get:
+		return pointer_id
 	set(value):
 		pointer_label.text = "%s (0x%02x)" % [value, value]
 
@@ -24,7 +27,7 @@ extends MarginContainer
 		description_label.text = text
 
 @export var opcodes_text: String:
-	#get:
-		#return opcodes_text
+	get:
+		return opcodes_label.text
 	set(text):
 		opcodes_label.text = text

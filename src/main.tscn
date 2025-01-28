@@ -28,7 +28,8 @@ save_xml_button = NodePath("HBoxContainer/PatchPanel/MarginContainer/VBoxContain
 save_xml_dialog = NodePath("HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SaveAsXml/SaveXmlDialog")
 save_seq_button = NodePath("HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SaveAsSEQ")
 save_seq_dialog = NodePath("HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SaveAsSEQ/SaveSeqDialog")
-animation_list_container = NodePath("HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer")
+animation_list_container = NodePath("HBoxContainer/TabContainer/Animations/VBoxContainer/AnimationListScroll/AnimationList")
+animation_list_row_tscn = ExtResource("6_2uymt")
 opcode_list_container = NodePath("HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/ScrollContainer/Opcodes")
 frame_list_container = NodePath("HBoxContainer/TabContainer/Frames/VBoxContainer/ScrollContainer/FrameListGrid")
 item_frames_csv_filepath = "res://src/frame_data_item.txt"
@@ -47,7 +48,7 @@ animations_pointers_text = NodePath("../SettingsPanel/MarginContainer/VBoxContai
 animations_bytes_text = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/NumEmptySeqBytes")
 shp_options = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/ShpFileOptions")
 sprite_options = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/SpriteOptions")
-animation_table = NodePath("../TabContainer/Animations/VBoxContainer/AnimationTree")
+animation_table = NodePath("")
 patch_name_edit = NodePath("MarginContainer/VBoxContainer/GridContainer/PatchNameLineEdit")
 author_name_edit = NodePath("MarginContainer/VBoxContainer/GridContainer/AuthorLineEdit")
 patch_description_edit = NodePath("MarginContainer/VBoxContainer/DescriptionTextEdit")
@@ -411,85 +412,15 @@ horizontal_alignment = 1
 visible = false
 layout_mode = 2
 
-[node name="ScrollContainer2" type="ScrollContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
+[node name="AnimationListScroll" type="ScrollContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2"]
+[node name="AnimationList" type="VBoxContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/AnimationListScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
-
-[node name="RowMarginContainer2" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer" instance=ExtResource("6_2uymt")]
-layout_mode = 2
-
-[node name="HSeparator" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
-layout_mode = 2
-
-[node name="RowMarginContainer3" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer" instance=ExtResource("6_2uymt")]
-layout_mode = 2
-
-[node name="HSeparator2" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
-layout_mode = 2
-
-[node name="RowMarginContainer4" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer" instance=ExtResource("6_2uymt")]
-layout_mode = 2
-
-[node name="HSeparator3" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
-layout_mode = 2
-
-[node name="RowMarginContainer5" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer" instance=ExtResource("6_2uymt")]
-layout_mode = 2
-
-[node name="HSeparator4" type="HSeparator" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer2/VBoxContainer"]
-layout_mode = 2
-
-[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
-visible = false
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="AnimationTree" type="Tree" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
-visible = false
-layout_mode = 2
-size_flags_vertical = 3
-columns = 4
-column_titles_visible = true
-hide_folding = true
-hide_root = true
-select_mode = 1
-scroll_horizontal_enabled = false
-
-[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
-visible = false
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-
-[node name="AnimationListGridContainer" type="GridContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer"]
-layout_mode = 2
-columns = 4
-
-[node name="Pointer ID" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
-layout_mode = 2
-text = "Pointer ID"
-horizontal_alignment = 1
-
-[node name="Anim ID" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
-layout_mode = 2
-text = "Anim ID"
-horizontal_alignment = 1
-
-[node name="Desription" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
-layout_mode = 2
-text = "Description"
-horizontal_alignment = 1
-
-[node name="Opcodes" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/ScrollContainer/AnimationListGridContainer"]
-layout_mode = 2
-text = "Opcodes"
-horizontal_alignment = 1
 
 [node name="Frames" type="MarginContainer" parent="HBoxContainer/TabContainer"]
 visible = false

@@ -76,8 +76,6 @@ func _ready() -> void:
 	animation_id_spinbox.value_changed.connect(animation_name_options.select)
 	animation_id_spinbox.value_changed.connect(animation_name_options.item_selected.emit)
 	animation_name_options.item_selected.connect(animation_id_spinbox.set_value_no_signal)
-	
-	init_tree()
 
 
 func update_info_text(current: int, max_value: int, ui: Label) -> void:
@@ -122,50 +120,3 @@ static func option_button_select_text(option_button: OptionButton, text: String)
 	
 	if not found_text:
 		push_warning(option_button.name + "does not have item with text: " + text) 
-
-
-func init_tree() -> void:
-	animation_table.set_column_title(0, "Pointer ID")
-	animation_table.set_column_expand(0, true)
-	animation_table.set_column_clip_content(0, true)
-	
-	animation_table.set_column_title(1, "Anim ID")
-	animation_table.set_column_expand(1, false)
-	animation_table.set_column_title_alignment(1, HORIZONTAL_ALIGNMENT_CENTER)
-	
-	animation_table.set_column_title(2, "Description")
-	animation_table.set_column_custom_minimum_width(2, 150)
-	
-	animation_table.set_column_title(3, "Opcodes")
-	animation_table.set_column_expand(3, true)
-	animation_table.set_column_custom_minimum_width(3, 225)
-	
-	
-	var root: TreeItem  = animation_table.create_item()
-	
-	for i in 11:
-		var row: TreeItem = root.create_child()
-		row.set_text(0, "0")
-		row.set_text_alignment(0, HORIZONTAL_ALIGNMENT_CENTER)
-		#row.set_selectable(0, false)
-		row.set_text(1, "1")
-		row.set_editable(1, true)
-		row.set_cell_mode(1, TreeItem.CELL_MODE_RANGE)
-		row.set_text_alignment(1, HORIZONTAL_ALIGNMENT_RIGHT)
-		row.set_range_config(1, 0, 255, 1)
-		row.set_text(2, "Walk")
-		row.set_text(3, "LoadFrameAndWait(01,02)\nLoadFrameAndWait(01,02)")
-	
-	var row2: TreeItem = root.create_child()
-	row2.set_text(0, "1")
-	row2.set_text(1, "2")
-	row2.set_text_alignment(1, HORIZONTAL_ALIGNMENT_RIGHT)
-	row2.set_text(2, "Walk2")
-	row2.set_text(3, "LoadFrameAndWait(01,02)\nLoadFrameAndWait(01,02)")
-	
-	var row3: TreeItem = root.create_child()
-	row3.set_text(0, "1")
-	row3.set_text(1, "2")
-	row3.set_text(2, "Walk2")
-	row3.set_text(3, "LoadFrameAndWait(01,02)\nLoadFrameAndWait(01,02)")
-	

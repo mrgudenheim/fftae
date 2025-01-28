@@ -3,8 +3,10 @@
 [ext_resource type="ButtonGroup" uid="uid://d3gvtnjq7tpqo" path="res://src/button_group_animations.tres" id="1_7wbbd"]
 [ext_resource type="Script" path="res://src/row_animation.gd" id="1_bnb56"]
 
-[node name="RowMarginContainer" type="MarginContainer" node_paths=PackedStringArray("pointer_label", "anim_id_spinbox", "description_label", "opcodes_label")]
+[node name="RowMarginContainer" type="MarginContainer" node_paths=PackedStringArray("pointer_label", "anim_id_spinbox", "description_label", "opcodes_label", "button")]
 clip_contents = true
+offset_right = 547.0
+offset_bottom = 59.0
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 0
@@ -14,10 +16,10 @@ pointer_label = NodePath("Row/PointerId")
 anim_id_spinbox = NodePath("Row/MarginContainer/AnimId")
 description_label = NodePath("Row/MarginContainer2/Description")
 opcodes_label = NodePath("Row/MarginContainer3/Opcodes")
+button = NodePath("RowButton")
 
 [node name="RowButton" type="Button" parent="."]
 layout_mode = 2
-mouse_filter = 1
 toggle_mode = true
 button_group = ExtResource("1_7wbbd")
 
@@ -60,13 +62,13 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="MarginContainer2" type="MarginContainer" parent="Row"]
-custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_right = 5
 
 [node name="Description" type="Label" parent="Row/MarginContainer2"]
+custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
 text = "Walk Front"
 autowrap_mode = 3
