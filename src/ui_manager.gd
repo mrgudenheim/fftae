@@ -6,7 +6,7 @@ extends Node
 @export var animations_bytes_text: Label
 @export var shp_options: OptionButton
 @export var sprite_options: OptionButton
-@export var animation_table: Tree
+@export var animation_scroll_container: ScrollContainer
 
 @export var patch_name_edit: LineEdit
 @export var author_name_edit: LineEdit
@@ -120,3 +120,11 @@ static func option_button_select_text(option_button: OptionButton, text: String)
 	
 	if not found_text:
 		push_warning(option_button.name + "does not have item with text: " + text) 
+
+
+func _on_pointer_spin_box_value_changed(value: int) -> void:
+	var row_button: Button = animation_scroll_container.get_child(0).get_child(value * 2).button
+	animation_scroll_container.ensure_control_visible(row_button)
+	row_button.button_pressed = true
+	row_button.pressed.emit()
+	

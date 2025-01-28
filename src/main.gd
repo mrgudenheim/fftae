@@ -390,7 +390,7 @@ func populate_animation_list(animations_list_parent: VBoxContainer, seq_local: S
 		
 		row_ui.button.pressed.connect(
 			func() -> void: 
-				ui_manager.pointer_index_spinbox.value = row_ui.get_index()
+				ui_manager.pointer_index_spinbox.value = row_ui.get_index() / 2 # ignore HSepators
 				ui_manager.animation_id_spinbox.value = row_ui.anim_id
 				)
 
