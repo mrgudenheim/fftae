@@ -126,6 +126,9 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	
 	cache_associated_files()
 	
+	preview_manager.enable_ui()
+	ui_manager.enable_ui()
+	
 	save_xml_button.disabled = false
 	save_seq_button.disabled = false
 	
@@ -137,6 +140,7 @@ func _on_load_rom_dialog_file_selected(path: String) -> void:
 	_on_seq_file_options_item_selected(ui_manager.seq_options.selected)
 	_on_shp_file_options_item_selected(ui_manager.shp_options.selected)
 	
+	ui_manager.pointer_index_spinbox.value = 6 # default to walking animation
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
 	
 	var background_image: Image = shp.create_blank_frame(Color.BLACK)
@@ -568,6 +572,7 @@ func _on_seq_file_options_item_selected(index: int) -> void:
 	ui_manager.update_animation_description_options(seq)
 	
 	populate_animation_list(animation_list_container, seq)
+	ui_manager.pointer_index_spinbox.value = 0
 	populate_opcode_list(opcode_list_container, ui_manager.animation_name_options.selected)
 	
 	UiManager.option_button_select_text(ui_manager.shp_options, seq.shp_name)

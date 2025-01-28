@@ -40,7 +40,7 @@ anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="PatchPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_pointers_text", "animations_bytes_text", "shp_options", "sprite_options", "animation_scroll_container", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox", "preview_viewport")]
+[node name="PatchPanel" type="PanelContainer" parent="HBoxContainer" node_paths=PackedStringArray("seq_options", "animations_pointers_text", "animations_bytes_text", "shp_options", "sprite_options", "animation_scroll_container", "patch_name_edit", "author_name_edit", "patch_description_edit", "animation_id_spinbox", "animation_name_options", "row_spinbox", "pointer_index_spinbox", "create_animation", "delete_animation", "create_opcode", "delete_opcode", "create_pointer", "delete_pointer", "preview_viewport")]
 layout_mode = 2
 script = ExtResource("2_hmnjv")
 seq_options = NodePath("../SettingsPanel/MarginContainer/VBoxContainer/Settings/SeqFileOptions")
@@ -56,6 +56,12 @@ animation_id_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContaine
 animation_name_options = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Options/AnimationOptionButton")
 row_spinbox = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Functions/RowSpinBox")
 pointer_index_spinbox = NodePath("../TabContainer/Animations/VBoxContainer/Functions/PointerSpinBox")
+create_animation = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/NewAnimation")
+delete_animation = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer/DeleteAnimation")
+create_opcode = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Functions/InsertOpcode")
+delete_opcode = NodePath("../AnimationEditor/MarginContainer/VBoxContainer/Functions/DeleteOpcode")
+create_pointer = NodePath("../TabContainer/Animations/VBoxContainer/AddPointer")
+delete_pointer = NodePath("../TabContainer/Animations/VBoxContainer/Functions/DeletePointer")
 preview_viewport = NodePath("MarginContainer/VBoxContainer/PreviewContainer/PreviewSubViewportContainer")
 
 [node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/PatchPanel"]
@@ -135,7 +141,7 @@ wrap_mode = 1
 layout_mode = 2
 text = "Preview:"
 
-[node name="PreviewContainer" type="PanelContainer" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer" node_paths=PackedStringArray("ui_manager", "preview_viewport", "weapon_options", "item_options", "other_type_options", "submerged_depth_options", "face_right_check", "animation_slider", "opcode_text")]
+[node name="PreviewContainer" type="PanelContainer" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer" node_paths=PackedStringArray("ui_manager", "preview_viewport", "weapon_options", "item_options", "other_type_options", "submerged_depth_options", "face_right_check", "is_playing_check", "animation_slider", "opcode_text")]
 layout_mode = 2
 script = ExtResource("4_jq1qv")
 ui_manager = NodePath("../../..")
@@ -145,6 +151,7 @@ item_options = NodePath("../../../../SettingsPanel/MarginContainer/VBoxContainer
 other_type_options = NodePath("../../../../SettingsPanel/MarginContainer/VBoxContainer/Settings/OtherTypeOptions")
 submerged_depth_options = NodePath("../../../../SettingsPanel/MarginContainer/VBoxContainer/Settings/SubmergedOptions")
 face_right_check = NodePath("../../../../SettingsPanel/MarginContainer/VBoxContainer/Settings/FaceRightCheckBox")
+is_playing_check = NodePath("../SliderContainer/PlayCheckBox")
 layer_priority_table_filepath = "res://src/layer_priority_table.txt"
 weapon_table_filepath = "res://src/weapons.txt"
 item_list_filepath = "res://src/item_list.txt"
@@ -165,6 +172,7 @@ text = "Play?"
 [node name="PlayCheckBox" type="CheckBox" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SliderContainer"]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
+disabled = true
 button_pressed = true
 
 [node name="HSlider" type="HSlider" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/SliderContainer"]
@@ -300,6 +308,7 @@ horizontal_alignment = 2
 
 [node name="WeaponOptions" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
+disabled = true
 
 [node name="ItemLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
@@ -308,6 +317,7 @@ horizontal_alignment = 2
 
 [node name="ItemOptions" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
+disabled = true
 
 [node name="OtherTypeLabel" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
@@ -316,6 +326,7 @@ horizontal_alignment = 2
 
 [node name="OtherTypeOptions" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
+disabled = true
 selected = 0
 item_count = 3
 popup/item_0/text = "Chicken/Chest"
@@ -331,6 +342,7 @@ horizontal_alignment = 2
 
 [node name="SubmergedOptions" type="OptionButton" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
+disabled = true
 selected = 0
 item_count = 3
 popup/item_0/text = "0"
@@ -347,6 +359,7 @@ horizontal_alignment = 2
 [node name="FaceRightCheckBox" type="CheckBox" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings"]
 layout_mode = 2
 size_flags_horizontal = 0
+disabled = true
 
 [node name="TabContainer" type="TabContainer" parent="HBoxContainer"]
 layout_mode = 2
@@ -361,6 +374,7 @@ layout_mode = 2
 
 [node name="AddPointer" type="Button" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Add Pointer"
 
 [node name="Functions" type="HBoxContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
@@ -372,6 +386,7 @@ text = "Delete Pointer"
 
 [node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions"]
 layout_mode = 2
+editable = false
 
 [node name="Headers" type="HBoxContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
@@ -493,10 +508,12 @@ layout_mode = 2
 
 [node name="NewAnimation" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Add New Animation"
 
 [node name="DeleteAnimation" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Delete Current Animation"
 
 [node name="Options" type="GridContainer" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer"]
@@ -533,13 +550,16 @@ text = "Row: "
 
 [node name="RowSpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2
+editable = false
 
 [node name="InsertOpcode" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2
+disabled = true
 text = "Insert Opcode"
 
 [node name="DeleteOpcode" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2
+disabled = true
 text = "Delete Opcode"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer"]

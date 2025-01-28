@@ -12,6 +12,7 @@ var global_fft_animation: FftAnimation:
 @export var other_type_options: OptionButton
 @export var submerged_depth_options: OptionButton
 @export var face_right_check: CheckBox
+@export var is_playing_check: CheckBox
 
 @export_file("*.txt") var layer_priority_table_filepath: String
 var layer_priority_table: Array = []
@@ -93,6 +94,15 @@ func load_csv(filepath: String) -> Array:
 		table.append(lines[line_index].split(","))
 
 	return table
+
+
+func enable_ui() -> void:
+	weapon_options.disabled = false
+	item_options.disabled = false
+	other_type_options.disabled = false
+	submerged_depth_options.disabled = false
+	face_right_check.disabled = false
+	is_playing_check.disabled = false
 
 
 func start_animation(fft_animation: FftAnimation, draw_target: Sprite2D, is_playing: bool, isLooping: bool, force_loop: bool = false) -> void:

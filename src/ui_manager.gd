@@ -17,6 +17,12 @@ extends Node
 @export var animation_name_options: OptionButton
 @export var row_spinbox: SpinBox
 @export var pointer_index_spinbox: SpinBox
+@export var create_animation: Button
+@export var delete_animation: Button
+@export var create_opcode: Button
+@export var delete_opcode: Button
+@export var create_pointer: Button
+@export var delete_pointer: Button
 
 @export var preview_viewport: PreviewSubViewportContainer
 
@@ -76,6 +82,20 @@ func _ready() -> void:
 	animation_id_spinbox.value_changed.connect(animation_name_options.select)
 	animation_id_spinbox.value_changed.connect(animation_name_options.item_selected.emit)
 	animation_name_options.item_selected.connect(animation_id_spinbox.set_value_no_signal)
+
+
+func enable_ui() -> void:
+	create_animation.disabled = false
+	delete_animation.disabled = false
+	animation_id_spinbox.editable = true
+	animation_name_options.disabled = false
+	row_spinbox.editable = true
+	create_opcode.disabled = false
+	delete_opcode.disabled = false
+	
+	pointer_index_spinbox.editable = true
+	create_pointer.disabled = false
+	delete_pointer.disabled = false
 
 
 func update_info_text(current: int, max_value: int, ui: Label) -> void:
