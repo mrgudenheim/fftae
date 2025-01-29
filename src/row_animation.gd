@@ -11,6 +11,7 @@ extends MarginContainer
 	get:
 		return pointer_id
 	set(value):
+		pointer_id = value
 		pointer_label.text = "%s (0x%02x)" % [value, value]
 
 @export var anim_id: int:

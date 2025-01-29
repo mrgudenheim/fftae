@@ -2,7 +2,7 @@ class_name FFTae
 extends Control
 
 static var ae: FFTae
-static var rom:PackedByteArray = []
+static var rom: PackedByteArray = []
 static var global_fft_animation: FftAnimation = FftAnimation.new()
 
 @export var ui_manager: UiManager
@@ -17,7 +17,8 @@ static var global_fft_animation: FftAnimation = FftAnimation.new()
 @export var animation_list_container: VBoxContainer
 @export var animation_list_row_tscn: PackedScene
 @export var opcode_list_container: GridContainer
-@export var frame_list_container: GridContainer
+@export var frame_list_container: VBoxContainer
+@export var frame_list_row_tscn: PackedScene
 
 @export_file("*.txt") var item_frames_csv_filepath: String
 
@@ -427,48 +428,32 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 			opcode_options.param_spinboxes[param_index].value = seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
 
 
-func populate_frame_list(frame_grid_parent: GridContainer, shp_local: Shp) -> void:
+func populate_frame_list(frame_list_parent: VBoxContainer, shp_local: Shp) -> void:
+	for child: Node in frame_list_parent.get_children():
+		frame_list_parent.remove_child(child)
+		child.queue_free()
+	
 	#ui_manager.current_animation_slots = shp_local.frames.size()
-	clear_grid_container(frame_grid_parent, 1)
 	
 	for frame_index in shp_local.frame_pointers.size():
 		var pointer: int = shp_local.frame_pointers[frame_index]
 		var frame: FrameData = shp_local.frames[frame_index]
-		var id_hex: String = " (0x%02x)" % frame_index
-		var id: String = str(frame_index) + id_hex
-		var y_rotation: String = str(frame.y_rotation)
-		var subframe_strings: String = frame.get_subframes_string()
 		
-		var pointer_id_label: Label = Label.new()
-		pointer_id_label.text = id
-		pointer_id_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var row_ui: FrameRow = frame_list_row_tscn.instantiate()
+		frame_list_parent.add_child(row_ui)
+		frame_list_parent.add_child(HSeparator.new())
 		
-		var rotation_label: Label = Label.new()
-		rotation_label.text = str(y_rotation)
-		rotation_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		row_ui.frame_id = frame_index
+		row_ui.frame_rotation = frame.y_rotation
+		row_ui.subframes_text = frame.get_subframes_string()
 		
-		var subframes_label: Label = Label.new()
-		subframes_label.text = subframe_strings
-		subframes_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		var subframes_label_panel_margin: MarginContainer = MarginContainer.new()
-		subframes_label_panel_margin.add_child(subframes_label)
-		var subframes_panel: PanelContainer = PanelContainer.new()
-		subframes_panel.add_child(subframes_label_panel_margin)
-		subframes_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		
-		var frame_preview: TextureRect = TextureRect.new()
 		var preview_image_size: Vector2i = Vector2i(120, 120)
 		var preview_image: Image = shp_local.create_blank_frame(Color.BLACK, preview_image_size)
 		var assembled_frame: Image = shp_local.get_assembled_frame(frame_index, spr.spritesheet, ui_manager.animation_id_spinbox.value, preview_manager.other_type_options.selected, preview_manager.weapon_v_offset, preview_manager.submerged_depth_options.selected, Vector2i(60, 60), 15)
 		assembled_frame.resize(preview_image_size.x, preview_image_size.y, Image.INTERPOLATE_NEAREST)
 		preview_image.blend_rect(assembled_frame, Rect2i(Vector2i.ZERO, preview_image_size), Vector2i.ZERO)
-		frame_preview.texture = ImageTexture.create_from_image(preview_image)
-		frame_preview.rotation_degrees = frame.y_rotation
-		
-		frame_grid_parent.add_child(pointer_id_label)
-		frame_grid_parent.add_child(rotation_label)
-		frame_grid_parent.add_child(subframes_panel)
-		frame_grid_parent.add_child(frame_preview)
+		row_ui.preview_rect.texture = ImageTexture.create_from_image(preview_image)
+		row_ui.preview_rect.rotation_degrees = frame.y_rotation
 
 
 func draw_assembled_frame(frame_index: int) -> void:

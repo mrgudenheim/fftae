@@ -169,10 +169,10 @@ func set_data_from_shp_file(filepath:String) -> void:
 
 
 func set_name(new_file_name: String) -> void:
-	new_file_name = new_file_name.trim_suffix(".shp")
-	new_file_name = new_file_name.trim_suffix(".SHP")
-	new_file_name = new_file_name.trim_suffix(".Shp")
-	new_file_name = new_file_name.to_lower()
+	#new_file_name = new_file_name.trim_suffix(".shp")
+	#new_file_name = new_file_name.trim_suffix(".SHP")
+	#new_file_name = new_file_name.trim_suffix(".Shp")
+	#new_file_name = new_file_name.to_lower()
 	
 	file_name = new_file_name
 	
