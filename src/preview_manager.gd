@@ -376,7 +376,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 
 
 func get_animation_frame_offset(weapon_frame_offset_index:int, shp:Shp) -> int:
-	if ((shp.file_name.contains("wep") or shp.file_name.contains("eff"))
+	if ((shp.file_name.contains("WEP") or shp.file_name.contains("EFF"))
 		and shp.zero_frames.size() > 0):
 		return shp.zero_frames[weapon_frame_offset_index]
 	else:

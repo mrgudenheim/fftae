@@ -98,13 +98,13 @@ var sp_extra:int = 0
 var zero_frames:Array[int] = [] # only used in wep or eff
 var section1_length:int = 0:
 	get:
-		return 0x44 if (file_name.begins_with("wep") or file_name.begins_with("eff")) else 8
+		return 0x44 if (file_name.begins_with("WEP") or file_name.begins_with("EFF")) else 8
 
 # section 2
 var frame_pointers:Array[int] = []
 var section2_length:int = 0:
 	get:
-		return 0x800 if (file_name.begins_with("wep") or file_name.begins_with("eff")) else 0x400
+		return 0x800 if (file_name.begins_with("WEP") or file_name.begins_with("EFF")) else 0x400
 	
 # section 3
 var frames: Array[FrameData] = []
@@ -190,30 +190,32 @@ func set_data_from_shp_bytes(bytes: PackedByteArray, new_name: String) -> void:
 	sp_extra = bytes.decode_u16(6)
 	
 	# these shapes have a slightly different format
-	if (file_name.begins_with("wep") or file_name.begins_with("eff")):
+	if (file_name.begins_with("WEP") or file_name.begins_with("EFF")):
 		attack_start_index = 9999; # these types do not have a second (lower) half
 		
 		var initial_offset: int = 6 # skip first bytes and unarmed
 		for index in ((section1_length - initial_offset) / 2):
-			var zero_frame:int = bytes.decode_u16(initial_offset + (index*2))
+			var zero_frame: int = bytes.decode_u16(initial_offset + (index*2))
 			zero_frames.append(zero_frame)
 		
 	
 	for frame_index: int in (section2_length / 4):
-		var frame_pointer:int = bytes.decode_u32(section1_length + (frame_index * 4))
+		var frame_pointer: int = bytes.decode_u32(section1_length + (frame_index * 4))
 		if frame_index > 0 and frame_pointer == 0:
 			break # skip to section 3 if no more pointers in section 2
 		frame_pointers.append(frame_pointer)
 		if has_submerged_data:
-			var frame_pointer_submerged:int = bytes.decode_u32(swim_pointer + (frame_index * 4))
+			var frame_pointer_submerged: int = bytes.decode_u32(swim_pointer + (frame_index * 4))
 			frame_pointers_submerged.append(frame_pointer_submerged)
 	
 	var frame_data_start: int = section1_length + section2_length + 2
 	frames.clear()
-	for frame_pointer in frame_pointers:
-		var frame_offset:int = frame_data_start + frame_pointer
-		var num_subframes:int = 1 + (bytes.decode_u8(frame_offset) & 0b00000111)
-		var frame_length:int = 2 + (num_subframes * 4)
+	for frame_pointer: int in frame_pointers:
+		var frame_offset: int = frame_data_start + frame_pointer
+		if frame_offset >= bytes.size():
+			push_warning(str(frame_offset) + " > " + str(bytes.size()))
+		var num_subframes: int = 1 + (bytes.decode_u8(frame_offset) & 0b00000111)
+		var frame_length: int = 2 + (num_subframes * 4)
 		frames.append(_get_frame_data(bytes.slice(frame_offset, frame_offset + frame_length)))
 	
 	# submerged frames
@@ -221,17 +223,17 @@ func set_data_from_shp_bytes(bytes: PackedByteArray, new_name: String) -> void:
 		var frame_submerged_data_start: int = swim_pointer + section2_length + 2
 		frames_submerged.clear()
 		for frame_pointer_submerged in frame_pointers_submerged:
-			var frame_offset:int = frame_submerged_data_start + frame_pointer_submerged
-			var num_subframes:int = 1 + (bytes.decode_u8(frame_offset) & 0b00000111)
-			var frame_length:int = 2 + (num_subframes * 4)
+			var frame_offset: int = frame_submerged_data_start + frame_pointer_submerged
+			var num_subframes: int = 1 + (bytes.decode_u8(frame_offset) & 0b00000111)
+			var frame_length: int = 2 + (num_subframes * 4)
 			frames_submerged.append(_get_frame_data(bytes.slice(frame_offset, frame_offset + frame_length)))
 
 
-func _get_frame_data(bytes:PackedByteArray) -> FrameData:
+func _get_frame_data(bytes: PackedByteArray) -> FrameData:
 	var frame_data := FrameData.new()
 	
 	frame_data.num_subframes = 1 + (bytes.decode_u8(0) & 0x07)
-	var y_rotation_pointer:int = (bytes.decode_u8(0) & 0xF8) >> 3
+	var y_rotation_pointer: int = (bytes.decode_u8(0) & 0xF8) >> 3
 	frame_data.y_rotation = ROTATIONS_DEGREES[y_rotation_pointer]
 	frame_data.transparency_type = (bytes.decode_u8(1) & 0x60) >> 5
 	frame_data.transparency_flag = (bytes.decode_u8(1) & 0x01) == 1
@@ -273,7 +275,7 @@ func write_shp() -> void:
 	
 	# section 1
 	# wep and eff shapes have a slightly different format
-	if (file_name.begins_with("wep") or file_name.begins_with("eff")):
+	if (file_name.begins_with("WEP") or file_name.begins_with("EFF")):
 		var initial_offset:int = 6
 		
 		# skip zero bytes and unarmed

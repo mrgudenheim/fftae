@@ -45,6 +45,12 @@ var shp_name: String:
 				return "ARUTE.SHP"
 			"KANZEN":
 				return "KANZEN.SHP"
+			"WEP1":
+				return "WEP1.SHP"
+			"WEP2":
+				return "WEP2.SHP"
+			"EFF1":
+				return "EFF1.SHP"
 			_:
 				push_warning(file_name.to_upper() + " - Can't find associate Shp name")
 				return "TYPE1.SHP"
