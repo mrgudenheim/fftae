@@ -28,7 +28,7 @@ const ending_opcodes: PackedStringArray = [
 
 var shp_name: String:
 	get:
-		match file_name.to_upper():
+		match file_name.to_upper().trim_suffix(".SEQ"):
 			"TYPE1":
 				return "TYPE1.SHP"
 			"TYPE3":
