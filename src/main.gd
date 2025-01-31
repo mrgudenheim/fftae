@@ -77,6 +77,7 @@ var spr: Spr:
 			sprs[file_name] = new_spr
 			return sprs[file_name]
 
+
 func _ready() -> void:
 	ae = self
 
@@ -88,13 +89,17 @@ func _on_load_rom_pressed() -> void:
 func _on_load_rom_dialog_file_selected(path: String) -> void:
 	rom = FileAccess.get_file_as_bytes(path)
 	
+	process_rom(rom)
+
+
+func process_rom(new_rom: PackedByteArray) -> void:
 	file_records.clear()
 	for directory_sector: int in directory_data_sectors:
 		var offset_start: int = 0
 		if directory_sector == directory_data_sectors[0]:
 			offset_start = OFFSET_RECORD_DATA_START
 		var directory_start: int = directory_sector * bytes_per_sector
-		var directory_data: PackedByteArray = rom.slice(directory_start, directory_start + data_bytes_per_sector + bytes_per_sector_header)
+		var directory_data: PackedByteArray = new_rom.slice(directory_start, directory_start + data_bytes_per_sector + bytes_per_sector_header)
 		
 		var byte_index: int = offset_start + bytes_per_sector_header
 		while byte_index < data_bytes_per_sector + bytes_per_sector_header:
@@ -200,13 +205,24 @@ func _on_load_file_dialog_file_selected(path: String) -> void:
 
 
 func _on_save_xml_dialog_file_selected(path: String) -> void:
+	var xml_complete: String = get_xml()
+	
+	# clean up file name
+	if path.get_slice(".", -2).to_lower() == path.get_slice(".", -1).to_lower():
+		path = path.trim_suffix(path.get_slice(".", -1))
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var save_file := FileAccess.open(path, FileAccess.WRITE)
+	save_file.store_string(xml_complete)
+
+
+func get_xml() -> String:
 	var xml_header: String = '<?xml version="1.0" encoding="utf-8" ?>\n<Patches>'
 	var xml_patch_name: String = '<Patch name="' + ui_manager.patch_name + '">'
 	var xml_author: String = '<Author>' + ui_manager.patch_author + '</Author>'
 	
 	var files_changed: PackedStringArray = []
 	var xml_files: PackedStringArray = []
-	for file_name in seqs.keys():
+	for file_name: String in seqs.keys():
 		var seq_temp: Seq = seqs[file_name]
 		var seq_bytes: PackedByteArray = seq_temp.get_seq_bytes() 
 		if file_records[file_name].get_file_data(rom) == seq_bytes:
@@ -262,12 +278,7 @@ func _on_save_xml_dialog_file_selected(path: String) -> void:
 	
 	var xml_complete: String = "\n".join(xml_parts)
 	
-	# clean up file name
-	if path.get_slice(".", -2).to_lower() == path.get_slice(".", -1).to_lower():
-		path = path.trim_suffix(path.get_slice(".", -1))
-	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
-	var save_file := FileAccess.open(path, FileAccess.WRITE)
-	save_file.store_string(xml_complete)
+	return xml_complete
 
 
 func _on_save_seq_dialog_file_selected(path: String) -> void:
