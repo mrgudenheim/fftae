@@ -241,6 +241,7 @@ func get_sequence_data(bytes:PackedByteArray) -> Sequence:
 		seq.seq_parts.append(seq_part)
 		seq_part_pointer += seq_part.length
 	
+	seq.update_length()
 	return seq
 
 

@@ -29,7 +29,7 @@ func on_item_selected(item_index: int) -> void:
 	seq_part.opcode_name = opcode_name
 	for opcode: String in Seq.opcode_names.keys():
 		if Seq.opcode_names[opcode] == opcode_name:
-			seq_part.opcode = opcode	
+			seq_part.opcode = opcode
 	var opcode_params: int = 2 # 2 for LoadFrameWait
 	if Seq.opcode_parameters_by_name.has(opcode_name):
 		opcode_params = Seq.opcode_parameters_by_name[opcode_name]
@@ -60,6 +60,8 @@ func on_item_selected(item_index: int) -> void:
 			var empty_location: int = self.get_index() + 1 + param_index
 			parent.move_child(empty, empty_location)
 			params_ui.append(empty)
+	
+	FFTae.ae.seq.sequences[seq_id].update_length()
 	
 	# update animation list to reflect changes (very slow)
 	#FFTae.ae.populate_animation_list(FFTae.ae.animation_list_container, FFTae.ae.seq)

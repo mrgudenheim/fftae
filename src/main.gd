@@ -87,13 +87,20 @@ func _on_load_rom_pressed() -> void:
 
 
 func _on_load_rom_dialog_file_selected(path: String) -> void:
+	var start_time: int = Time.get_ticks_msec()
 	rom = FileAccess.get_file_as_bytes(path)
+	push_warning("Time to load file (ms): " + str(Time.get_ticks_msec() - start_time))
 	
 	process_rom(rom)
 
 
 func process_rom(new_rom: PackedByteArray) -> void:
+	await get_tree().process_frame
+	
 	file_records.clear()
+	
+	var start_time: int = Time.get_ticks_msec()
+	
 	for directory_sector: int in directory_data_sectors:
 		var offset_start: int = 0
 		if directory_sector == directory_data_sectors[0]:
@@ -130,8 +137,9 @@ func process_rom(new_rom: PackedByteArray) -> void:
 			_:
 				push_warning(record.name + ": File extension not recognized")
 	
+	push_warning("Time to get file records (ms): " + str(Time.get_ticks_msec() - start_time))
 	cache_associated_files()
-	
+	push_warning("Time to cache files (ms): " + str(Time.get_ticks_msec() - start_time))
 	preview_manager.enable_ui()
 	ui_manager.enable_ui()
 	
@@ -144,7 +152,7 @@ func process_rom(new_rom: PackedByteArray) -> void:
 	UiManager.option_button_select_text(ui_manager.sprite_options, "RAMUZA.SPR")
 	
 	_on_seq_file_options_item_selected(ui_manager.seq_options.selected)
-	_on_shp_file_options_item_selected(ui_manager.shp_options.selected)
+	#_on_shp_file_options_item_selected(ui_manager.shp_options.selected)
 	
 	ui_manager.pointer_index_spinbox.value = 6 # default to walking animation
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
@@ -156,7 +164,8 @@ func process_rom(new_rom: PackedByteArray) -> void:
 	
 	preview_manager.start_animation(new_fft_animation, ui_manager.preview_viewport.sprite_primary, preview_manager.animation_is_playing, true)
 	ui_manager.preview_viewport.camera_control._update_viewport_transform()
-
+	
+	push_warning("Time to process ROM (ms): " + str(Time.get_ticks_msec() - start_time))
 
 # https://ffhacktics.com/wiki/BATTLE.BIN_Data_Tables#Animation_.26_Display_Related_Data
 func _load_battle_bin_sprite_data() -> void:
@@ -380,6 +389,8 @@ func populate_animation_list(animations_list_parent: VBoxContainer, seq_local: S
 	
 	ui_manager.current_animation_slots = seq_local.sequence_pointers.size()
 	
+	var counter: int = 0
+	
 	for index in seq_local.sequence_pointers.size():		
 		var pointer: int = seq_local.sequence_pointers[index]
 		var sequence: Sequence = seq_local.sequences[pointer]
@@ -409,6 +420,12 @@ func populate_animation_list(animations_list_parent: VBoxContainer, seq_local: S
 				ui_manager.pointer_index_spinbox.value = row_ui.get_index() / 2 # ignore HSepators
 				ui_manager.animation_id_spinbox.value = row_ui.anim_id
 				)
+		
+		# let frame finish rendering to improve responsiveness
+		counter += 1
+		if counter >= 10:
+			await get_tree().process_frame
+			counter = 0
 
 
 func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> void:
@@ -435,6 +452,7 @@ func populate_opcode_list(opcode_grid_parent: GridContainer, seq_id: int) -> voi
 				opcode_options.item_selected.emit(opcode_options_index)
 				break
 		
+		# update param spinboxes starting value
 		for param_index: int in seq.sequences[seq_id].seq_parts[seq_part_index].parameters.size():
 			opcode_options.param_spinboxes[param_index].value = seq.sequences[seq_id].seq_parts[seq_part_index].parameters[param_index]
 
@@ -445,6 +463,8 @@ func populate_frame_list(frame_list_parent: VBoxContainer, shp_local: Shp) -> vo
 		child.queue_free()
 	
 	#ui_manager.current_animation_slots = shp_local.frames.size()
+	
+	var counter: int = 0
 	
 	for frame_index in shp_local.frame_pointers.size():
 		var pointer: int = shp_local.frame_pointers[frame_index]
@@ -465,6 +485,12 @@ func populate_frame_list(frame_list_parent: VBoxContainer, shp_local: Shp) -> vo
 		preview_image.blend_rect(assembled_frame, Rect2i(Vector2i.ZERO, preview_image_size), Vector2i.ZERO)
 		row_ui.preview_rect.texture = ImageTexture.create_from_image(preview_image)
 		row_ui.preview_rect.rotation_degrees = frame.y_rotation
+		
+		# let frame finish rendering to improve responsiveness
+		counter += 1
+		if counter >= 10:
+			await get_tree().process_frame
+			counter = 0
 
 
 func draw_assembled_frame(frame_index: int) -> void:
@@ -491,6 +517,7 @@ func _on_insert_opcode_pressed() -> void:
 	new_seq_part.parameters.fill(0)
 	
 	seq.sequences[ui_manager.animation_name_options.selected].seq_parts.insert(seq_part_id, new_seq_part)
+	seq.sequences[ui_manager.animation_name_options.selected].update_length()
 	ui_manager.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
 
@@ -501,6 +528,7 @@ func _on_delete_opcode_pressed() -> void:
 	#var previous_length: int = seq.sequences[seq_id].length
 	
 	seq.sequences[ui_manager.animation_name_options.selected].seq_parts.remove_at(seq_part_id)
+	seq.sequences[ui_manager.animation_name_options.selected].update_length()
 	ui_manager.current_bytes = seq.toal_length
 	_on_animation_option_button_item_selected(seq_id)
 
@@ -545,7 +573,7 @@ func _on_delete_pointer_pressed() -> void:
 	populate_animation_list(animation_list_container, seq)
 
 
-func _on_seq_file_options_item_selected(index: int) -> void:
+func _on_seq_file_options_item_selected(index: int, select_shp: bool = true) -> void:
 	var type: String = ui_manager.seq_options.get_item_text(index)
 	
 	if file_records.has(type):
@@ -584,7 +612,7 @@ func _on_shp_file_options_item_selected(_index: int) -> void:
 
 func _on_sprite_options_item_selected(_index: int) -> void:
 	#ui_manager.preview_viewport.sprite_primary.texture = ImageTexture.create_from_image(spr.spritesheet)
-	populate_frame_list(frame_list_container, shp)
+	#populate_frame_list(frame_list_container, shp)
 	UiManager.option_button_select_text(ui_manager.seq_options, spr.seq_name)
 	ui_manager.seq_options.item_selected.emit(ui_manager.seq_options.selected)
 	UiManager.option_button_select_text(ui_manager.shp_options, spr.shp_name)
