@@ -9,10 +9,10 @@
 [ext_resource type="PackedScene" uid="uid://t3xjefep2ne1" path="res://src/row_animation.tscn" id="6_2uymt"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_8s6nw"]
-font_size = 12
+font_size = 14
 
 [sub_resource type="LabelSettings" id="LabelSettings_bugng"]
-font_size = 12
+font_size = 14
 
 [node name="Main" type="Control" node_paths=PackedStringArray("ui_manager", "preview_manager", "load_rom_dialog", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container", "frame_list_container")]
 layout_mode = 3
@@ -479,7 +479,7 @@ autowrap_mode = 3
 layout_mode = 2
 
 [node name="Subframes" type="Label" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/Headers"]
-custom_minimum_size = Vector2(230, 0)
+custom_minimum_size = Vector2(265, 0)
 layout_mode = 2
 text = "Subframes
 x, y, u, v, rect, flip_x, flip_y"
