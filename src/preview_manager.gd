@@ -315,6 +315,10 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 			(target_sprite.get_parent() as Node2D).rotation_degrees = y_rotation
 		elif seq_part.opcode_name == "Wait":
 			var loop_length: int = seq_part.parameters[0]
+			if loop_length > 0:
+				# set seq_part_id to further forward
+				pass
+			
 			var num_loops: int = seq_part.parameters[1]
 			
 			var primary_animation_part_id: int = seq_part_id + fft_animation.primary_anim_opcode_part_id - fft_animation.sequence.seq_parts.size()
