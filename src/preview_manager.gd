@@ -132,14 +132,15 @@ func start_animation(fft_animation: FftAnimation, draw_target: Sprite2D, is_play
 
 
 func play_animation(fft_animation: FftAnimation, draw_target: Sprite2D, isLooping: bool) -> void:
-	for animation_part_id:int in fft_animation.sequence.seq_parts.size():
+	var animation_part_id: int = 0
+	while animation_part_id < fft_animation.sequence.seq_parts.size():
 		var seq_part:SeqPart = fft_animation.sequence.seq_parts[animation_part_id]
 		# break loop animation when stopped or on selected animation changed to prevent 2 loops playing at once
 		if (isLooping and (!animation_is_playing 
 				or fft_animation != global_fft_animation)):
 			return
 		
-		await process_seq_part(fft_animation, animation_part_id, draw_target)
+		animation_part_id = await process_seq_part(fft_animation, animation_part_id, draw_target)
 		
 		if not seq_part.isOpcode:
 			var delay_frames: int = seq_part.parameters[1]  # param 1 is delay
@@ -153,8 +154,9 @@ func play_animation(fft_animation: FftAnimation, draw_target: Sprite2D, isLoopin
 		draw_target.texture = ImageTexture.create_from_image(fft_animation.shp.create_blank_frame())
 
 
-func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target: Sprite2D) -> void:
+func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target: Sprite2D) -> int:
 	# print_debug(str(animation) + " " + str(animation_part_id + 3))
+	var next_seq_part_id: int = seq_part_id + 1
 	var seq_part:SeqPart = fft_animation.sequence.seq_parts[seq_part_id]
 	
 	var frame_id_label: String = ""
@@ -316,23 +318,30 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 		elif seq_part.opcode_name == "Wait":
 			var loop_length: int = seq_part.parameters[0]
 			if loop_length > 0:
-				# set seq_part_id to further forward
-				pass
-			
-			var num_loops: int = seq_part.parameters[1]
-			
-			var primary_animation_part_id: int = seq_part_id + fft_animation.primary_anim_opcode_part_id - fft_animation.sequence.seq_parts.size()
-			# print_debug(str(primary_animation_part_id) + "\t" + str(animation_part_id) + "\t" + str(primary_anim_opcode_part_id) + "\t" + str(animation.size() - 3))
-			
-			var temp_seq: Sequence = get_sub_animation(loop_length, primary_animation_part_id, fft_animation.parent_anim.sequence)
-			var temp_fft_animation: FftAnimation = fft_animation.get_duplicate()
-			temp_fft_animation.sequence = temp_seq
-			temp_fft_animation.parent_anim = fft_animation
-			temp_fft_animation.is_primary_anim = false
-			temp_fft_animation.primary_anim_opcode_part_id = primary_animation_part_id
-			
-			for iteration in num_loops:
-				await start_animation(temp_fft_animation, draw_target, true, false, true)
+				var jump_length: int = 1
+				var jump_seq_part_id: int = seq_part_id + 1
+				while jump_seq_part_id < fft_animation.sequence.seq_parts.size():
+					if jump_length >= loop_length:
+						break
+					jump_length += fft_animation.sequence.seq_parts[jump_seq_part_id].length
+					jump_seq_part_id += 1
+				
+				next_seq_part_id = jump_seq_part_id
+			else:
+				var num_loops: int = seq_part.parameters[1]
+				
+				var primary_animation_part_id: int = seq_part_id + fft_animation.primary_anim_opcode_part_id - fft_animation.sequence.seq_parts.size()
+				# print_debug(str(primary_animation_part_id) + "\t" + str(animation_part_id) + "\t" + str(primary_anim_opcode_part_id) + "\t" + str(animation.size() - 3))
+				
+				var temp_seq: Sequence = get_sub_animation(loop_length, primary_animation_part_id, fft_animation.parent_anim.sequence)
+				var temp_fft_animation: FftAnimation = fft_animation.get_duplicate()
+				temp_fft_animation.sequence = temp_seq
+				temp_fft_animation.parent_anim = fft_animation
+				temp_fft_animation.is_primary_anim = false
+				temp_fft_animation.primary_anim_opcode_part_id = primary_animation_part_id
+				
+				for iteration in num_loops:
+					await start_animation(temp_fft_animation, draw_target, true, false, true)
 			
 		elif seq_part.opcode_name == "IncrementLoop":
 			pass # handled by animations looping by default
@@ -377,6 +386,8 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 		elif seq_part.opcode_name == "QueueDistortAnim":
 			# https://ffhacktics.com/wiki/Animate_Unit_Distorts
 			pass
+	
+	return next_seq_part_id
 
 
 func get_animation_frame_offset(weapon_frame_offset_index:int, shp:Shp) -> int:
