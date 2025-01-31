@@ -68,7 +68,7 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 5
 
 [node name="Description" type="Label" parent="Row/MarginContainer2"]
-custom_minimum_size = Vector2(135, 0)
+custom_minimum_size = Vector2(115, 0)
 layout_mode = 2
 text = "Walk Front"
 autowrap_mode = 3

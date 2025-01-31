@@ -64,7 +64,7 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 5
 
 [node name="Subframes" type="Label" parent="Row/MarginContainer2"]
-custom_minimum_size = Vector2(285, 0)
+custom_minimum_size = Vector2(215, 0)
 layout_mode = 2
 text = "Walk Front"
 

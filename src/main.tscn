@@ -9,8 +9,10 @@
 [ext_resource type="PackedScene" uid="uid://t3xjefep2ne1" path="res://src/row_animation.tscn" id="6_2uymt"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_8s6nw"]
+font_size = 12
 
 [sub_resource type="LabelSettings" id="LabelSettings_bugng"]
+font_size = 12
 
 [node name="Main" type="Control" node_paths=PackedStringArray("ui_manager", "preview_manager", "load_rom_dialog", "load_file_dialog", "save_xml_button", "save_xml_dialog", "save_seq_button", "save_seq_dialog", "animation_list_container", "opcode_list_container", "frame_list_container")]
 layout_mode = 3
@@ -123,8 +125,9 @@ text = "Author: "
 horizontal_alignment = 2
 
 [node name="AuthorLineEdit" type="LineEdit" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/GridContainer"]
-custom_minimum_size = Vector2(150, 0)
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 placeholder_text = "Default Author Name"
 
 [node name="DescriptionLabel" type="Label" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer"]
@@ -161,7 +164,7 @@ animation_slider = NodePath("../SliderContainer/HSlider")
 opcode_text = NodePath("../Opcode")
 
 [node name="PreviewSubViewportContainer" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/PreviewContainer" instance=ExtResource("4_ero0u")]
-custom_minimum_size = Vector2(250, 250)
+custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
 
 [node name="SliderContainer" type="HBoxContainer" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer"]
@@ -204,6 +207,7 @@ filters = PackedStringArray("*.xml")
 use_native_dialog = true
 
 [node name="SaveAsSEQ" type="Button" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 disabled = true
 text = "Save as SEQ
@@ -384,6 +388,7 @@ layout_mode = 2
 
 [node name="DeletePointer" type="Button" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions"]
 layout_mode = 2
+disabled = true
 text = "Delete Pointer"
 
 [node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions"]
@@ -413,7 +418,7 @@ horizontal_alignment = 1
 layout_mode = 2
 
 [node name="Desription" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Headers"]
-custom_minimum_size = Vector2(150, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 text = "Description"
 horizontal_alignment = 1
@@ -422,7 +427,7 @@ horizontal_alignment = 1
 layout_mode = 2
 
 [node name="Opcodes" type="Label" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Headers"]
-custom_minimum_size = Vector2(225, 0)
+custom_minimum_size = Vector2(205, 0)
 layout_mode = 2
 text = "Opcodes"
 horizontal_alignment = 1
@@ -474,7 +479,7 @@ autowrap_mode = 3
 layout_mode = 2
 
 [node name="Subframes" type="Label" parent="HBoxContainer/TabContainer/Frames/VBoxContainer/Headers"]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(230, 0)
 layout_mode = 2
 text = "Subframes
 x, y, u, v, rect, flip_x, flip_y"

@@ -10,7 +10,7 @@ const CAMERA_SPEED_RATE := 15.0
 var smooth_zoom: bool = true
 var integer_zoom: bool = true
 
-var zoom := Vector2(4, 4):
+var zoom := Vector2(3, 3):
 	set(value):
 		zoom = value
 		zoom_changed.emit()
