@@ -615,6 +615,6 @@ func _on_sprite_options_item_selected(_index: int) -> void:
 	#populate_frame_list(frame_list_container, shp)
 	UiManager.option_button_select_text(ui_manager.seq_options, spr.seq_name)
 	ui_manager.seq_options.item_selected.emit(ui_manager.seq_options.selected)
-	UiManager.option_button_select_text(ui_manager.shp_options, spr.shp_name)
-	ui_manager.shp_options.item_selected.emit(ui_manager.shp_options.selected)
+	#UiManager.option_button_select_text(ui_manager.shp_options, spr.shp_name)
+	#ui_manager.shp_options.item_selected.emit(ui_manager.shp_options.selected)
 	preview_manager._on_animation_changed()
