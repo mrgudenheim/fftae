@@ -146,7 +146,7 @@ wrap_mode = 1
 layout_mode = 2
 text = "Preview:"
 
-[node name="PreviewContainer" type="PanelContainer" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer" node_paths=PackedStringArray("ui_manager", "preview_viewport", "weapon_options", "item_options", "other_type_options", "submerged_depth_options", "face_right_check", "is_playing_check", "animation_slider", "opcode_text")]
+[node name="PreviewContainer" type="PanelContainer" parent="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer" node_paths=PackedStringArray("ui_manager", "preview_viewport", "weapon_options", "item_options", "other_type_options", "submerged_depth_options", "face_right_check", "is_playing_check", "is_back_facing_check", "animation_slider", "opcode_text")]
 layout_mode = 2
 script = ExtResource("4_jq1qv")
 ui_manager = NodePath("../../..")
@@ -157,6 +157,7 @@ other_type_options = NodePath("../../../../SettingsPanel/MarginContainer/VBoxCon
 submerged_depth_options = NodePath("../../../../SettingsPanel/MarginContainer/VBoxContainer/Settings/SubmergedOptions")
 face_right_check = NodePath("../../../../SettingsPanel/MarginContainer/VBoxContainer/Settings/FaceRightCheckBox")
 is_playing_check = NodePath("../SliderContainer/PlayCheckBox")
+is_back_facing_check = NodePath("../../../../SettingsPanel/MarginContainer/VBoxContainer/GridContainer/FaceBackCheck")
 layer_priority_table_filepath = "res://src/layer_priority_table.txt"
 weapon_table_filepath = "res://src/weapons.txt"
 item_list_filepath = "res://src/item_list.txt"
@@ -366,6 +367,32 @@ horizontal_alignment = 2
 layout_mode = 2
 size_flags_horizontal = 0
 disabled = true
+
+[node name="Animation Rewrite" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "----- Animation Rewrite ASM -----"
+horizontal_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="UseAnimationRewrite" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Rewrite Opcodes: "
+horizontal_alignment = 2
+
+[node name="AnimationRewriteCheck" type="CheckBox" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+tooltip_text = "Uses new opcode definitions from the Animation Rewrite ASM"
+
+[node name="FaceBack" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Face Back: "
+horizontal_alignment = 2
+
+[node name="FaceBackCheck" type="CheckBox" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
 
 [node name="TabContainer" type="TabContainer" parent="HBoxContainer"]
 layout_mode = 2
@@ -634,6 +661,7 @@ horizontal_alignment = 1
 [connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/WeaponOptions" to="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/PreviewContainer" method="_on_weapon_options_item_selected"]
 [connection signal="item_selected" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/SubmergedOptions" to="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/PreviewContainer" method="_on_submerged_options_item_selected"]
 [connection signal="toggled" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/Settings/FaceRightCheckBox" to="HBoxContainer/PatchPanel/MarginContainer/VBoxContainer/PreviewContainer" method="_on_face_right_check_toggled"]
+[connection signal="toggled" from="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/GridContainer/AnimationRewriteCheck" to="." method="_on_animation_rewrite_check_toggled"]
 [connection signal="pressed" from="HBoxContainer/TabContainer/Animations/VBoxContainer/AddPointer" to="." method="_on_add_pointer_pressed"]
 [connection signal="pressed" from="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions/DeletePointer" to="." method="_on_delete_pointer_pressed"]
 [connection signal="value_changed" from="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions/PointerSpinBox" to="HBoxContainer/PatchPanel" method="_on_pointer_spin_box_value_changed"]

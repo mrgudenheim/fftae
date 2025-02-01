@@ -618,3 +618,8 @@ func _on_sprite_options_item_selected(_index: int) -> void:
 	#UiManager.option_button_select_text(ui_manager.shp_options, spr.shp_name)
 	#ui_manager.shp_options.item_selected.emit(ui_manager.shp_options.selected)
 	preview_manager._on_animation_changed()
+
+
+func _on_animation_rewrite_check_toggled(toggled_on: bool) -> void:
+	Seq.load_opcode_data(toggled_on)
+	populate_opcode_list(opcode_list_container, ui_manager.animation_id_spinbox.value)

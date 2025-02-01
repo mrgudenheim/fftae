@@ -13,6 +13,7 @@ var global_fft_animation: FftAnimation:
 @export var submerged_depth_options: OptionButton
 @export var face_right_check: CheckBox
 @export var is_playing_check: CheckBox
+@export var is_back_facing_check: CheckBox
 
 @export_file("*.txt") var layer_priority_table_filepath: String
 var layer_priority_table: Array = []
@@ -174,7 +175,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 	# handle LoadFrameWait
 	if not seq_part.isOpcode:
 		var new_frame_id: int = seq_part.parameters[0]
-		var frame_id_offset: int = get_animation_frame_offset(fft_animation.weapon_frame_offset_index, fft_animation.shp)
+		var frame_id_offset: int = get_animation_frame_offset(fft_animation.weapon_frame_offset_index, fft_animation.shp, fft_animation.back_face_offset)
 		new_frame_id = new_frame_id + frame_id_offset + opcode_frame_offset
 		frame_id_label = str(new_frame_id)
 	
@@ -386,16 +387,23 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 		elif seq_part.opcode_name == "QueueDistortAnim":
 			# https://ffhacktics.com/wiki/Animate_Unit_Distorts
 			pass
+		# Opcodes from animation rewraite ASM by Talcall
+		elif seq_part.opcode_name == "SetBackFacedOffset":
+			fft_animation.back_face_offset = seq_part.parameters[0]
+			pass
 	
 	return next_seq_part_id
 
 
-func get_animation_frame_offset(weapon_frame_offset_index:int, shp:Shp) -> int:
+func get_animation_frame_offset(weapon_frame_offset_index: int, shp: Shp, back_faced_offset: int) -> int:
 	if ((shp.file_name.contains("WEP") or shp.file_name.contains("EFF"))
 		and shp.zero_frames.size() > 0):
 		return shp.zero_frames[weapon_frame_offset_index]
 	else:
-		return 0
+		if is_back_facing_check.button_pressed:
+			return back_faced_offset
+		else:
+			return 0
 
 
 func get_sub_animation(length:int, sub_animation_end_part_id:int, parent_animation:Sequence) -> Sequence:
@@ -457,6 +465,7 @@ func get_animation_from_globals() -> FftAnimation:
 	fft_animation.image = FFTae.ae.spr.spritesheet
 	fft_animation.flipped_h = face_right_check.button_pressed
 	fft_animation.submerged_depth = submerged_depth_options.selected
+	fft_animation.back_face_offset = 0
 	
 	FFTae.ae.global_fft_animation = fft_animation
 	return fft_animation

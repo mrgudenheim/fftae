@@ -479,39 +479,46 @@ func write_csv() -> void:
 		seq_id += 1
 
 	DirAccess.make_dir_recursive_absolute("user://FFTorama")
-	var save_file := FileAccess.open("user://FFTorama/animation_data_"+file_name+".txt", FileAccess.WRITE)
+	var save_file := FileAccess.open("user://FFTorama/animation_data_" + file_name + ".txt", FileAccess.WRITE)
 	save_file.store_string(output)
 
 
 # https://ffhacktics.com/wiki/SEQ_%26_Animation_info_page
-static func load_opcode_data() -> void:
+static func load_opcode_data(use_rewrite_opcodes: bool = false) -> void:
 	opcode_names.clear()
 	opcode_parameters.clear()
 	opcode_parameters_by_name.clear()
 	
-	var opcode_filepath:String = "res://src/SeqData/opcodeParameters.txt"
+	var opcode_filepath: String = "res://src/SeqData/opcodeParameters.txt"
+	var animation_rewrite_opcodes_filepath: String = "res://src/SeqData/animation_rewrite_opcodes.txt"
 	
-	var file := FileAccess.open(opcode_filepath, FileAccess.READ)
+	load_opcode_file(opcode_filepath)
+	if use_rewrite_opcodes:
+		load_opcode_file(animation_rewrite_opcodes_filepath)
+
+
+static func load_opcode_file(file_path: String) -> void:
+	var file := FileAccess.open(file_path, FileAccess.READ)
 	var input: String = file.get_as_text()
 	
 	var lines: PackedStringArray = input.split("\n");
-
+	
 	# skip first row of headers
-	var line_index:int = 1
+	var line_index: int = 1
 	while line_index < lines.size():
 		var parts: PackedStringArray = lines[line_index].split(",")
 		if parts.size() <= 2:
 			line_index += 1
 			continue
 		
-		var opcode_code:String = parts[2].substr(0, 4) # ignore any extra characters in text file
-		var opcode_name:String = parts[0]
-		var opcode_num_parameters:int = parts[1] as int
-
+		var opcode_code: String = parts[2].substr(0, 4) # ignore any extra characters in text file
+		var opcode_name: String = parts[0]
+		var opcode_num_parameters: int = parts[1] as int
+		
 		opcode_names[opcode_code] = opcode_name
 		opcode_parameters[opcode_code] = opcode_num_parameters
 		opcode_parameters_by_name[opcode_name] = opcode_num_parameters
-
+		
 		line_index += 1
 
 

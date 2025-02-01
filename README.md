@@ -11,6 +11,7 @@ This tool streamlines creating xml patches for FFT that edit animations.
 - Create SEQ file or xml patch
 - Preview animation and SHP frames
 - SEQ and SHP will be auto selected when selecting an SPR. SHP will be auto selected when selecting SEQ
+- Partial Experimental support for opcodes from Animation Rewrite ASM
 
 # Limitations and Notes
 - Having two Move opcodes in a row (ex. MoveForward2() followed by MoveForward2()) may cause weird issues when ran in game
@@ -20,6 +21,7 @@ This tool streamlines creating xml patches for FFT that edit animations.
 	MON.SHP uses Sp2 files based on animation index, so the frames retrieved may change depending on which animation is selected.
 	WEP.SHP offsets the selection vertically based on weapon id
 	OTHER.SHP offsets the selection vertically based on the "other type"
+- Since the Animation Rewrite ASM changes the ffc2 opcode to have 1 parameter instead of 0, there may be issues unless all vanilla ffc2 opcodes are changed to something else.
 
 # Future Improvements
 - Improve UI

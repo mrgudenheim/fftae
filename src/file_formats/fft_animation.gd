@@ -9,6 +9,7 @@ var flipped_h: bool = false # mirrors the animation. Set to true to create right
 var submerged_depth: int = 0
 var weapon_frame_offset_index: int = 0
 var other_type_index: int = 0
+var back_face_offset: int = 0
 
 var parent_anim: FftAnimation = null: # used for nested loops in animations
 	get:

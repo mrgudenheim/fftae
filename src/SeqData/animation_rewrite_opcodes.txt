@@ -1,5 +1,5 @@
 OpcodeName,Parameters,Code
-SetBackFacedOffset,0,ffc2
+SetBackFacedOffset,1,ffc2
 MoveSubGraphU,2,ffc7
 MoveSubGraphV,2,ffc8
 MoveSubGraphX,2,ffc9
