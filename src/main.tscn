@@ -384,7 +384,7 @@ horizontal_alignment = 2
 
 [node name="AnimationRewriteCheck" type="CheckBox" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-tooltip_text = "Uses new opcode definitions from the Animation Rewrite ASM"
+tooltip_text = "WARNING: Uses new opcode definitions from the Animation Rewrite ASM."
 
 [node name="FaceBack" type="Label" parent="HBoxContainer/SettingsPanel/MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
@@ -421,6 +421,7 @@ text = "Delete Pointer"
 [node name="PointerSpinBox" type="SpinBox" parent="HBoxContainer/TabContainer/Animations/VBoxContainer/Functions"]
 layout_mode = 2
 editable = false
+select_all_on_focus = true
 
 [node name="Headers" type="HBoxContainer" parent="HBoxContainer/TabContainer/Animations/VBoxContainer"]
 layout_mode = 2
@@ -577,6 +578,7 @@ horizontal_alignment = 1
 layout_mode = 2
 alignment = 2
 editable = false
+select_all_on_focus = true
 
 [node name="AnimationOptionButton" type="OptionButton" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Options"]
 layout_mode = 2
@@ -593,6 +595,7 @@ text = "Row: "
 [node name="RowSpinBox" type="SpinBox" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2
 editable = false
+select_all_on_focus = true
 
 [node name="InsertOpcode" type="Button" parent="HBoxContainer/AnimationEditor/MarginContainer/VBoxContainer/Functions"]
 layout_mode = 2

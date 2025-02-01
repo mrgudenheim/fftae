@@ -44,6 +44,7 @@ func on_item_selected(item_index: int) -> void:
 	for param_index: int in range(max_params):
 		if param_index < opcode_params:
 			var param_spinbox: SpinBox = SpinBox.new()
+			param_spinbox.select_all_on_focus = true
 			param_spinbox.max_value = 255
 			param_spinbox.min_value = -128
 			param_spinbox.alignment = HORIZONTAL_ALIGNMENT_RIGHT
