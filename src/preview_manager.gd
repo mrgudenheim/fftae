@@ -186,7 +186,7 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 			var assembled_image: Image = fft_animation.shp.get_assembled_frame(new_frame_id, fft_animation.image, ui_manager.animation_id_spinbox.value, other_type_options.selected, weapon_v_offset, submerged_depth_options.selected)
 			draw_target.texture = ImageTexture.create_from_image(assembled_image)
 			var y_rotation: float = fft_animation.shp.get_frame(new_frame_id, fft_animation.submerged_depth).y_rotation
-			if fft_animation.flipped_h:
+			if fft_animation.flipped_h != fft_animation.flipped_v:
 				y_rotation = -y_rotation
 			(draw_target.get_parent() as Node2D).rotation_degrees = y_rotation
 	
@@ -277,7 +277,11 @@ func process_seq_part(fft_animation: FftAnimation, seq_part_id: int, draw_target
 		elif seq_part.opcode_name == "SetFrameOffset":
 			opcode_frame_offset = seq_part.parameters[0] # use global var since SetFrameOffset is only used in animations that do not call other animations
 		elif seq_part.opcode_name == "FlipHorizontal":
-			ui_manager.preview_viewport.sprite_primary.flip_h = !ui_manager.preview_viewport.sprite_primary.flip_h
+			draw_target.flip_h = !draw_target.flip_h
+			fft_animation.flipped_h = not fft_animation.flipped_h
+		elif seq_part.opcode_name == "FlipVertical":
+			draw_target.flip_v = !draw_target.flip_v
+			fft_animation.flipped_v = not fft_animation.flipped_v
 		elif seq_part.opcode_name == "UnloadMFItem":
 			var target_sprite: Sprite2D = ui_manager.preview_viewport.sprite_item
 			target_sprite.texture = ImageTexture.create_from_image(fft_animation.shp.create_blank_frame())
@@ -454,6 +458,18 @@ func reset_sprites() -> void:
 	preview_viewport.sprite_weapon.z_index = -3
 	preview_viewport.sprite_effect.z_index = -1
 	preview_viewport.sprite_text.z_index = 0
+	
+	# reset flip_h
+	preview_viewport.sprite_primary.flip_h = face_right_check.button_pressed
+	preview_viewport.sprite_weapon.flip_h = face_right_check.button_pressed
+	preview_viewport.sprite_effect.flip_h = face_right_check.button_pressed
+	preview_viewport.sprite_text.flip_h = face_right_check.button_pressed
+	
+	# reset flip_v
+	preview_viewport.sprite_primary.flip_v = false
+	preview_viewport.sprite_weapon.flip_v = false
+	preview_viewport.sprite_effect.flip_v = false
+	preview_viewport.sprite_text.flip_v = false
 
 
 func get_animation_from_globals() -> FftAnimation:
@@ -464,6 +480,7 @@ func get_animation_from_globals() -> FftAnimation:
 	fft_animation.weapon_frame_offset_index = global_weapon_frame_offset_index
 	fft_animation.image = FFTae.ae.spr.spritesheet
 	fft_animation.flipped_h = face_right_check.button_pressed
+	fft_animation.flipped_v = false
 	fft_animation.submerged_depth = submerged_depth_options.selected
 	fft_animation.back_face_offset = 0
 	
@@ -504,6 +521,6 @@ func _on_submerged_options_item_selected(index: int) -> void:
 	_on_animation_changed()
 
 
-func _on_face_right_check_toggled(_toggled_on: bool) -> void:	
+func _on_face_right_check_toggled(_toggled_on: bool) -> void:
 	preview_viewport.flip_h()
 	_on_animation_changed()
